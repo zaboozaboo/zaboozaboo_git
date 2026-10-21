@@ -120,7 +120,7 @@ const UI = {
         <div class="body">
           <div class="nm"><span class="rbadge">${r.name}</span>${h.name}</div>
           <div class="meta"><span class="stars">${'★'.repeat(o.stars)}${'☆'.repeat(MAX_STARS - o.stars)}</span> Lv.${o.level}/${maxLv} · ${h.building}</div>
-          <div class="meta">${u.name}${h.count > 1 ? ' x' + h.count : ''} (${kind}) · 공 ${fmt(u.atk * am.atk * lm)} · 체 ${fmt(u.hp * am.hp * lm)} · ${h.spawnCd}s</div>
+          <div class="meta">${u.name}x${h.count} (${kind}) · 공 ${fmt(u.atk * am.atk * lm)} · 체 ${fmt(u.hp * am.hp * lm)} · ${h.spawnCd}s</div>
           <div class="meta">조각 ${o.shards}/${o.stars >= MAX_STARS ? 'MAX' : need}</div>
           <div class="acts">
             ${o.level < maxLv ? UI.costBtn('레벨업', heroLevelCost(id), 'hlv', `data-id="${id}"`) : '<button class="btn small" disabled>최대 레벨</button>'}
@@ -170,11 +170,11 @@ const UI = {
         ${UI.costBtn('1회', 100, 'summon', 'data-n="1"', 'gems').replace('btn small', 'btn')}
         ${UI.costBtn('10회', 900, 'summon', 'data-n="10"', 'gems').replace('btn small', 'btn')}
       </div>
-      <p class="hint" style="text-align:center">10회 소환 시 SR 이상 1장 확정</p>
-      <div class="rates">${RARITY_ORDER.map(r => `<span><span class="rbadge" style="--r:${RARITY[r].color}">${r}</span>${(RARITY[r].weight / total * 100).toFixed(0)}%</span>`).join('')}</div></div>
+      <p class="hint" style="text-align:center">10회 소환 시 고급 이상 1장 확정</p>
+      <div class="rates">${RARITY_ORDER.map(r => `<span><span class="rbadge" style="--r:${RARITY[r].color}">${RARITY[r].name}</span>${(RARITY[r].weight / total * 100).toFixed(0)}%</span>`).join('')}</div></div>
       <div class="sec"><h3>도감</h3>${HEROES.map(h => {
         const o = S.heroes[h.id];
-        return `<div class="row" style="${o ? '' : 'opacity:.35'}"><div class="ic">${h.icon}</div><div class="body"><div class="t"><span class="rbadge" style="--r:${RARITY[h.rarity].color}">${h.rarity}</span>${h.name}</div><div class="d">${h.building} → ${h.unit.name}${h.count > 1 ? ' x' + h.count : ''}</div></div>${o ? '★' + o.stars : '미보유'}</div>`;
+        return `<div class="row" style="${o ? '' : 'opacity:.35'}"><div class="ic">${h.icon}</div><div class="body"><div class="t"><span class="rbadge" style="--r:${RARITY[h.rarity].color}">${RARITY[h.rarity].name}</span>${h.name}</div><div class="d">${h.building} → ${h.unit.name} x${h.count}</div></div>${o ? '★' + o.stars : '미보유'}</div>`;
       }).join('')}</div>`;
   },
 
@@ -286,9 +286,9 @@ const UI = {
 
   showSummon(res) {
     const best = res.reduce((a, r) => Math.max(a, RARITY_ORDER.indexOf(r.rarity)), 0);
-    const cards = res.map((h, i) => `<div class="rcard ${RARITY_ORDER.indexOf(h.rarity) >= 3 ? 'hi' : ''}" style="--r:${RARITY[h.rarity].color};animation-delay:${i * 0.07}s">
-      ${h.isNew ? '<span class="new">NEW</span>' : ''}<div class="ic">${h.icon}</div><span class="rbadge">${h.rarity}</span><div>${h.name.split(' ').pop()}</div></div>`).join('');
-    UI.modal(`<h2>${best >= 3 ? '🌟 대박! 🌟' : '소환 결과'}</h2><div class="result-grid" style="${res.length === 1 ? 'grid-template-columns:1fr;max-width:110px;margin:10px auto' : ''}">${cards}</div>`,
+    const cards = res.map((h, i) => `<div class="rcard ${RARITY_ORDER.indexOf(h.rarity) >= 2 ? 'hi' : ''}" style="--r:${RARITY[h.rarity].color};animation-delay:${i * 0.07}s">
+      ${h.isNew ? '<span class="new">NEW</span>' : ''}<div class="ic">${h.icon}</div><span class="rbadge">${RARITY[h.rarity].name}</span><div>${h.name.split(' ').pop()}</div></div>`).join('');
+    UI.modal(`<h2>${best >= 2 ? '🌟 영웅 등장! 🌟' : '소환 결과'}</h2><div class="result-grid" style="${res.length === 1 ? 'grid-template-columns:1fr;max-width:110px;margin:10px auto' : ''}">${cards}</div>`,
       [{ label: '확인', cls: 'primary' }]);
   },
 
@@ -312,8 +312,8 @@ const UI = {
     if (B.mode !== 'stage') { UI.toast('이미 전투 중입니다'); return; }
     if (S.daily.war <= 0) return;
     S.daily.war--;
-    const tier = Math.min(4, Math.floor(S.maxStage / 15));
-    const deck = UI.randomDeck(Math.min(5, slotCount() + 1), Math.max(0, tier - 2), Math.min(4, tier + 1));
+    const tier = Math.min(2, Math.floor(S.maxStage / 25));
+    const deck = UI.randomDeck(Math.min(5, slotCount() + 1), Math.max(0, tier - 1), Math.min(2, tier + 1));
     const nn = NATIONS[k];
     const power = myPower() * rand(0.85, 1.2);
     const spec = UI.buildSpec('war', deck, power, nn.color, `${nn.icon} ${nn.short} 원정군`,
@@ -341,8 +341,8 @@ const UI = {
     const r = i + 1;
     S.daily.duel--;
     const size = r <= 3 ? 5 : r <= 10 ? 4 : 3;
-    const maxR = r <= 2 ? 4 : r <= 6 ? 3 : r <= 12 ? 2 : 1;
-    const deck = UI.randomDeck(size, Math.max(0, maxR - 2), maxR);
+    const maxR = r <= 6 ? 2 : r <= 14 ? 1 : 0;
+    const deck = UI.randomDeck(size, Math.max(0, maxR - 1), maxR);
     const spec = UI.buildSpec('duel', deck, foe.power, '#9b5de5', `${titleOf(r).name} ${foe.name}`,
       { cls: foe.cls, gender: pick(['m', 'f']), promo: Math.min(3, Math.floor((20 - r) / 6)), name: foe.name });
     startSpecial(spec, (res) => {

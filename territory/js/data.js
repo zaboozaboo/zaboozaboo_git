@@ -1,14 +1,13 @@
 // 영토, 나의 영토 — 게임 데이터 정의
 'use strict';
 
+// 건물(영웅 카드) 등급은 일반 / 고급 / 영웅 3단계
 const RARITY = {
-  N:   { name: 'N',   color: '#9aa4b1', weight: 50,   score: 1 },
-  R:   { name: 'R',   color: '#4fa3ff', weight: 30,   score: 1.8 },
-  SR:  { name: 'SR',  color: '#b26bff', weight: 14,   score: 3.2 },
-  SSR: { name: 'SSR', color: '#ffb020', weight: 5,    score: 5.5 },
-  UR:  { name: 'UR',  color: '#ff4d6d', weight: 1,    score: 9 },
+  C: { name: '일반', color: '#9aa4b1', weight: 62, score: 1 },
+  R: { name: '고급', color: '#4fa3ff', weight: 30, score: 2 },
+  H: { name: '영웅', color: '#ffb020', weight: 8,  score: 4 },
 };
-const RARITY_ORDER = ['N', 'R', 'SR', 'SSR', 'UR'];
+const RARITY_ORDER = ['C', 'R', 'H'];
 
 // 메인 영주 직업 — 전직 4단계
 const CLASSES = {
@@ -50,34 +49,37 @@ const NATIONS = {
   ignis:  { name: '화염제국 이그니스', short: '이그니스', color: '#ff6a4d', dark: '#8a2414', icon: '🔥', bonusText: '부대 공격력 +20%', bonus: { atk: 0.2 } },
 };
 
-// 영웅 카드 = 유닛을 뽑아내는 건물
+// 영웅 카드 = 유닛을 뽑아내는 건물. 한 번 소환할 때 부하가 3마리 또는 5마리씩 나온다.
 const HEROES = [
-  { id: 'militia',  name: '민병대장 한스',   rarity: 'N',   icon: '🪓', building: '민병 막사', spawnCd: 3.0, count: 1,
-    unit: { name: '민병', kind: 'melee', hp: 60, atk: 6, range: 22, speed: 38, atkCd: 1.0, size: 7, color: '#c9a26b', weapon: 'axe' } },
-  { id: 'archer',   name: '견습궁수 리나',   rarity: 'N',   icon: '🏹', building: '사격장', spawnCd: 3.5, count: 1,
-    unit: { name: '궁수', kind: 'ranged', hp: 35, atk: 7, range: 150, speed: 34, atkCd: 1.3, size: 6, color: '#7fb069', proj: 'arrow', weapon: 'bow' } },
-  { id: 'spear',    name: '창병대장 볼크',   rarity: 'R',   icon: '🔱', building: '창병 훈련소', spawnCd: 3.2, count: 1,
-    unit: { name: '창병', kind: 'melee', hp: 110, atk: 9, range: 30, speed: 36, atkCd: 1.0, size: 7, color: '#8d99ae', weapon: 'spear' } },
-  { id: 'crossbow', name: '석궁대장 베른',   rarity: 'R',   icon: '🎯', building: '석궁 공방', spawnCd: 3.8, count: 1,
-    unit: { name: '석궁병', kind: 'ranged', hp: 50, atk: 15, range: 175, speed: 32, atkCd: 1.8, size: 6, color: '#a0785a', proj: 'bolt_x', weapon: 'bow' } },
-  { id: 'apprentice', name: '견습마법사 미나', rarity: 'R', icon: '📘', building: '마법 학당', spawnCd: 4.0, count: 1,
-    unit: { name: '견습 마법사', kind: 'ranged', hp: 40, atk: 10, range: 140, speed: 32, atkCd: 1.5, size: 6, color: '#6c8cff', proj: 'bolt', splash: 25, weapon: 'staff' } },
-  { id: 'cavalry',  name: '기병대장 로웰',   rarity: 'SR',  icon: '🐎', building: '마구간', spawnCd: 5.0, count: 1,
-    unit: { name: '기병', kind: 'melee', hp: 190, atk: 17, range: 26, speed: 78, atkCd: 0.9, size: 9, color: '#b5651d', weapon: 'lance', mount: true } },
-  { id: 'monk',     name: '수도사 이사벨',   rarity: 'SR',  icon: '📿', building: '수도원', spawnCd: 5.0, count: 1,
-    unit: { name: '수도사', kind: 'healer', hp: 80, atk: 6, heal: 14, range: 120, speed: 34, atkCd: 1.3, size: 6, color: '#f1e3c6', proj: 'holy', weapon: 'staff' } },
-  { id: 'pyro',     name: '화염술사 이그란', rarity: 'SR',  icon: '🔥', building: '화염의 탑', spawnCd: 4.5, count: 1,
+  // ── 일반 ──
+  { id: 'militia',  name: '민병대장 한스',   rarity: 'C', icon: '🪓', building: '민병 막사', spawnCd: 9, count: 5,
+    unit: { name: '민병', kind: 'melee', hp: 55, atk: 5, range: 22, speed: 38, atkCd: 1.0, size: 7, color: '#c9a26b', weapon: 'axe' } },
+  { id: 'archer',   name: '견습궁수 리나',   rarity: 'C', icon: '🏹', building: '사격장', spawnCd: 10, count: 5,
+    unit: { name: '궁수', kind: 'ranged', hp: 32, atk: 6, range: 150, speed: 34, atkCd: 1.3, size: 6, color: '#7fb069', proj: 'arrow', weapon: 'bow' } },
+  { id: 'spear',    name: '창병대장 볼크',   rarity: 'C', icon: '🔱', building: '창병 훈련소', spawnCd: 8, count: 3,
+    unit: { name: '창병', kind: 'melee', hp: 95, atk: 8, range: 30, speed: 36, atkCd: 1.0, size: 7, color: '#8d99ae', weapon: 'spear' } },
+  { id: 'crossbow', name: '석궁대장 베른',   rarity: 'C', icon: '🎯', building: '석궁 공방', spawnCd: 9, count: 3,
+    unit: { name: '석궁병', kind: 'ranged', hp: 45, atk: 13, range: 175, speed: 32, atkCd: 1.8, size: 6, color: '#a0785a', proj: 'bolt_x', weapon: 'bow' } },
+  // ── 고급 ──
+  { id: 'apprentice', name: '마법사 미나',   rarity: 'R', icon: '📘', building: '마법 학당', spawnCd: 11, count: 5,
+    unit: { name: '견습 마법사', kind: 'ranged', hp: 45, atk: 11, range: 140, speed: 32, atkCd: 1.5, size: 6, color: '#6c8cff', proj: 'bolt', splash: 25, weapon: 'staff' } },
+  { id: 'cavalry',  name: '기병대장 로웰',   rarity: 'R', icon: '🐎', building: '마구간', spawnCd: 11, count: 3,
+    unit: { name: '기병', kind: 'melee', hp: 190, atk: 16, range: 26, speed: 78, atkCd: 0.9, size: 9, color: '#b5651d', weapon: 'lance', mount: true } },
+  { id: 'monk',     name: '수도사 이사벨',   rarity: 'R', icon: '📿', building: '수도원', spawnCd: 11, count: 3,
+    unit: { name: '수도사', kind: 'healer', hp: 85, atk: 6, heal: 14, range: 120, speed: 34, atkCd: 1.3, size: 6, color: '#f1e3c6', proj: 'holy', weapon: 'staff' } },
+  { id: 'pyro',     name: '화염술사 이그란', rarity: 'R', icon: '🔥', building: '화염의 탑', spawnCd: 11, count: 3,
     unit: { name: '화염술사', kind: 'ranged', hp: 70, atk: 20, range: 150, speed: 32, atkCd: 1.6, size: 7, color: '#ff7b39', proj: 'fire', splash: 40, weapon: 'staff' } },
-  { id: 'griffin',  name: '그리핀 기수 아리아', rarity: 'SSR', icon: '🦅', building: '그리핀 둥지', spawnCd: 6.0, count: 1,
-    unit: { name: '그리핀 기수', kind: 'melee', hp: 330, atk: 34, range: 28, speed: 95, atkCd: 0.8, size: 10, color: '#e8c872', weapon: 'lance', flying: true } },
-  { id: 'paladin',  name: '성기사단장 가렌', rarity: 'SSR', icon: '⚜️', building: '성기사단 본부', spawnCd: 6.5, count: 1,
-    unit: { name: '성기사', kind: 'melee', hp: 650, atk: 30, range: 26, speed: 36, atkCd: 1.0, size: 10, color: '#e9ecef', weapon: 'sword', heavy: true } },
-  { id: 'ranger',   name: '대궁수 엘렌',     rarity: 'SSR', icon: '🌙', building: '엘프 망루', spawnCd: 6.0, count: 3,
-    unit: { name: '엘프 궁수', kind: 'ranged', hp: 90, atk: 22, range: 200, speed: 40, atkCd: 1.0, size: 6, color: '#9be564', proj: 'arrow', weapon: 'bow' } },
-  { id: 'dragon',   name: '드래곤 테이머 카엘', rarity: 'UR', icon: '🐉', building: '용의 둥지', spawnCd: 12, count: 1,
-    unit: { name: '레드 드래곤', kind: 'ranged', hp: 1600, atk: 70, range: 130, speed: 40, atkCd: 1.4, size: 16, color: '#d7263d', proj: 'fire', splash: 55, flying: true, dragon: true } },
-  { id: 'archangel', name: '대천사 세라핌',  rarity: 'UR', icon: '😇', building: '천상의 제단', spawnCd: 11, count: 1,
-    unit: { name: '대천사', kind: 'healer', hp: 1100, atk: 45, heal: 45, healAll: true, range: 170, speed: 45, atkCd: 1.1, size: 12, color: '#fff3b0', proj: 'holy', flying: true, angel: true } },
+  { id: 'ranger',   name: '숲지기 엘렌',     rarity: 'R', icon: '🌙', building: '엘프 망루', spawnCd: 11, count: 5,
+    unit: { name: '엘프 궁수', kind: 'ranged', hp: 60, atk: 13, range: 200, speed: 40, atkCd: 1.0, size: 6, color: '#9be564', proj: 'arrow', weapon: 'bow' } },
+  // ── 영웅 ──
+  { id: 'griffin',  name: '그리핀 기수 아리아', rarity: 'H', icon: '🦅', building: '그리핀 둥지', spawnCd: 13, count: 3,
+    unit: { name: '그리핀 기수', kind: 'melee', hp: 320, atk: 30, range: 28, speed: 95, atkCd: 0.8, size: 10, color: '#e8c872', weapon: 'lance', flying: true } },
+  { id: 'paladin',  name: '성기사단장 가렌', rarity: 'H', icon: '⚜️', building: '성기사단 본부', spawnCd: 14, count: 5,
+    unit: { name: '성기사', kind: 'melee', hp: 420, atk: 22, range: 26, speed: 36, atkCd: 1.0, size: 10, color: '#e9ecef', weapon: 'sword', heavy: true } },
+  { id: 'dragon',   name: '드래곤 테이머 카엘', rarity: 'H', icon: '🐉', building: '용의 둥지', spawnCd: 16, count: 3,
+    unit: { name: '와이번', kind: 'ranged', hp: 520, atk: 30, range: 130, speed: 42, atkCd: 1.4, size: 13, color: '#d7263d', proj: 'fire', splash: 50, flying: true, dragon: true } },
+  { id: 'archangel', name: '대천사 세라핌',  rarity: 'H', icon: '😇', building: '천상의 제단', spawnCd: 16, count: 3,
+    unit: { name: '천사', kind: 'healer', hp: 380, atk: 18, heal: 22, healAll: true, range: 160, speed: 45, atkCd: 1.1, size: 10, color: '#fff3b0', proj: 'holy', flying: true, angel: true } },
 ];
 const HERO_BY_ID = Object.fromEntries(HEROES.map(h => [h.id, h]));
 

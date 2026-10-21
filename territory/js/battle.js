@@ -5,7 +5,7 @@ const W = 800, H = 400;
 const GROUND_TOP = 160, GROUND_BOT = 388;
 const P_CASTLE_X = 70;        // 아군 성 전면
 const E_CASTLE_X = W - 70;    // 적 성 전면 (국가전/서열전)
-const MAX_ALLIES = 70;
+const MAX_ALLIES = 120;
 const AGGRO = 240;
 
 const BUILDING_POS = [
@@ -64,7 +64,9 @@ function spawnHero(team, heroId, pos, scale, tint) {
   const mult = heroMult(heroId, scale);
   for (let i = 0; i < hero.count; i++) {
     const x = team === 0 ? pos.x + 10 : W - pos.x - 10;
-    const u = makeUnit(team, hero.unit, mult, x + rand(-6, 6), pos.y + rand(-10, 10) + i * 6, { heroId, tint });
+    // 3마리/5마리가 대열을 지어 건물에서 쏟아져 나온다
+    const row = i - (hero.count - 1) / 2;
+    const u = makeUnit(team, hero.unit, mult, x + rand(-4, 4) - Math.abs(row) * 5 * (team === 0 ? 1 : -1), pos.y + row * 9 + rand(-2, 2), { heroId, tint });
     B.units.push(u);
   }
 }

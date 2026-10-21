@@ -133,11 +133,11 @@ function goldMult() {
   if (leadingNation() === S.nation) m *= 1.1;
   return m;
 }
-const stageMult = (stage) => Math.pow(1.12, stage - 1);
-const goldPerKill = (stage) => 3 * Math.pow(1.115, stage - 1) * goldMult();
+const stageMult = (stage) => Math.pow(1.18, stage - 1);
+const goldPerKill = (stage) => 2.5 * Math.pow(1.13, stage - 1) * goldMult();
 
 const lordLevelCost = () => Math.round(50 * Math.pow(1.16, S.lord.level - 1));
-const heroLevelCost = (id) => Math.round(25 * RARITY[HERO_BY_ID[id].rarity].score * Math.pow(1.17, S.heroes[id].level - 1));
+const heroLevelCost = (id) => Math.round(25 * RARITY[HERO_BY_ID[id].rarity].score * Math.pow(1.2, S.heroes[id].level - 1));
 const heroMaxLevel = (id) => 20 + S.heroes[id].stars * 20;
 const shardsForStar = (stars) => stars; // 1성→2성: 중복 1장, 2성→3성: 2장 ...
 const MAX_STARS = 5;
@@ -161,8 +161,8 @@ function rollRarity(minRarity) {
 function summon(n) {
   const results = [];
   for (let i = 0; i < n; i++) {
-    const guarantee = n >= 10 && i === n - 1 && !results.some(r => RARITY_ORDER.indexOf(r.rarity) >= 2);
-    const rar = rollRarity(guarantee ? 'SR' : null);
+    const guarantee = n >= 10 && i === n - 1 && !results.some(r => RARITY_ORDER.indexOf(r.rarity) >= 1);
+    const rar = rollRarity(guarantee ? 'R' : null);
     const hero = pick(HEROES.filter(h => h.rarity === rar));
     const owned = S.heroes[hero.id];
     if (owned) owned.shards++;
