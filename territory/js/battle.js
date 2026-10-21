@@ -5,7 +5,6 @@ const W = 800, H = 400;
 const GROUND_TOP = 160, GROUND_BOT = 388;
 const P_CASTLE_X = 70;        // 아군 성 전면
 const E_CASTLE_X = W - 70;    // 적 성 전면 (국가전/서열전)
-const MAX_ALLIES = 120;
 const AGGRO = 240;
 
 const BUILDING_POS = [
@@ -94,6 +93,8 @@ function spawnEnemy(key, stage, opts = {}) {
 }
 
 // ---------- 전투 시작 ----------
+const armyCount = () => B.units.reduce((a, u) => a + (u.team === 0 && !u.isLord ? 1 : 0), 0);
+
 function resetField(keepAllies) {
   B.units = keepAllies ? B.units.filter(u => u.team === 0) : [];
   B.projs = []; B.fx = []; B.texts = [];
@@ -102,14 +103,15 @@ function resetField(keepAllies) {
   if (!keepAllies) { B.lordRespawn = 0.5; }
 }
 
+// 스테이지가 바뀌어도(보스 도전, 실패 후퇴 포함) 살아남은 부대는 그대로 남는다
 function startStage(stage) {
-  const keep = B.mode === 'stage' && B.units.length > 0 && !B.failed;
+  const refill = B.failed || !B.pCastle;
   B.mode = 'stage';
   B.failed = false;
   B.special = null;
-  resetField(keep);
+  resetField(true);
   B.eCastle = null;
-  if (!keep || !B.pCastle) B.pCastle = { hp: castleMaxHp(), max: castleMaxHp() };
+  if (refill) B.pCastle = { hp: castleMaxHp(), max: castleMaxHp() };
   else { B.pCastle.max = castleMaxHp(); B.pCastle.hp = Math.min(B.pCastle.max, B.pCastle.hp + B.pCastle.max * 0.3); }
   const reg = region(stage);
   const n = Math.min(6 + Math.floor(stage * 0.35), 28);
@@ -132,6 +134,8 @@ function startSpecial(spec, onEnd) {
   B.special = spec;
   B.onEnd = onEnd;
   B.failed = false;
+  // 국가전/서열전 동안 스테이지 부대는 영지에 대기시켜 두었다가 끝나면 복귀
+  B.stash = { units: B.units.filter(u => u.team === 0), castle: B.pCastle, lordRespawn: B.lordRespawn };
   resetField(false);
   B.pCastle = { hp: castleMaxHp(), max: castleMaxHp() };
   const eMax = 800 * spec.scale * 1.2;
@@ -280,14 +284,15 @@ function updateBattle(dt) {
 function spawnPhase(dt) {
   // 아군 건물 소환
   const am = armyMult();
-  const allies = B.units.reduce((a, u) => a + (u.team === 0 ? 1 : 0), 0);
+  let allies = armyCount();
+  const cap = armyCap();
   for (let i = 0; i < slotCount(); i++) {
     const id = S.slots[i];
     if (!id) continue;
     const hero = HERO_BY_ID[id];
     B.spawnT[i] += dt * am.spawn / hero.spawnCd;
     if (B.spawnT[i] >= 1) {
-      if (allies < MAX_ALLIES) { B.spawnT[i] = 0; spawnHero(0, id, BUILDING_POS[i]); B.fx.push({ type: 'ring', x: BUILDING_POS[i].x, y: BUILDING_POS[i].y, r: 4, max: 22, t: 0, life: 0.35, color: RARITY[hero.rarity].color }); }
+      if (allies < cap) { B.spawnT[i] = 0; spawnHero(0, id, BUILDING_POS[i]); allies += hero.count; B.fx.push({ type: 'ring', x: BUILDING_POS[i].x, y: BUILDING_POS[i].y, r: 4, max: 22, t: 0, life: 0.35, color: RARITY[hero.rarity].color }); }
       else B.spawnT[i] = 1;
     }
   }
@@ -482,7 +487,11 @@ function finishBattle() {
   } else {
     const cb = B.onEnd;
     const res = { result: B.result, dmgRatio: 1 - Math.max(0, B.eCastle.hp) / B.eCastle.max };
-    B.failed = true;
+    const st = B.stash;
+    B.stash = null;
+    B.units = st ? st.units : [];
+    B.pCastle = st ? st.castle : null;
+    B.lordRespawn = st ? st.lordRespawn : 0.3;
     B.mode = 'stage';
     startStage(S.stage);
     if (cb) cb(res);
@@ -493,6 +502,5 @@ function challengeBoss() {
   if (B.mode !== 'stage') return;
   S.farming = false;
   S.stage = Math.min(S.maxStage, S.stage + 1);
-  B.failed = true;
   startStage(S.stage);
 }

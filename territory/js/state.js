@@ -43,7 +43,7 @@ function newGame({ name, gender, cls, nation }) {
     stage: 1,
     maxStage: 1,
     farming: false,
-    upgrades: { atk: 0, hp: 0, spawn: 0, castle: 0, gold: 0 },
+    upgrades: { atk: 0, hp: 0, spawn: 0, cap: 0, castle: 0, gold: 0 },
     heroes: { militia: { level: 1, stars: 1, shards: 0 }, archer: { level: 1, stars: 1, shards: 0 } },
     slots: ['militia', 'archer', null, null, null],
     daily: { date: todayStr(), war: 3, duel: 5, freeSummon: 1 },
@@ -68,6 +68,7 @@ function loadGame() {
     const raw = localStorage.getItem(SAVE_KEY);
     if (!raw) return null;
     S = JSON.parse(raw);
+    for (const u of UPGRADES) if (S.upgrades[u.id] === undefined) S.upgrades[u.id] = 0;
     return S;
   } catch (e) { return null; }
 }
@@ -85,6 +86,8 @@ function checkDaily() {
 // ---------- 공식 ----------
 const promoInfo = () => PROMOTIONS[S.lord.promo];
 const slotCount = () => promoInfo().slots;
+// 부대 정원: 기본 40, 전직마다 +10, '부대 정원' 강화마다 +2
+const armyCap = () => 40 + S.lord.promo * 10 + (S.upgrades.cap || 0) * 2;
 const myRank = () => S.ladder.findIndex(e => e.me) + 1;
 const titleOf = (rank) => TITLES.find(t => rank <= t.upTo);
 const nationBonus = (k) => (NATIONS[S.nation].bonus[k] || 0);

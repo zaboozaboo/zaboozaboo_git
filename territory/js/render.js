@@ -403,6 +403,12 @@ function drawHud() {
     ctx.textAlign = 'left'; ctx.fillText(S.lord.name, 8, 24);
     ctx.textAlign = 'right'; ctx.fillText(B.special.foeName, W - 8, 24);
   }
+  // 부대 인원
+  const cnt = armyCount(), cap = armyCap();
+  ctx.textAlign = 'left'; ctx.font = 'bold 12px sans-serif';
+  ctx.fillStyle = 'rgba(0,0,0,.45)'; roundRect(76, H - 24, 92, 18, 9); ctx.fill();
+  ctx.fillStyle = cnt >= cap ? '#ffd34d' : '#fff';
+  ctx.fillText(`⚔ 부대 ${cnt}/${cap}`, 84, H - 11);
   if (B.buffs.rally > 0) { ctx.textAlign = 'left'; ctx.font = 'bold 12px sans-serif'; ctx.fillStyle = '#ffd166'; ctx.fillText(`📯 돌격 ${B.buffs.rally.toFixed(1)}`, 80, GROUND_TOP - 8); }
   if (B.buffs.sanctuary > 0) { ctx.textAlign = 'left'; ctx.font = 'bold 12px sans-serif'; ctx.fillStyle = '#fff3b0'; ctx.fillText(`🕊️ 성역 ${B.buffs.sanctuary.toFixed(1)}`, 80, GROUND_TOP - 8); }
   if (B.stageBanner > 0) {

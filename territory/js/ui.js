@@ -131,7 +131,7 @@ const UI = {
     }).join('');
     return `<div class="sec"><h3>영토 배치 <small>${S.slots.slice(0, sc).filter(Boolean).length}/${sc} · 전직하면 슬롯 증가</small></h3>
       <div class="slots">${slots}</div>
-      <p class="hint">빈 터를 누르고 영웅의 [배치]를 누르면 그 자리에 건물이 세워집니다.</p></div>
+      <p class="hint">빈 터를 누르고 영웅의 [배치]를 누르면 그 자리에 건물이 세워집니다.<br>부대 정원(${armyCap()}명)이 차면 건물은 소환을 멈추고 대기합니다.</p></div>
       <div class="sec"><h3>보유 영웅 카드 <small>${owned.length}/${HEROES.length}종</small></h3>${list}</div>`;
   },
 
@@ -150,7 +150,7 @@ const UI = {
       <div class="statgrid">
         <div>영주 공격력<b>${fmt(ls.atk)}</b></div><div>영주 체력<b>${fmt(ls.hp)}</b></div>
         <div>부대 공격 배율<b>x${am.atk.toFixed(2)}</b></div><div>부대 체력 배율<b>x${am.hp.toFixed(2)}</b></div>
-        <div>성 체력<b>${fmt(castleMaxHp())}</b></div><div>골드 배율<b>x${goldMult().toFixed(2)}</b></div>
+        <div>부대 정원<b>${armyCap()}명</b></div><div>성 체력<b>${fmt(castleMaxHp())}</b></div><div>골드 배율<b>x${goldMult().toFixed(2)}</b></div><div>영토 슬롯<b>${slotCount()}칸</b></div>
       </div>
       <div class="row" style="margin-top:8px"><div class="ic">${c.skill.icon}</div><div class="body"><div class="t">${c.skill.name} <small style="color:var(--muted)">쿨타임 ${c.skill.cd}s</small></div><div class="d">${c.skill.desc}</div></div></div>
       <div style="margin-top:8px">${UI.costBtn('영주 레벨업', lordLevelCost(), 'lordlv').replace('btn small', 'btn wide')}</div>
@@ -191,7 +191,7 @@ const UI = {
         <div class="req ${okL ? 'ok' : 'no'}">영주 레벨 ${p.reqLevel} 이상 (현재 ${S.lord.level})</div>
         <div class="req ${okS ? 'ok' : 'no'}">스테이지 ${p.reqStage} 클리어 (현재 ${S.maxStage - 1})</div>
         <div class="req ${okG ? 'ok' : 'no'}">골드 ${fmt(p.cost)}</div>
-        <p class="hint">효과: 영토 슬롯 ${PROMOTIONS[cur].slots} → <b>${p.slots}</b>, 전체 능력 배율 x${PROMOTIONS[cur].mult} → <b>x${p.mult}</b>, 외형 변화</p>
+        <p class="hint">효과: 영토 슬롯 ${PROMOTIONS[cur].slots} → <b>${p.slots}</b>, 부대 정원 +10, 전체 능력 배율 x${PROMOTIONS[cur].mult} → <b>x${p.mult}</b>, 외형 변화</p>
         <div style="margin-top:10px">${UI.costBtn('전직하기', p.cost, 'promo', '', 'gold', !(okL && okS)).replace('btn small', 'btn wide')}</div></div>`;
     } else next = `<div class="sec"><h3>최종 전직 완료</h3><p class="hint">${c.promos[cur]}의 경지에 올랐습니다.</p></div>`;
     return `<div class="sec"><h3>${c.icon} ${c.name} 전직 계보</h3><div class="promo-path">${path}</div></div>${next}`;
