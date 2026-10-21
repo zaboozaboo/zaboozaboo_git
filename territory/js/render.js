@@ -118,8 +118,14 @@ function drawBuilding(team, i, heroId, prog) {
   ctx.font = '12px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
   ctx.fillText(hero.icon, x, y - 31);
   ctx.textBaseline = 'alphabetic';
+  // 소환 게이지(정원이 차서 대기 중이면 금색) + 현재/정원
+  const cap = team === 0 ? heroCap(heroId) : hero.cap;
+  const alive = slotAlive(team, i, heroId);
   ctx.fillStyle = 'rgba(0,0,0,.5)'; ctx.fillRect(x - 13, y + 9, 26, 3);
-  ctx.fillStyle = '#9fe8ff'; ctx.fillRect(x - 13, y + 9, 26 * Math.min(1, prog || 0), 3);
+  ctx.fillStyle = alive >= cap ? '#ffd34d' : '#9fe8ff'; ctx.fillRect(x - 13, y + 9, 26 * Math.min(1, prog || 0), 3);
+  ctx.font = 'bold 9px sans-serif'; ctx.lineWidth = 2.5; ctx.strokeStyle = 'rgba(0,0,0,.7)';
+  ctx.fillStyle = alive >= cap ? '#ffd34d' : '#fff';
+  ctx.strokeText(`${alive}/${cap}`, x, y + 22); ctx.fillText(`${alive}/${cap}`, x, y + 22);
 }
 
 function teamColor(u) {

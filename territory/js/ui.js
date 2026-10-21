@@ -120,7 +120,9 @@ const UI = {
         <div class="body">
           <div class="nm"><span class="rbadge">${r.name}</span>${h.name}</div>
           <div class="meta"><span class="stars">${'★'.repeat(o.stars)}${'☆'.repeat(MAX_STARS - o.stars)}</span> Lv.${o.level}/${maxLv} · ${h.building}</div>
-          <div class="meta">${u.name}x${h.count} (${kind}) · 공 ${fmt(u.atk * am.atk * lm)} · 체 ${fmt(u.hp * am.hp * lm)} · ${h.spawnCd}s</div>
+          <div class="meta"><b class="trait">${h.trait}</b> ${h.traitDesc}</div>
+          <div class="meta">${u.name} ${h.count}마리씩 (${kind}) · 정원 <b>${heroCap(id)}</b> · ${h.spawnCd}초마다</div>
+          <div class="meta">공 ${fmt(u.atk * am.atk * lm)} · 체 ${fmt(u.hp * am.hp * lm)}</div>
           <div class="meta">조각 ${o.shards}/${o.stars >= MAX_STARS ? 'MAX' : need}</div>
           <div class="acts">
             ${o.level < maxLv ? UI.costBtn('레벨업', heroLevelCost(id), 'hlv', `data-id="${id}"`) : '<button class="btn small" disabled>최대 레벨</button>'}
@@ -131,7 +133,7 @@ const UI = {
     }).join('');
     return `<div class="sec"><h3>영토 배치 <small>${S.slots.slice(0, sc).filter(Boolean).length}/${sc} · 전직하면 슬롯 증가</small></h3>
       <div class="slots">${slots}</div>
-      <p class="hint">빈 터를 누르고 영웅의 [배치]를 누르면 그 자리에 건물이 세워집니다.<br>부대 정원(${armyCap()}명)이 차면 건물은 소환을 멈추고 대기합니다.</p></div>
+      <p class="hint">빈 터를 누르고 영웅의 [배치]를 누르면 그 자리에 건물이 세워집니다.<br>건물마다 부대 정원이 있어, 그 건물의 부하가 정원만큼 살아 있으면 소환을 멈추고 대기합니다.</p></div>
       <div class="sec"><h3>보유 영웅 카드 <small>${owned.length}/${HEROES.length}종</small></h3>${list}</div>`;
   },
 
@@ -150,7 +152,7 @@ const UI = {
       <div class="statgrid">
         <div>영주 공격력<b>${fmt(ls.atk)}</b></div><div>영주 체력<b>${fmt(ls.hp)}</b></div>
         <div>부대 공격 배율<b>x${am.atk.toFixed(2)}</b></div><div>부대 체력 배율<b>x${am.hp.toFixed(2)}</b></div>
-        <div>부대 정원<b>${armyCap()}명</b></div><div>성 체력<b>${fmt(castleMaxHp())}</b></div><div>골드 배율<b>x${goldMult().toFixed(2)}</b></div><div>영토 슬롯<b>${slotCount()}칸</b></div>
+        <div>총 부대 정원<b>${armyCap()}명</b></div><div>성 체력<b>${fmt(castleMaxHp())}</b></div><div>골드 배율<b>x${goldMult().toFixed(2)}</b></div><div>영토 슬롯<b>${slotCount()}칸</b></div>
       </div>
       <div class="row" style="margin-top:8px"><div class="ic">${c.skill.icon}</div><div class="body"><div class="t">${c.skill.name} <small style="color:var(--muted)">쿨타임 ${c.skill.cd}s</small></div><div class="d">${c.skill.desc}</div></div></div>
       <div style="margin-top:8px">${UI.costBtn('영주 레벨업', lordLevelCost(), 'lordlv').replace('btn small', 'btn wide')}</div>
@@ -174,7 +176,7 @@ const UI = {
       <div class="rates">${RARITY_ORDER.map(r => `<span><span class="rbadge" style="--r:${RARITY[r].color}">${RARITY[r].name}</span>${(RARITY[r].weight / total * 100).toFixed(0)}%</span>`).join('')}</div></div>
       <div class="sec"><h3>도감</h3>${HEROES.map(h => {
         const o = S.heroes[h.id];
-        return `<div class="row" style="${o ? '' : 'opacity:.35'}"><div class="ic">${h.icon}</div><div class="body"><div class="t"><span class="rbadge" style="--r:${RARITY[h.rarity].color}">${RARITY[h.rarity].name}</span>${h.name}</div><div class="d">${h.building} → ${h.unit.name} x${h.count}</div></div>${o ? '★' + o.stars : '미보유'}</div>`;
+        return `<div class="row" style="${o ? '' : 'opacity:.35'}"><div class="ic">${h.icon}</div><div class="body"><div class="t"><span class="rbadge" style="--r:${RARITY[h.rarity].color}">${RARITY[h.rarity].name}</span>${h.name}</div><div class="d">${h.trait} · ${h.unit.name} ${h.count}마리씩, 정원 ${h.cap}</div></div>${o ? '★' + o.stars : '미보유'}</div>`;
       }).join('')}</div>`;
   },
 
@@ -191,7 +193,7 @@ const UI = {
         <div class="req ${okL ? 'ok' : 'no'}">영주 레벨 ${p.reqLevel} 이상 (현재 ${S.lord.level})</div>
         <div class="req ${okS ? 'ok' : 'no'}">스테이지 ${p.reqStage} 클리어 (현재 ${S.maxStage - 1})</div>
         <div class="req ${okG ? 'ok' : 'no'}">골드 ${fmt(p.cost)}</div>
-        <p class="hint">효과: 영토 슬롯 ${PROMOTIONS[cur].slots} → <b>${p.slots}</b>, 부대 정원 +10, 전체 능력 배율 x${PROMOTIONS[cur].mult} → <b>x${p.mult}</b>, 외형 변화</p>
+        <p class="hint">효과: 영토 슬롯 ${PROMOTIONS[cur].slots} → <b>${p.slots}</b>, 전체 능력 배율 x${PROMOTIONS[cur].mult} → <b>x${p.mult}</b>, 외형 변화</p>
         <div style="margin-top:10px">${UI.costBtn('전직하기', p.cost, 'promo', '', 'gold', !(okL && okS)).replace('btn small', 'btn wide')}</div></div>`;
     } else next = `<div class="sec"><h3>최종 전직 완료</h3><p class="hint">${c.promos[cur]}의 경지에 올랐습니다.</p></div>`;
     return `<div class="sec"><h3>${c.icon} ${c.name} 전직 계보</h3><div class="promo-path">${path}</div></div>${next}`;
@@ -305,7 +307,8 @@ const UI = {
   buildSpec(mode, deck, power, color, foeName, lordOpt) {
     const base = deck.reduce((a, id) => a + RARITY[HERO_BY_ID[id].rarity].score, 0) * 30;
     const scale = Math.max(0.3, power / base);
-    return { mode, deck, scale, spawnRate: 1, color, foeName, lord: { ...lordOpt, scale: scale * 1.5 } };
+    // 상대 건물도 내 소환 속도 강화와 같은 속도로 돌아간다
+    return { mode, deck, scale, spawnRate: armyMult().spawn, color, foeName, lord: { ...lordOpt, scale: scale * 1.5 } };
   },
 
   startWar(k) {

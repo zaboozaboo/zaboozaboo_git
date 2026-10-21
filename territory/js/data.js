@@ -50,35 +50,36 @@ const NATIONS = {
 };
 
 // 영웅 카드 = 유닛을 뽑아내는 건물. 한 번 소환할 때 부하가 3마리 또는 5마리씩 나온다.
+// cap = 그 건물이 전장에 동시에 유지할 수 있는 부하 수(부대 정원). 영웅마다 개성 있게 다르다.
 const HEROES = [
   // ── 일반 ──
-  { id: 'militia',  name: '민병대장 한스',   rarity: 'C', icon: '🪓', building: '민병 막사', spawnCd: 14, count: 5,
+  { id: 'militia',  name: '민병대장 한스',   rarity: 'C', icon: '🪓', building: '민병 막사', spawnCd: 9, count: 5, cap: 20, trait: '인해전술', traitDesc: '쓰러져도 금세 다시 몰려나온다',
     unit: { name: '민병', kind: 'melee', hp: 55, atk: 5, range: 22, speed: 38, atkCd: 1.0, size: 7, color: '#c9a26b', weapon: 'axe' } },
-  { id: 'archer',   name: '견습궁수 리나',   rarity: 'C', icon: '🏹', building: '사격장', spawnCd: 15, count: 5,
+  { id: 'archer',   name: '견습궁수 리나',   rarity: 'C', icon: '🏹', building: '사격장', spawnCd: 10, count: 5, cap: 15, trait: '화살비', traitDesc: '넓게 퍼져 일제히 쏜다',
     unit: { name: '궁수', kind: 'ranged', hp: 32, atk: 6, range: 150, speed: 34, atkCd: 1.3, size: 6, color: '#7fb069', proj: 'arrow', weapon: 'bow' } },
-  { id: 'spear',    name: '창병대장 볼크',   rarity: 'C', icon: '🔱', building: '창병 훈련소', spawnCd: 12, count: 3,
+  { id: 'spear',    name: '창병대장 볼크',   rarity: 'C', icon: '🔱', building: '창병 훈련소', spawnCd: 9, count: 3, cap: 12, trait: '창벽', traitDesc: '앞줄에서 오래 버틴다',
     unit: { name: '창병', kind: 'melee', hp: 95, atk: 8, range: 30, speed: 36, atkCd: 1.0, size: 7, color: '#8d99ae', weapon: 'spear' } },
-  { id: 'crossbow', name: '석궁대장 베른',   rarity: 'C', icon: '🎯', building: '석궁 공방', spawnCd: 14, count: 3,
+  { id: 'crossbow', name: '석궁대장 베른',   rarity: 'C', icon: '🎯', building: '석궁 공방', spawnCd: 12, count: 3, cap: 6, trait: '저격 소대', traitDesc: '수는 적지만 한 발이 묵직하다',
     unit: { name: '석궁병', kind: 'ranged', hp: 45, atk: 13, range: 175, speed: 32, atkCd: 1.8, size: 6, color: '#a0785a', proj: 'bolt_x', weapon: 'bow' } },
   // ── 고급 ──
-  { id: 'apprentice', name: '마법사 미나',   rarity: 'R', icon: '📘', building: '마법 학당', spawnCd: 16, count: 5,
+  { id: 'apprentice', name: '마법사 미나',   rarity: 'R', icon: '📘', building: '마법 학당', spawnCd: 12, count: 5, cap: 10, trait: '견습생 무리', traitDesc: '서툴지만 범위 마법을 퍼붓는다',
     unit: { name: '견습 마법사', kind: 'ranged', hp: 45, atk: 11, range: 140, speed: 32, atkCd: 1.5, size: 6, color: '#6c8cff', proj: 'bolt', splash: 25, weapon: 'staff' } },
-  { id: 'cavalry',  name: '기병대장 로웰',   rarity: 'R', icon: '🐎', building: '마구간', spawnCd: 16, count: 3,
+  { id: 'cavalry',  name: '기병대장 로웰',   rarity: 'R', icon: '🐎', building: '마구간', spawnCd: 13, count: 3, cap: 6, trait: '돌격대', traitDesc: '빠르게 적진 깊숙이 파고든다',
     unit: { name: '기병', kind: 'melee', hp: 190, atk: 16, range: 26, speed: 78, atkCd: 0.9, size: 9, color: '#b5651d', weapon: 'lance', mount: true } },
-  { id: 'monk',     name: '수도사 이사벨',   rarity: 'R', icon: '📿', building: '수도원', spawnCd: 16, count: 3,
+  { id: 'monk',     name: '수도사 이사벨',   rarity: 'R', icon: '📿', building: '수도원', spawnCd: 14, count: 3, cap: 6, trait: '치유단', traitDesc: '소수가 전열을 붙잡아 둔다',
     unit: { name: '수도사', kind: 'healer', hp: 85, atk: 6, heal: 14, range: 120, speed: 34, atkCd: 1.3, size: 6, color: '#f1e3c6', proj: 'holy', weapon: 'staff' } },
-  { id: 'pyro',     name: '화염술사 이그란', rarity: 'R', icon: '🔥', building: '화염의 탑', spawnCd: 16, count: 3,
+  { id: 'pyro',     name: '화염술사 이그란', rarity: 'R', icon: '🔥', building: '화염의 탑', spawnCd: 14, count: 3, cap: 6, trait: '화염 분대', traitDesc: '뭉친 적을 한꺼번에 태운다',
     unit: { name: '화염술사', kind: 'ranged', hp: 70, atk: 20, range: 150, speed: 32, atkCd: 1.6, size: 7, color: '#ff7b39', proj: 'fire', splash: 40, weapon: 'staff' } },
-  { id: 'ranger',   name: '숲지기 엘렌',     rarity: 'R', icon: '🌙', building: '엘프 망루', spawnCd: 16, count: 5,
+  { id: 'ranger',   name: '숲지기 엘렌',     rarity: 'R', icon: '🌙', building: '엘프 망루', spawnCd: 13, count: 5, cap: 10, trait: '숲의 사수', traitDesc: '가장 먼 곳에서 쏜다',
     unit: { name: '엘프 궁수', kind: 'ranged', hp: 60, atk: 13, range: 200, speed: 40, atkCd: 1.0, size: 6, color: '#9be564', proj: 'arrow', weapon: 'bow' } },
   // ── 영웅 ──
-  { id: 'griffin',  name: '그리핀 기수 아리아', rarity: 'H', icon: '🦅', building: '그리핀 둥지', spawnCd: 20, count: 3,
+  { id: 'griffin',  name: '그리핀 기수 아리아', rarity: 'H', icon: '🦅', building: '그리핀 둥지', spawnCd: 16, count: 3, cap: 6, trait: '공중 기동대', traitDesc: '하늘에서 후열을 덮친다',
     unit: { name: '그리핀 기수', kind: 'melee', hp: 320, atk: 30, range: 28, speed: 95, atkCd: 0.8, size: 10, color: '#e8c872', weapon: 'lance', flying: true } },
-  { id: 'paladin',  name: '성기사단장 가렌', rarity: 'H', icon: '⚜️', building: '성기사단 본부', spawnCd: 21, count: 5,
+  { id: 'paladin',  name: '성기사단장 가렌', rarity: 'H', icon: '⚜️', building: '성기사단 본부', spawnCd: 22, count: 5, cap: 5, trait: '단 하나의 성기사단', traitDesc: '한 분대만 유지되지만 쉽게 쓰러지지 않는다',
     unit: { name: '성기사', kind: 'melee', hp: 420, atk: 22, range: 26, speed: 36, atkCd: 1.0, size: 10, color: '#e9ecef', weapon: 'sword', heavy: true } },
-  { id: 'dragon',   name: '드래곤 테이머 카엘', rarity: 'H', icon: '🐉', building: '용의 둥지', spawnCd: 24, count: 3,
+  { id: 'dragon',   name: '드래곤 테이머 카엘', rarity: 'H', icon: '🐉', building: '용의 둥지', spawnCd: 26, count: 3, cap: 3, trait: '세 마리의 용', traitDesc: '모두 쓰러져야 다시 부화한다',
     unit: { name: '와이번', kind: 'ranged', hp: 520, atk: 30, range: 130, speed: 42, atkCd: 1.4, size: 13, color: '#d7263d', proj: 'fire', splash: 50, flying: true, dragon: true } },
-  { id: 'archangel', name: '대천사 세라핌',  rarity: 'H', icon: '😇', building: '천상의 제단', spawnCd: 24, count: 3,
+  { id: 'archangel', name: '대천사 세라핌',  rarity: 'H', icon: '😇', building: '천상의 제단', spawnCd: 26, count: 3, cap: 3, trait: '천상의 삼위', traitDesc: '셋이 함께 강림해 전장을 치유한다',
     unit: { name: '천사', kind: 'healer', hp: 380, atk: 18, heal: 22, healAll: true, range: 160, speed: 45, atkCd: 1.1, size: 10, color: '#fff3b0', proj: 'holy', flying: true, angel: true } },
 ];
 const HERO_BY_ID = Object.fromEntries(HEROES.map(h => [h.id, h]));
@@ -120,7 +121,7 @@ const UPGRADES = [
   { id: 'atk',    name: '부대 공격력', icon: '⚔️', base: 40,  growth: 1.14, desc: l => `+${(l * 6)}%` },
   { id: 'hp',     name: '부대 체력',   icon: '❤️', base: 40,  growth: 1.14, desc: l => `+${(l * 6)}%` },
   { id: 'spawn',  name: '소환 속도',   icon: '⏱️', base: 120, growth: 1.25, max: 50, desc: l => `+${(l * 2)}%` },
-  { id: 'cap',    name: '부대 정원',   icon: '⛺', base: 400, growth: 1.4,  max: 15, desc: l => `+${l * 2}명` },
+  { id: 'cap',    name: '막사 확장',   icon: '⛺', base: 400, growth: 1.4,  max: 10, desc: l => `건물별 정원 +${l * 5}%` },
   { id: 'castle', name: '성벽 강화',   icon: '🏰', base: 60,  growth: 1.15, desc: l => `성 체력 +${l * 10}%` },
   { id: 'gold',   name: '세금 징수',   icon: '💰', base: 100, growth: 1.18, desc: l => `골드 +${l * 5}%` },
 ];

@@ -86,8 +86,13 @@ function checkDaily() {
 // ---------- 공식 ----------
 const promoInfo = () => PROMOTIONS[S.lord.promo];
 const slotCount = () => promoInfo().slots;
-// 부대 정원: 기본 40, 전직마다 +10, '부대 정원' 강화마다 +2
-const armyCap = () => 40 + S.lord.promo * 10 + (S.upgrades.cap || 0) * 2;
+// 건물별 부대 정원: 영웅 고유 정원에 ★승급마다 +10%, 막사 확장마다 +5%
+function heroCap(id, stars, capLvl) {
+  const base = HERO_BY_ID[id].cap;
+  if (stars === undefined) { stars = S.heroes[id] ? S.heroes[id].stars : 1; capLvl = S.upgrades.cap || 0; }
+  return Math.max(base, Math.round(base * (1 + 0.1 * (stars - 1) + 0.05 * (capLvl || 0))));
+}
+const armyCap = () => S.slots.slice(0, slotCount()).reduce((a, id) => a + (id ? heroCap(id) : 0), 0);
 const myRank = () => S.ladder.findIndex(e => e.me) + 1;
 const titleOf = (rank) => TITLES.find(t => rank <= t.upTo);
 const nationBonus = (k) => (NATIONS[S.nation].bonus[k] || 0);

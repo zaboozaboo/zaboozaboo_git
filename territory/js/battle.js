@@ -58,14 +58,15 @@ function heroMult(id, scale) {
   return { atk: am.atk * lm, hp: am.hp * lm };
 }
 
-function spawnHero(team, heroId, pos, scale, tint) {
+function spawnHero(team, heroId, pos, scale, tint, slot, n) {
   const hero = HERO_BY_ID[heroId];
   const mult = heroMult(heroId, scale);
-  for (let i = 0; i < hero.count; i++) {
+  n = n || hero.count;
+  for (let i = 0; i < n; i++) {
     const x = team === 0 ? pos.x + 10 : W - pos.x - 10;
     // 3마리/5마리가 대열을 지어 건물에서 쏟아져 나온다
-    const row = i - (hero.count - 1) / 2;
-    const u = makeUnit(team, hero.unit, mult, x + rand(-4, 4) - Math.abs(row) * 5 * (team === 0 ? 1 : -1), pos.y + row * 9 + rand(-2, 2), { heroId, tint });
+    const row = i - (n - 1) / 2;
+    const u = makeUnit(team, hero.unit, mult, x + rand(-4, 4) - Math.abs(row) * 5 * (team === 0 ? 1 : -1), pos.y + row * 9 + rand(-2, 2), { heroId, tint, slot });
     B.units.push(u);
   }
 }
@@ -94,6 +95,20 @@ function spawnEnemy(key, stage, opts = {}) {
 
 // ---------- 전투 시작 ----------
 const armyCount = () => B.units.reduce((a, u) => a + (u.team === 0 && !u.isLord ? 1 : 0), 0);
+// 특정 건물(슬롯)에서 나와 살아 있는 부하 수
+const slotAlive = (team, slot, heroId) => B.units.reduce((a, u) => a + (u.team === team && u.slot === slot && u.heroId === heroId ? 1 : 0), 0);
+
+// 건물 하나를 진행시키고, 정원에 여유가 있으면 분대를 내보낸다
+function tickSpawner(team, slot, heroId, pos, t, rate, cap, scale, tint) {
+  const hero = HERO_BY_ID[heroId];
+  t = Math.min(1, t + rate / hero.spawnCd);
+  if (t < 1) return t;
+  const room = cap - slotAlive(team, slot, heroId);
+  if (room <= 0) return 1; // 정원이 찼으면 대기
+  spawnHero(team, heroId, pos, scale, tint, slot, Math.min(hero.count, room));
+  B.fx.push({ type: 'ring', x: team === 0 ? pos.x : W - pos.x, y: pos.y, r: 4, max: 22, t: 0, life: 0.35, color: RARITY[hero.rarity].color });
+  return 0;
+}
 
 function resetField(keepAllies) {
   B.units = keepAllies ? B.units.filter(u => u.team === 0) : [];
@@ -140,7 +155,9 @@ function startSpecial(spec, onEnd) {
   B.pCastle = { hp: castleMaxHp(), max: castleMaxHp() };
   const eMax = 800 * spec.scale * 1.2;
   B.eCastle = { hp: eMax, max: eMax };
-  B.enemySpawners = spec.deck.map((id, i) => ({ id, t: Math.random() * 2, pos: BUILDING_POS[i] }));
+  // 양측 모두 개전과 동시에 첫 분대가 출격한다
+  B.enemySpawners = spec.deck.map((id, i) => ({ id, t: 1, pos: BUILDING_POS[i] }));
+  B.spawnT = B.spawnT.map(() => 1);
   B.queue = []; B.queueTotal = 0;
   B.timeLimit = 75;
   B.stageBanner = 2.2;
@@ -284,17 +301,10 @@ function updateBattle(dt) {
 function spawnPhase(dt) {
   // 아군 건물 소환
   const am = armyMult();
-  let allies = armyCount();
-  const cap = armyCap();
   for (let i = 0; i < slotCount(); i++) {
     const id = S.slots[i];
     if (!id) continue;
-    const hero = HERO_BY_ID[id];
-    B.spawnT[i] += dt * am.spawn / hero.spawnCd;
-    if (B.spawnT[i] >= 1) {
-      if (allies < cap) { B.spawnT[i] = 0; spawnHero(0, id, BUILDING_POS[i]); allies += hero.count; B.fx.push({ type: 'ring', x: BUILDING_POS[i].x, y: BUILDING_POS[i].y, r: 4, max: 22, t: 0, life: 0.35, color: RARITY[hero.rarity].color }); }
-      else B.spawnT[i] = 1;
-    }
+    B.spawnT[i] = tickSpawner(0, i, id, BUILDING_POS[i], B.spawnT[i], dt * am.spawn, heroCap(id));
   }
   if (B.lordRespawn > 0) { B.lordRespawn -= dt; if (B.lordRespawn <= 0) spawnLord(0); }
 
@@ -309,11 +319,9 @@ function spawnPhase(dt) {
     }
   } else {
     const sp = B.special;
-    for (const s of B.enemySpawners) {
-      const hero = HERO_BY_ID[s.id];
-      s.t += dt * sp.spawnRate / hero.spawnCd;
-      if (s.t >= 1) { s.t = 0; spawnHero(1, s.id, s.pos, sp.scale, sp.color); }
-    }
+    B.enemySpawners.forEach((s, i) => {
+      s.t = tickSpawner(1, i, s.id, s.pos, s.t, dt * sp.spawnRate, HERO_BY_ID[s.id].cap, sp.scale, sp.color);
+    });
     if (B.eLordRespawn > 0) { B.eLordRespawn -= dt; if (B.eLordRespawn <= 0) spawnLord(1, sp.lord); }
   }
 }

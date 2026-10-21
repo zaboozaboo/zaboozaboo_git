@@ -97,6 +97,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .hero .meta { font-size: 11px; color: var(--muted); margin-top: 2px; }
 .hero .stars { color: var(--gold); font-size: 11px; letter-spacing: -1px; }
 .hero .acts { display: flex; gap: 4px; margin-top: 6px; flex-wrap: wrap; }
+.hero .trait { color: var(--gold); font-weight: 800; }
 .rbadge { display: inline-block; font-size: 10px; font-weight: 900; padding: 1px 5px; border-radius: 4px; background: var(--r); color: #111; margin-right: 4px; vertical-align: 1px; }
 .placed-tag { position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%); font-size: 9px; background: var(--ok); color: #082; padding: 0 4px; border-radius: 4px; font-weight: 800; white-space: nowrap; }
 
