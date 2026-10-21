@@ -5,6 +5,9 @@ const W = 800, H = 400;
 const GROUND_TOP = 160, GROUND_BOT = 388;
 const P_CASTLE_X = 70;        // 아군 성 전면
 const E_CASTLE_X = W - 70;    // 적 성 전면 (국가전/서열전)
+const LAIR_X = W - 64;
+const LAIR_MOUTH = [GROUND_TOP + 40, GROUND_BOT - 20];        // 몬스터 소굴 입구 (스테이지)
+const ALLY_MAX_X = W - 80;    // 아군은 소굴/적 성 앞까지만 전진한다
 const AGGRO = 240;
 
 const BUILDING_POS = [
@@ -87,7 +90,9 @@ function spawnEnemy(key, stage, opts = {}) {
   const def = ENEMIES[key];
   const m = stageMult(stage);
   const bossMul = def.boss ? (1 + stage / 40) : 1;
-  const u = makeUnit(1, def, { atk: m * bossMul, hp: m * bossMul }, W + 20, rand(GROUND_TOP + 15, GROUND_BOT - 10), { monster: true, key });
+  // 화면 오른쪽 몬스터 소굴 입구에서 기어 나온다
+  const u = makeUnit(1, def, { atk: m * bossMul, hp: m * bossMul }, W - 34, rand(LAIR_MOUTH[0], LAIR_MOUTH[1]), { monster: true, key });
+  B.lairPulse = def.boss ? 1 : 0.4;
   u.gold = goldPerKill(stage) * (def.boss ? 15 : 1);
   B.units.push(u);
   return u;
@@ -263,6 +268,7 @@ function updateBattle(dt) {
   B.time += dt;
   if (B.stageBanner > 0) B.stageBanner -= dt;
   if (B.shake > 0) B.shake = Math.max(0, B.shake - dt);
+  if (B.lairPulse > 0) B.lairPulse = Math.max(0, B.lairPulse - dt);
   B.buffs.rally = Math.max(0, B.buffs.rally - dt);
   B.buffs.sanctuary = Math.max(0, B.buffs.sanctuary - dt);
   if (B.skillT > 0) B.skillT -= dt;
@@ -274,6 +280,7 @@ function updateBattle(dt) {
 
   for (const u of B.units) if (u.hp > 0) updateUnit(u, dt);
   separate();
+  confine();
   updateProjs(dt);
   updateFx(dt);
 
@@ -388,6 +395,17 @@ function attack(u, t) {
     dealDamage(t, u.atk * teamAtkMult(u), u);
     if (u.def.heavy || u.boss) B.fx.push({ type: 'slash', x: t.x, y: t.y - 6, t: 0, life: 0.2, face: u.face });
   } else fire(u, t, false);
+}
+
+// 모든 유닛을 전장 안에 가둔다. 아군은 소굴(또는 적 성) 앞을 넘지 못한다.
+function confine() {
+  for (const u of B.units) {
+    const maxX = u.team === 0 ? ALLY_MAX_X : W - 20;
+    const minX = u.team === 1 ? P_CASTLE_X - 10 : 20;
+    if (u.x > maxX) u.x = maxX;
+    if (u.x < minX) u.x = minX;
+    u.y = Math.max(GROUND_TOP + 8, Math.min(GROUND_BOT - 4, u.y));
+  }
 }
 
 function separate() {

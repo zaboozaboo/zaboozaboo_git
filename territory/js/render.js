@@ -24,6 +24,7 @@ function render() {
   drawBackground(reg);
   drawCastle(0);
   for (let i = 0; i < slotCount(); i++) drawBuilding(0, i, S.slots[i], B.spawnT[i]);
+  if (!B.eCastle) drawLair();
   if (B.eCastle) {
     drawCastle(1);
     B.enemySpawners.forEach((s, i) => drawBuilding(1, i, s.id, s.t));
@@ -99,6 +100,37 @@ function drawCastle(team) {
     ctx.fillStyle = r > 0.5 ? '#5ad16b' : r > 0.25 ? '#f2c14e' : '#ff5c5c'; ctx.fillRect(bxp + 1, GROUND_TOP - 69, 60 * r, 6);
   }
   void x0;
+}
+
+// 스테이지의 적 출현지: 지역별 색으로 빛나는 몬스터 소굴
+const LAIR_GLOW = ['#7dff6a', '#b48cff', '#ffae42', '#8fe3ff', '#ff3b3b'];
+function drawLair() {
+  const ri = Math.floor(((B.stage || 1) - 1) / 10) % REGIONS.length;
+  const glow = LAIR_GLOW[ri];
+  const top = GROUND_TOP - 70, x0 = LAIR_X;
+  // 바위 절벽
+  ctx.fillStyle = '#3b3530';
+  ctx.beginPath(); ctx.moveTo(W + 10, top - 20); ctx.lineTo(x0 + 26, top);
+  ctx.lineTo(x0 + 6, GROUND_TOP + 10); ctx.lineTo(x0 - 4, GROUND_TOP + 90); ctx.lineTo(x0 + 4, H - 40); ctx.lineTo(x0 - 6, H + 10); ctx.lineTo(W + 10, H + 10); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = 'rgba(255,255,255,.07)';
+  ctx.beginPath(); ctx.moveTo(x0 + 26, top); ctx.lineTo(x0 + 6, GROUND_TOP + 10); ctx.lineTo(x0 + 16, GROUND_TOP + 10); ctx.lineTo(x0 + 34, top + 6); ctx.fill();
+  // 동굴 입구
+  const my0 = LAIR_MOUTH[0] - 18, my1 = LAIR_MOUTH[1] + 14;
+  const pulse = 0.55 + 0.25 * Math.sin(B.time * 3) + (B.lairPulse || 0) * 0.6;
+  const g = ctx.createRadialGradient(W - 20, (my0 + my1) / 2, 6, W - 20, (my0 + my1) / 2, 120);
+  g.addColorStop(0, glow); g.addColorStop(0.35, 'rgba(20,10,20,.95)'); g.addColorStop(1, '#0d0a0f');
+  ctx.globalAlpha = Math.min(1, pulse);
+  ctx.fillStyle = g;
+  ctx.beginPath(); ctx.moveTo(W + 10, my0); ctx.quadraticCurveTo(x0 + 4, my0 + 10, x0 + 14, (my0 + my1) / 2);
+  ctx.quadraticCurveTo(x0 + 2, my1, W + 10, my1 + 6); ctx.closePath(); ctx.fill();
+  ctx.globalAlpha = 1;
+  // 어둠 속 눈빛
+  for (let i = 0; i < 3; i++) {
+    const ey = my0 + 30 + i * 60 + Math.sin(B.time + i) * 6;
+    if (Math.sin(B.time * 0.9 + i * 2) > 0.3) { ctx.fillStyle = glow; ctx.fillRect(W - 22 + i * 4, ey, 3, 2); ctx.fillRect(W - 15 + i * 4, ey, 3, 2); }
+  }
+  ctx.font = 'bold 10px sans-serif'; ctx.textAlign = 'center';
+  ctx.fillStyle = glow; ctx.fillText('몬스터 소굴', W - 32, top + 2);
 }
 
 function drawBuilding(team, i, heroId, prog) {
