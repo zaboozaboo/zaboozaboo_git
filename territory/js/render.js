@@ -669,25 +669,6 @@ function drawFx(f) {
 function drawHud() {
   const VW = LANE_W, VH = W;
   ctx.textAlign = 'center';
-  if (B.mode === 'stage') {
-    const alive = B.units.filter(u => u.team === 1).length;
-    const prog = B.queueTotal ? 1 - (B.queue.length + alive) / B.queueTotal : 0;
-    ctx.fillStyle = 'rgba(0,0,0,.5)'; roundRect(VW / 2 - 80, 66, 160, 9, 4.5); ctx.fill();
-    ctx.fillStyle = isBossStage(B.stage) ? '#ff5c7a' : '#7fd6ff'; roundRect(VW / 2 - 79, 67, 158 * Math.max(0, prog), 7, 3.5); ctx.fill();
-    if (B.timeLimit) {
-      const left = Math.max(0, B.timeLimit - B.time);
-      ctx.font = 'bold 14px sans-serif'; ctx.fillStyle = left < 10 ? '#ff5c5c' : '#fff';
-      ctx.strokeStyle = 'rgba(0,0,0,.6)'; ctx.lineWidth = 3;
-      ctx.strokeText(`👹 보스 ${left.toFixed(1)}s`, VW / 2, 94); ctx.fillText(`👹 보스 ${left.toFixed(1)}s`, VW / 2, 94);
-    }
-  } else {
-    const left = Math.max(0, B.timeLimit - B.time);
-    ctx.font = 'bold 13px sans-serif'; ctx.fillStyle = '#fff'; ctx.strokeStyle = 'rgba(0,0,0,.6)'; ctx.lineWidth = 3;
-    const t1 = `${B.mode === 'war' ? '⚔️ 국가전' : '🏅 서열전'}  ${left.toFixed(0)}s`;
-    ctx.strokeText(t1, VW / 2, 92); ctx.fillText(t1, VW / 2, 92);
-    ctx.font = 'bold 10px sans-serif';
-    ctx.strokeText(`VS ${B.special.foeName}`, VW / 2, 106); ctx.fillText(`VS ${B.special.foeName}`, VW / 2, 106);
-  }
   // 부대 인원 / 버프
   const cnt = armyCount(), cap = armyCap();
   ctx.font = 'bold 11px sans-serif'; ctx.textAlign = 'left';

@@ -84,7 +84,20 @@ const UI = {
     $('#tb-gems').textContent = fmt(S.gems);
     if (B.mode === 'stage') {
       $('#ct-stage').textContent = `${region(B.stage || S.stage).name} ${B.stage || S.stage}${S.farming ? ' 🔁반복' : ''}`;
-    } else $('#ct-stage').textContent = B.mode === 'war' ? '⚔️ 국가전 진행 중' : '🏅 서열전 진행 중';
+    } else $('#ct-stage').textContent = `${B.mode === 'war' ? '⚔️ 국가전' : '🏅 서열전'} VS ${B.special.foeName}`;
+    // 웨이브 진행도와 남은 시간(전장 위가 아니라 이 줄에 표시)
+    const wave = $('#ct-wave'), timer = $('#ct-timer');
+    if (B.mode === 'stage') {
+      const alive = B.units.filter(u => u.team === 1).length;
+      wave.style.width = (B.queueTotal ? Math.max(0, 1 - (B.queue.length + alive) / B.queueTotal) * 100 : 0) + '%';
+      wave.classList.toggle('boss', isBossStage(B.stage));
+    } else if (B.eCastle) {
+      wave.style.width = Math.max(0, 1 - B.eCastle.hp / B.eCastle.max) * 100 + '%';
+      wave.classList.add('boss');
+    }
+    const left = B.timeLimit ? Math.max(0, B.timeLimit - B.time) : 0;
+    timer.textContent = B.timeLimit ? `${B.mode === 'stage' ? '👹 ' : '⏱ '}${left.toFixed(0)}초` : '';
+    timer.classList.toggle('warn', B.timeLimit > 0 && left < 10);
     $('#ct-power').textContent = `⚡ 전투력 ${fmt(myPower())} · 최고 ${S.maxStage - 1}단계`;
     $('#btn-boss').classList.toggle('hidden', !(S.farming && B.mode === 'stage'));
     $('#btn-auto').classList.toggle('on', S.settings.autoSkill);
