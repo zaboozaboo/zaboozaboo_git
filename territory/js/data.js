@@ -37,9 +37,9 @@ const CLASSES = {
 // 전직 단계: 요구 영주 레벨 / 스테이지 / 골드, 효과
 const PROMOTIONS = [
   { tier: 0, slots: 2, mult: 1.0 },
-  { tier: 1, slots: 3, mult: 1.6, reqLevel: 10, reqStage: 10, cost: 5000 },
-  { tier: 2, slots: 4, mult: 2.6, reqLevel: 30, reqStage: 30, cost: 250000 },
-  { tier: 3, slots: 5, mult: 4.2, reqLevel: 60, reqStage: 60, cost: 2.5e7 },
+  { tier: 1, slots: 3, mult: 1.6, reqLand: 1, reqLevel: 10, reqStage: 10, cost: 5000 },
+  { tier: 2, slots: 4, mult: 2.6, reqLand: 3, reqLevel: 30, reqStage: 30, cost: 250000 },
+  { tier: 3, slots: 5, mult: 4.2, reqLand: 6, reqLevel: 60, reqStage: 60, cost: 2.5e7 },
 ];
 
 // 3개 국가

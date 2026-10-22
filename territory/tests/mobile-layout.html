@@ -1,0 +1,17 @@
+<!doctype html><html lang="ko"><meta charset="utf-8"><title>Mobile shell isolated QA</title>
+<style>body{background:#182b3c;color:white;font:14px system-ui;margin:0;padding:12px}nav{display:flex;gap:8px;margin-bottom:10px}button{padding:8px}iframe{border:0;display:block;width:375px;height:640px;max-width:100%}</style>
+<nav><button data-width="320">320px</button><button data-width="375">375px</button><button data-width="500">500px</button><button id="qa-boss">첫 보스 승리 재현</button><button id="qa-dice">파이브카드 연출</button><button id="qa-tiers">등급 카드 비교</button><button id="qa-star">별 획득 직전</button><button id="qa-growth">영토 성장 잠금</button><span>Isolated fixture · no saves read or written</span></nav><iframe title="모바일 게임 테스트"></iframe>
+<script>
+const frame=document.querySelector('iframe');
+fetch('../index.html').then(r=>r.text()).then(html=>{
+ const base=new URL('../',location.href).href;
+ const fixture=`<script>loadGame=()=>{newGame({name:'테스트 영주',gender:'f',cls:'knight',nation:'aurum'});S.gold=1000;S.stage=5;S.maxStage=6;S.farming=true;return S;};saveGame=()=>{};showOffline=()=>{};window.qaTiers=()=>{for(const id of ['paladin','ranger','apprentice'])S.heroes[id]={level:1,stars:1,shards:0};S.slots=['paladin','ranger',null,null,null];MobileShell.show('lobby');UI.openSheet('territory');};window.qaStar=()=>{S.kingdom.growth={step:9};S.gold=10000;MobileShell.show('lobby');UI.openSheet('lord');};window.qaGrowth=()=>{S.kingdom.growth={step:10};MobileShell.show('lobby');UI.openSheet('lord');};window.qaDice=()=>{B.units=B.units.filter(u=>u.team!==0||u.isLord);S.dice.history=[1,1,1,1];MobileShell.show('battle');rollProduction(()=>0);UI.refresh();};window.qaBossWin=()=>{S.maxStage=5;S.kingdom={lands:{}};startStage(5);B.result='win';finishBattle();};<\/script>`;
+ frame.srcdoc=html.replace('<head>','<head><base href="'+base+'">').replace('</body>',fixture+'</body>');
+});
+document.getElementById('qa-tiers').onclick=()=>frame.contentWindow.qaTiers();
+document.getElementById('qa-star').onclick=()=>frame.contentWindow.qaStar();
+document.getElementById('qa-growth').onclick=()=>frame.contentWindow.qaGrowth();
+document.getElementById('qa-dice').onclick=()=>frame.contentWindow.qaDice();
+document.getElementById('qa-boss').onclick=()=>frame.contentWindow.qaBossWin();
+document.querySelectorAll('[data-width]').forEach(b=>b.onclick=()=>frame.style.width=b.dataset.width+'px');
+</script></html>

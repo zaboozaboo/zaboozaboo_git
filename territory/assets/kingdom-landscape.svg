@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" fill="none">
+<defs><linearGradient id="water" x2="0" y2="400" gradientUnits="userSpaceOnUse"><stop stop-color="#72b9c2"/><stop offset="1" stop-color="#397f96"/></linearGradient><linearGradient id="land" x2="0" y2="400" gradientUnits="userSpaceOnUse"><stop stop-color="#bdd793"/><stop offset="1" stop-color="#79a566"/></linearGradient><g id="pine"><path d="M0 4v15" stroke="#685744" stroke-width="5"/><path d="m0-30-18 28h8l-14 18h48L10-2h8Z" fill="#396957"/><path d="M0-30v46h24L10-2h8Z" fill="#285a4d"/></g></defs>
+<path fill="url(#water)" d="M0 0h600v400H0z"/>
+<path d="M-20 125Q30 60 110 67L205 5 410 12 560 80 620 204 560 349 422 410 131 390 24 309Z" fill="#d9dfb4"/>
+<path d="M-15 120Q45 61 120 76L210 14 407 24 550 89 608 201 548 337 418 397 136 378 35 301Z" fill="url(#land)"/>
+<path d="M14 122q81-70 157-38l-29 76-104 42Z" fill="#93b675"/><path d="m420 68 90 35 56 95-77 40-58-80Z" fill="#9bbd77"/><path d="m132 291 86-15 67 78-113 4Z" fill="#a9c27c"/>
+<path d="M520-10q-70 65-35 114t-20 90q-31 36-13 74t-40 145" stroke="#c5d8ac" stroke-width="25"/>
+<path d="M520-10q-70 65-35 114t-20 90q-31 36-13 74t-40 145" stroke="#65b6be" stroke-width="16"/>
+<path d="m300 55-140 77 140 65 140-65M160 132v108l140 86 140-86V132M160 240l140-43 140 43M300 197v129" stroke="#b29e70" stroke-width="17" stroke-linejoin="round"/>
+<path d="m300 55-140 77 140 65 140-65M160 132v108l140 86 140-86V132M160 240l140-43 140 43M300 197v129" stroke="#e2cea0" stroke-width="12" stroke-linejoin="round"/>
+<path d="m446 232 29 8m-30-3 29 8m-30-3 29 8" stroke="#866a43" stroke-width="4"/>
+<g opacity=".95"><use href="#pine" x="44" y="121"/><use href="#pine" x="68" y="140"/><use href="#pine" x="31" y="163"/><use href="#pine" x="97" y="87"/><use href="#pine" x="76" y="276"/><use href="#pine" x="110" y="313"/><use href="#pine" x="489" y="310"/><use href="#pine" x="524" y="270"/><use href="#pine" x="552" y="208"/><use href="#pine" x="406" y="58"/></g>
+<g stroke="#71a175" stroke-width="3" stroke-linecap="round"><path d="m78 218 4-6 3 5m110-164 5-6 3 6m206 290 4-7 4 6m137-185 3-6 5 5m-306 199 4-6 4 6"/></g>
+<g fill="#e8dfad"><circle cx="116" cy="198" r="3"/><circle cx="125" cy="201" r="2"/><circle cx="363" cy="304" r="3"/><circle cx="370" cy="299" r="2"/></g>
+<g stroke="#c1e5df" opacity=".6" stroke-width="2"><path d="M18 354h25m-9 8h32m447 6h29m-16 8h17M554 48h24m-7 6h17"/></g>
+</svg>

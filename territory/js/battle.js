@@ -28,7 +28,7 @@ const B = {
   mode: 'stage', units: [], projs: [], fx: [], texts: [],
   pCastle: null, eCastle: null,
   queue: [], queueT: 0, queueTotal: 0,
-  enemySpawners: [], spawnT: [],
+  enemySpawners: [], spawnT: [], deployDelay: [],
   time: 0, timeLimit: 0,
   buffs: { rally: 0, sanctuary: 0 },
   lordRespawn: 0, eLordRespawn: 0,
@@ -75,12 +75,13 @@ function heroMult(id, scale) {
 function spawnHero(team, heroId, pos, scale, tint, slot, n) {
   const hero = HERO_BY_ID[heroId];
   const mult = heroMult(heroId, scale);
+  if(team===0 && Number.isInteger(slot) && slot<slotCount()) { ensureFormation();pos=formationPosition(slot); }
   n = n || hero.count;
   for (let i = 0; i < n; i++) {
     const x = team === 0 ? pos.x + 10 : W - pos.x - 10;
     // 3마리/5마리가 대열을 지어 건물에서 쏟아져 나온다
     const row = i - (n - 1) / 2;
-    const u = makeUnit(team, hero.unit, mult, x + rand(-4, 4) - Math.abs(row) * 5 * (team === 0 ? 1 : -1), pos.y + row * 9 + rand(-2, 2), { heroId, tint, slot });
+    const u = makeUnit(team, hero.unit, mult, x + rand(-4, 4) - Math.abs(row) * 5 * (team === 0 ? 1 : -1), pos.y + row * 17 + rand(-2, 2), { heroId, tint, slot, formationRow:team===0?S.formation?.[slot]:undefined });
     B.units.push(u);
   }
 }
@@ -102,7 +103,7 @@ function spawnEnemy(key, stage, opts = {}) {
   const m = stageMult(stage);
   const bossMul = def.boss ? (1 + stage / 40) : 1;
   // 화면 오른쪽 몬스터 소굴 입구에서 기어 나온다
-  const u = makeUnit(1, def, { atk: m * bossMul, hp: m * bossMul }, W - 34, rand(LAIR_MOUTH[0], LAIR_MOUTH[1]), { monster: true, key });
+  const u = makeUnit(1, def, { atk: m * bossMul, hp: m * bossMul }, W - (def.boss ? 200 : 145), rand(LAIR_MOUTH[0], LAIR_MOUTH[1]), { monster: true, key });
   B.lairPulse = def.boss ? 1 : 0.4;
   u.gold = goldPerKill(stage) * (def.boss ? 15 : 1);
   B.units.push(u);
@@ -128,9 +129,11 @@ function tickSpawner(team, slot, heroId, pos, t, rate, cap, scale, tint) {
 
 function resetField(keepAllies) {
   B.units = keepAllies ? B.units.filter(u => u.team === 0) : [];
-  B.projs = []; B.fx = []; B.texts = [];
+  B.projs = []; B.fx = []; B.texts = []; B.skillCue = null;
   B.ended = false; B.endDelay = 0; B.time = 0;
-  B.spawnT = [0, 0, 0, 0, 0].map(() => Math.random());
+  ensureFormation();
+  B.spawnT = [0, 0, 0, 0, 0];
+  let order=0;B.deployDelay=S.slots.map((id,i)=>id&&i<slotCount()?order++*.8:0);
   if (!keepAllies) { B.lordRespawn = 0.5; }
 }
 
@@ -189,6 +192,8 @@ function castSkill() {
   const lord = B.units.find(u => u.isLord && u.team === 0);
   const power = promoInfo().mult;
   B.skillT = CLASSES[cls].skill.cd;
+  if(typeof GameAudio!=='undefined'&&typeof MobileShell!=='undefined'&&MobileShell.mode==='battle')GameAudio.play('skill');
+  B.skillCue = { name: CLASSES[cls].skill.name, t: 1.4 };
   if (cls === 'knight') {
     B.buffs.rally = 8;
     addText(lord.x, lord.y, '돌격하라!', '#ffd166', 18, 44);
@@ -225,6 +230,7 @@ function dealDamage(target, dmg, src) {
   if (target.team === 0 && B.buffs.sanctuary > 0) dmg *= 0.5;
   target.hp -= dmg;
   target.flash = 0.12;
+  if (B.fx.length < 180) B.fx.push({ type:'impact', x:target.x, y:target.y, up:14, t:0, life:.24, color:target.team===0?'#ef9e81':'#f4dca3' });
   if (target.boss || target.isLord || (src && src.isLord)) addText(target.x, target.y + rand(-8, 8), fmt(dmg), target.team === 0 ? '#ff8080' : '#ffe08a', target.boss ? 14 : 11, target.size * 2.4 + 6);
 }
 
@@ -278,6 +284,7 @@ function fire(u, target, isHeal) {
 // ---------- 갱신 ----------
 function updateBattle(dt) {
   B.time += dt;
+  if (B.skillCue) B.skillCue.t = Math.max(0, B.skillCue.t - dt);
   if (B.stageBanner > 0) B.stageBanner -= dt;
   if (B.shake > 0) B.shake = Math.max(0, B.shake - dt);
   if (B.lairPulse > 0) B.lairPulse = Math.max(0, B.lairPulse - dt);
@@ -300,6 +307,7 @@ function updateBattle(dt) {
   for (const u of B.units) {
     if (u.hp <= 0 && !u.dead) {
       u.dead = true;
+      if (B.fx.filter(f => f.type === 'fall').length < 24) B.fx.push({ type:'fall', x:u.x, y:u.y, t:0, life:.42, unit:{...u} });
       B.fx.push({ type: 'poof', x: u.x, y: u.y, t: 0, life: 0.5, color: u.team === 0 ? '#ffffff' : u.color, size: u.size });
       if (u.team === 1 && u.gold) {
         const g = u.gold;
@@ -318,13 +326,7 @@ function updateBattle(dt) {
 }
 
 function spawnPhase(dt) {
-  // 아군 건물 소환
-  const am = armyMult();
-  for (let i = 0; i < slotCount(); i++) {
-    const id = S.slots[i];
-    if (!id) continue;
-    B.spawnT[i] = tickSpawner(0, i, id, BUILDING_POS[i], B.spawnT[i], dt * am.spawn, heroCap(id));
-  }
+  tickDice(dt);
   if (B.lordRespawn > 0) { B.lordRespawn -= dt; if (B.lordRespawn <= 0) spawnLord(0); }
 
   if (B.mode === 'stage') {
@@ -346,11 +348,13 @@ function spawnPhase(dt) {
 }
 
 function updateUnit(u, dt) {
+  u.moving = false;
   u.cdT -= dt;
   if (u.anim > 0) u.anim -= dt;
   if (u.flash > 0) u.flash -= dt;
   u.retarget -= dt;
   if (u.retarget <= 0 || !u.target || u.target.hp <= 0) { u.target = nearestFoe(u); u.retarget = 0.3; }
+  const formationX=formationLimit(u);
   const spd = u.speed * (u.team === 0 && B.buffs.rally > 0 ? 1.4 : 1);
 
   // 힐러
@@ -365,13 +369,17 @@ function updateUnit(u, dt) {
     }
   }
 
+  // A changed rank reforms by walking, never teleporting an existing unit.
+  if(Number.isFinite(formationX)&&u.x>formationX+6) {
+    u.x-=Math.min(spd*dt,u.x-formationX);u.walk+=dt*spd*.25;u.moving=true;return;
+  }
   const t = u.target;
   if (t) {
     const dx = t.x - u.x, dy = t.y - u.y;
     const d = Math.hypot(dx, dy);
     const reach = u.range + t.size;
     if (d > reach) {
-      u.x += dx / d * spd * dt; u.y += dy / d * spd * dt; u.walk += dt * spd * 0.25;
+      u.x += Math.min(dx / d * spd * dt, Math.max(0,formationX-u.x)); u.y += dy / d * spd * dt; u.walk += dt * spd * 0.25; u.moving = true;
     } else if (u.cdT <= 0) {
       attack(u, t);
     }
@@ -388,7 +396,7 @@ function updateUnit(u, dt) {
   else if (B.eCastle) castleX = E_CASTLE_X;
   if (castleX !== null) {
     const dist = Math.abs(castleX - u.x);
-    if (dist > u.range) { u.x += dir * spd * dt; u.walk += dt * spd * 0.25; }
+    if (dist > u.range) { u.x += Math.min(dir * spd * dt, Math.max(0,formationX-u.x)); u.walk += dt * spd * 0.25; u.moving = true; }
     else if (u.cdT <= 0) {
       u.cdT = u.atkCd; u.anim = 0.25;
       if (u.kind === 'melee') damageCastle(u.team === 0 ? 1 : 0, u.atk * teamAtkMult(u));
@@ -397,7 +405,7 @@ function updateUnit(u, dt) {
   } else {
     // 스테이지 모드에서 적이 없으면 전선까지 전진 후 대기
     const hold = W * 0.62 + (u.id % 7) * 8 - (u.kind === 'melee' ? 0 : 60);
-    if (u.x < hold) { u.x += spd * dt; u.walk += dt * spd * 0.25; }
+    if (u.x < Math.min(hold,formationX)) { u.x += Math.min(spd * dt,Math.max(0,formationX-u.x)); u.walk += dt * spd * 0.25; u.moving = true; }
   }
   u.y = Math.max(GROUND_TOP + 8, Math.min(GROUND_BOT - 4, u.y));
 }
@@ -406,7 +414,7 @@ function attack(u, t) {
   u.cdT = u.atkCd; u.anim = 0.25;
   if (u.kind === 'melee') {
     dealDamage(t, u.atk * teamAtkMult(u), u);
-    if (u.def.heavy || u.boss) B.fx.push({ type: 'slash', x: t.x, y: t.y, up: 8, t: 0, life: 0.2, face: u.face });
+    if (B.fx.length < 180) B.fx.push({ type: 'slash', x: t.x, y: t.y, up: 8, t: 0, life: 0.2, face: u.face });
   } else fire(u, t, false);
 }
 
@@ -429,7 +437,7 @@ function separate() {
       const b = us[j];
       if (a.flying !== b.flying) continue;
       const dx = b.x - a.x, dy = b.y - a.y;
-      const min = (a.size + b.size) * 1.15; // 겹쳐도 하나하나 구분되도록 간격을 둔다
+      const min = (a.size + b.size) * 1.5; // 겹쳐도 하나하나 구분되도록 간격을 둔다
       const d2 = dx * dx + dy * dy;
       if (d2 < min * min && d2 > 0.0001) {
         const d = Math.sqrt(d2), push = (min - d) * 0.5;
@@ -512,6 +520,7 @@ function finishBattle() {
         // 최초 클리어 보상
         const gem = isBossStage(st) ? 30 : 3;
         S.gems += gem;
+        if(typeof offerLand==='function' && window.UI) { const wonStage=st; queueMicrotask(()=>offerLand(wonStage)); }
         if (window.UI) UI.toast(`스테이지 ${st} 최초 클리어! 💎${gem}`);
       }
       S.maxStage = Math.max(S.maxStage, st + 1);
