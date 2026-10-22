@@ -5,7 +5,7 @@ const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
 const UI = {
-  tab: 'territory',
+  tab: null, // 열린 탭(팝업 시트). null이면 전장만 보인다
   selSlot: null,
 
   // ---------- 캐릭터 생성 ----------
@@ -38,20 +38,45 @@ const UI = {
   // ---------- 메인 ----------
   initMain() {
     $('#game').classList.remove('hidden');
-    document.querySelectorAll('#tabs button').forEach(b => b.onclick = () => { UI.tab = b.dataset.tab; UI.selSlot = null; UI.renderTab(); });
+    // 탭을 누르면 전장 위로 시트가 올라오고, 같은 탭을 다시 누르면 닫힌다
+    document.querySelectorAll('#tabs button').forEach(b => b.onclick = () => {
+      if (UI.tab === b.dataset.tab) UI.closeSheet(); else UI.openSheet(b.dataset.tab);
+    });
+    $('#sheet-close').onclick = () => UI.closeSheet();
     $('#btn-skill').onclick = () => { if (!castSkill()) UI.toast('스킬을 아직 사용할 수 없습니다'); };
     $('#btn-auto').onclick = () => { S.settings.autoSkill = !S.settings.autoSkill; UI.refresh(); };
     $('#btn-speed').onclick = () => { S.settings.speed = S.settings.speed === 1 ? 2 : 1; UI.refresh(); };
     $('#btn-boss').onclick = () => challengeBoss();
     $('#sk-icon').textContent = CLASSES[S.lord.cls].skill.icon;
-    UI.renderTab();
     UI.refresh();
+  },
+
+  openSheet(tab) {
+    UI.tab = tab; UI.selSlot = null;
+    $('#sheet').classList.remove('hidden');
+    $('#panel').scrollTop = 0;
+    UI.renderTab();
+  },
+
+  closeSheet() {
+    UI.tab = null;
+    $('#sheet').classList.add('hidden');
+    document.querySelectorAll('#tabs button').forEach(b => b.classList.remove('active'));
+  },
+
+  // 상단 초상화: 현재 전직 단계의 영주 모습
+  drawPortrait() {
+    const key = `${S.lord.cls}|${S.lord.gender}|${S.lord.promo}|${S.nation}`;
+    if (UI.portraitKey === key) return;
+    UI.portraitKey = key;
+    drawLordPreview($('#tb-portrait-cv'), S.lord.cls, S.lord.gender, S.lord.promo, 1.25);
   },
 
   refresh() {
     const n = NATIONS[S.nation];
-    $('#tb-portrait').innerHTML = `${S.lord.gender === 'm' ? '🤴' : '👸'}<small>${CLASSES[S.lord.cls].icon}</small>`;
+    UI.drawPortrait();
     $('#tb-portrait').style.borderColor = n.color;
+    $('#tb-stars').textContent = '★'.repeat(S.lord.promo);
     $('#tb-name').textContent = S.lord.name;
     $('#tb-lv').textContent = 'Lv.' + S.lord.level;
     $('#tb-title').textContent = `${n.icon} ${n.short} · ${lordTitle()} · ${titleOf(myRank()).name}`;
@@ -75,9 +100,12 @@ const UI = {
   },
 
   renderTab() {
+    if (!UI.tab) { UI.refresh(); return; }
     document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('active', b.dataset.tab === UI.tab));
+    $('#sheet-title').textContent = { territory: '🏰 영토', lord: '👑 영주', summon: '🎴 소환', promo: '⭐ 전직', nation: '⚔️ 국가' }[UI.tab];
     const p = $('#panel');
     p.innerHTML = UI['tab_' + UI.tab]();
+    p.querySelectorAll('canvas[data-tier]').forEach(el => drawLordPreview(el, S.lord.cls, S.lord.gender, Number(el.dataset.tier)));
     p.querySelectorAll('[data-act]').forEach(el => el.onclick = (e) => {
       e.stopPropagation();
       UI.act(el.dataset.act, el.dataset);
@@ -184,7 +212,7 @@ const UI = {
   tab_promo() {
     const c = CLASSES[S.lord.cls];
     const cur = S.lord.promo;
-    const path = PROMOTIONS.map((p, i) => `<div class="promo-step ${i < cur ? 'done' : i === cur ? 'cur' : ''}">${i === 0 ? '기본' : i + '차'}<b>${c.promos[i]}</b>슬롯 ${p.slots} · x${p.mult}</div>`).join('');
+    const path = PROMOTIONS.map((p, i) => `<div class="promo-step ${i < cur ? 'done' : i === cur ? 'cur' : ''}"><canvas class="lord-prev" data-tier="${i}"></canvas>${i === 0 ? '기본' : i + '차'}<b>${c.promos[i]}</b>슬롯 ${p.slots} · x${p.mult}</div>`).join('');
     let next = '';
     if (cur < PROMOTIONS.length - 1) {
       const p = PROMOTIONS[cur + 1];
@@ -270,10 +298,14 @@ const UI = {
       const p = PROMOTIONS[S.lord.promo + 1];
       if (!p || S.lord.level < p.reqLevel || S.maxStage - 1 < p.reqStage || !spend(p.cost)) return;
       S.lord.promo++;
-      const lord = B.units.find(u => u.isLord && u.team === 0);
-      if (lord) lord.hp = 0;
-      B.lordRespawn = 0.3;
-      UI.modal(`<h2>⭐ 전직 성공!</h2><p><b style="font-size:20px;color:var(--gold)">${lordTitle()}</b><br><br>영토 슬롯이 <b>${slotCount()}칸</b>으로 늘었습니다!<br>전 능력 배율 x${promoInfo().mult}</p>`, [{ label: '확인', cls: 'primary' }]);
+      // 전장의 영주를 새 모습으로 바로 교체
+      const old = B.units.find(u => u.isLord && u.team === 0);
+      if (old) B.fx.push({ type: 'ring', x: old.x, y: old.y, r: 6, max: 90, t: 0, life: 0.8, color: '#ffe066' });
+      B.units = B.units.filter(u => !(u.isLord && u.team === 0));
+      B.lordRespawn = 0.2;
+      UI.modal(`<h2>⭐ 전직 성공!</h2><div class="promo-reveal"><canvas id="promo-from" data-t="${S.lord.promo - 1}"></canvas><span>▶</span><canvas id="promo-to" data-t="${S.lord.promo}"></canvas></div>
+        <p><b style="font-size:20px;color:var(--gold)">${lordTitle()}</b><br><br>영토 슬롯이 <b>${slotCount()}칸</b>으로 늘었습니다!<br>전 능력 배율 x${promoInfo().mult}</p>`, [{ label: '확인', cls: 'primary' }]);
+      document.querySelectorAll('.promo-reveal canvas').forEach(el => drawLordPreview(el, S.lord.cls, S.lord.gender, Number(el.dataset.t)));
     } else if (a === 'war') {
       UI.startWar(d.k);
     } else if (a === 'duel') {
@@ -333,8 +365,7 @@ const UI = {
       UI.renderTab();
     });
     saveGame();
-    UI.renderTab();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    UI.closeSheet();
   },
 
   startDuel(i) {
@@ -363,8 +394,7 @@ const UI = {
       UI.renderTab();
     });
     saveGame();
-    UI.renderTab();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    UI.closeSheet();
   },
 
   // ---------- 공통 ----------

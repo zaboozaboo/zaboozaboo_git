@@ -1,18 +1,26 @@
 // 전투 엔진 — 영토에서 쏟아져 나오는 부대 vs 적
 'use strict';
 
-const W = 800, H = 400;
-const GROUND_TOP = 160, GROUND_BOT = 388;
+// 전장 좌표계: x = 전선 방향(0 = 아군 성, W = 적 진영), y = 좌우 폭(0 ~ LANE_W).
+// 화면에는 세로로 그려진다(아군 성이 아래, 적이 위). W는 화면 비율에 맞춰 setWorld()에서 정한다.
+const LANE_W = 320;
+const GROUND_TOP = 16, GROUND_BOT = LANE_W - 16;
 const P_CASTLE_X = 70;        // 아군 성 전면
-const E_CASTLE_X = W - 70;    // 적 성 전면 (국가전/서열전)
-const LAIR_X = W - 64;
-const LAIR_MOUTH = [GROUND_TOP + 40, GROUND_BOT - 20];        // 몬스터 소굴 입구 (스테이지)
-const ALLY_MAX_X = W - 80;    // 아군은 소굴/적 성 앞까지만 전진한다
+let W = 600;
+let E_CASTLE_X, LAIR_X, ALLY_MAX_X; // 적 성 전면 / 몬스터 소굴 입구 / 아군 전진 한계
+const LAIR_MOUTH = [LANE_W * 0.22, LANE_W * 0.78]; // 소굴 입구의 좌우 범위
 const AGGRO = 240;
 
-const BUILDING_POS = [
-  { x: 110, y: 205 }, { x: 130, y: 255 }, { x: 110, y: 305 }, { x: 130, y: 350 }, { x: 150, y: 180 },
-];
+function setWorld(len) {
+  W = Math.round(Math.max(420, Math.min(900, len)));
+  E_CASTLE_X = W - 70;
+  LAIR_X = W - 64;
+  ALLY_MAX_X = W - 80;
+}
+setWorld(600);
+
+// 영토 슬롯(건물) 위치: 성 바로 앞에 좌우로 늘어선다. 열리는 순서대로 가운데 → 바깥.
+const BUILDING_POS = [0.5, 0.27, 0.73, 0.07, 0.93].map((f, i) => ({ x: i % 2 ? 112 : 102, y: LANE_W * f }));
 
 let uidSeq = 1;
 
@@ -32,11 +40,14 @@ const B = {
 
 function makeDeco() {
   B.deco = [];
-  for (let i = 0; i < 70; i++) B.deco.push({ x: Math.random() * W, y: rand(GROUND_TOP + 4, GROUND_BOT), r: rand(1, 3), t: Math.random() });
+  for (let i = 0; i < 90; i++) B.deco.push({ x: Math.random() * 1000, y: rand(0, LANE_W), r: rand(1, 3), t: Math.random() });
 }
 
 function region(stage) { return REGIONS[Math.floor((stage - 1) / 10) % REGIONS.length]; }
 const isBossStage = (stage) => stage % 5 === 0;
+
+// 전직할수록 영주 체구가 커진다
+const lordSize = (promo) => 10 + promo * 1.6;
 
 // ---------- 유닛 생성 ----------
 function makeUnit(team, def, mult, x, y, extra = {}) {
@@ -78,7 +89,7 @@ function spawnLord(team, opts) {
   let st, cls, gender, promo;
   if (team === 0) { st = lordStats(); cls = S.lord.cls; gender = S.lord.gender; promo = S.lord.promo; }
   else { cls = opts.cls; gender = opts.gender; promo = opts.promo; const c = CLASSES[cls].lord; st = { ...c, hp: c.hp * opts.scale * 1.5, atk: c.atk * opts.scale, heal: (c.heal || 0) * opts.scale }; }
-  const def = { ...st, name: team === 0 ? S.lord.name : opts.name, size: 10, color: '#fff' };
+  const def = { ...st, name: team === 0 ? S.lord.name : opts.name, size: lordSize(promo), color: '#fff' };
   const x = team === 0 ? P_CASTLE_X + 20 : E_CASTLE_X - 20;
   const u = makeUnit(team, def, { atk: 1, hp: 1 }, x, (GROUND_TOP + GROUND_BOT) / 2, { isLord: true, cls, gender, promo });
   u.maxHp = st.hp; u.hp = st.hp; u.atk = st.atk; u.heal = st.heal;
@@ -180,7 +191,7 @@ function castSkill() {
   B.skillT = CLASSES[cls].skill.cd;
   if (cls === 'knight') {
     B.buffs.rally = 8;
-    addText(lord.x, lord.y - 40, '돌격하라!', '#ffd166', 18);
+    addText(lord.x, lord.y, '돌격하라!', '#ffd166', 18, 44);
     B.fx.push({ type: 'ring', x: lord.x, y: lord.y, r: 10, max: 260, t: 0, life: 0.6, color: '#ffd166' });
   } else if (cls === 'mage') {
     const foes = B.units.filter(u => u.team === 1);
@@ -193,19 +204,20 @@ function castSkill() {
       B.fx.push({ type: 'meteor', x: tx, y: ty, t: -i * 0.25, life: 0.7, dmg: lord.atk * 14 * power, done: false });
     }
   } else if (cls === 'priest') {
-    for (const u of B.units) if (u.team === 0) { u.hp = Math.min(u.maxHp, u.hp + u.maxHp * 0.6); B.fx.push({ type: 'spark', x: u.x, y: u.y - 10, t: 0, life: 0.8 }); }
+    for (const u of B.units) if (u.team === 0) { u.hp = Math.min(u.maxHp, u.hp + u.maxHp * 0.6); B.fx.push({ type: 'spark', x: u.x, y: u.y, up: 12, t: 0, life: 0.8 }); }
     B.pCastle.hp = Math.min(B.pCastle.max, B.pCastle.hp + B.pCastle.max * 0.25);
     B.buffs.sanctuary = 5;
-    addText(lord.x, lord.y - 40, '성역!', '#fff3b0', 18);
+    addText(lord.x, lord.y, '성역!', '#fff3b0', 18, 44);
     B.fx.push({ type: 'ring', x: lord.x, y: lord.y, r: 10, max: 300, t: 0, life: 0.8, color: '#fff3b0' });
   }
   return true;
 }
 
 // ---------- 유틸 ----------
-function addText(x, y, txt, color = '#fff', size = 12) {
+// up: 화면에서 위로 띄울 높이
+function addText(x, y, txt, color = '#fff', size = 12, up = 0) {
   if (B.texts.length > 50) B.texts.shift();
-  B.texts.push({ x, y, txt, color, size, t: 0 });
+  B.texts.push({ x, y, txt, color, size, up, t: 0 });
 }
 
 function dealDamage(target, dmg, src) {
@@ -213,7 +225,7 @@ function dealDamage(target, dmg, src) {
   if (target.team === 0 && B.buffs.sanctuary > 0) dmg *= 0.5;
   target.hp -= dmg;
   target.flash = 0.12;
-  if (target.boss || target.isLord || (src && src.isLord)) addText(target.x + rand(-8, 8), target.y - target.size * 2 - 6, fmt(dmg), target.team === 0 ? '#ff8080' : '#ffe08a', target.boss ? 14 : 11);
+  if (target.boss || target.isLord || (src && src.isLord)) addText(target.x, target.y + rand(-8, 8), fmt(dmg), target.team === 0 ? '#ff8080' : '#ffe08a', target.boss ? 14 : 11, target.size * 2.4 + 6);
 }
 
 function damageCastle(team, dmg) {
@@ -253,9 +265,9 @@ function hurtAlly(u) {
 
 function fire(u, target, isHeal) {
   const tx = target ? target.x : (u.team === 0 ? E_CASTLE_X + 20 : P_CASTLE_X - 20);
-  const ty = target ? target.y - (target.flying ? 14 : 4) : u.y;
+  const ty = target ? target.y : u.y;
   B.projs.push({
-    x: u.x + (u.team === 0 ? 6 : -6), y: u.y - (u.flying ? 16 : 8), tx, ty, target,
+    x: u.x + (u.team === 0 ? 6 : -6), y: u.y, tx, ty, target,
     team: u.team, type: isHeal ? 'holy' : (u.proj || 'arrow'),
     dmg: isHeal ? 0 : u.atk * teamAtkMult(u), heal: isHeal ? u.heal : 0,
     splash: isHeal ? 0 : u.splash, castle: !target, src: u,
@@ -292,7 +304,7 @@ function updateBattle(dt) {
       if (u.team === 1 && u.gold) {
         const g = u.gold;
         S.gold += g; S.stats.kills++;
-        addText(u.x, u.y - 16, '+' + fmt(g), '#ffd34d', u.boss ? 16 : 11);
+        addText(u.x, u.y, '+' + fmt(g), '#ffd34d', u.boss ? 16 : 11, 18);
         if (u.boss) B.shake = 0.4;
       }
       if (u.isLord) { if (u.team === 0) B.lordRespawn = 6; else B.eLordRespawn = 8; }
@@ -363,13 +375,14 @@ function updateUnit(u, dt) {
     } else if (u.cdT <= 0) {
       attack(u, t);
     }
-    u.face = dx >= 0 ? 1 : -1;
+    // 화면 좌우(= 전장 폭 방향)로 몸을 돌린다
+    if (Math.abs(dy) > 4) u.face = dy >= 0 ? 1 : -1;
     return;
   }
 
   // 목표 없음 — 행군 또는 성 공격
   const dir = u.team === 0 ? 1 : -1;
-  u.face = dir;
+  u.face = u.face || (u.team === 0 ? 1 : -1);
   let castleX = null;
   if (u.team === 1) castleX = P_CASTLE_X;
   else if (B.eCastle) castleX = E_CASTLE_X;
@@ -393,7 +406,7 @@ function attack(u, t) {
   u.cdT = u.atkCd; u.anim = 0.25;
   if (u.kind === 'melee') {
     dealDamage(t, u.atk * teamAtkMult(u), u);
-    if (u.def.heavy || u.boss) B.fx.push({ type: 'slash', x: t.x, y: t.y - 6, t: 0, life: 0.2, face: u.face });
+    if (u.def.heavy || u.boss) B.fx.push({ type: 'slash', x: t.x, y: t.y, up: 8, t: 0, life: 0.2, face: u.face });
   } else fire(u, t, false);
 }
 
@@ -416,7 +429,7 @@ function separate() {
       const b = us[j];
       if (a.flying !== b.flying) continue;
       const dx = b.x - a.x, dy = b.y - a.y;
-      const min = (a.size + b.size) * 0.9;
+      const min = (a.size + b.size) * 1.15; // 겹쳐도 하나하나 구분되도록 간격을 둔다
       const d2 = dx * dx + dy * dy;
       if (d2 < min * min && d2 > 0.0001) {
         const d = Math.sqrt(d2), push = (min - d) * 0.5;
@@ -431,13 +444,13 @@ function separate() {
 
 function updateProjs(dt) {
   for (const p of B.projs) {
-    if (p.target && p.target.hp > 0) { p.tx = p.target.x; p.ty = p.target.y - (p.target.flying ? 14 : 4); }
+    if (p.target && p.target.hp > 0) { p.tx = p.target.x; p.ty = p.target.y; }
     const dx = p.tx - p.x, dy = p.ty - p.y;
     const d = Math.hypot(dx, dy);
     const step = p.speed * dt;
     if (d <= step + 2) {
       p.hit = true;
-      if (p.heal) { if (p.target && p.target.hp > 0) { p.target.hp = Math.min(p.target.maxHp, p.target.hp + p.heal); B.fx.push({ type: 'spark', x: p.tx, y: p.ty, t: 0, life: 0.5 }); } }
+      if (p.heal) { if (p.target && p.target.hp > 0) { p.target.hp = Math.min(p.target.maxHp, p.target.hp + p.heal); B.fx.push({ type: 'spark', x: p.tx, y: p.ty, up: 10, t: 0, life: 0.5 }); } }
       else if (p.castle) damageCastle(p.team === 0 ? 1 : 0, p.dmg);
       else if (p.splash) {
         B.fx.push({ type: 'boom', x: p.tx, y: p.ty, t: 0, life: 0.35, r: p.splash, color: p.type === 'fire' ? '#ff8c42' : '#8ab4ff' });
@@ -445,7 +458,7 @@ function updateProjs(dt) {
       } else if (p.target && p.target.hp > 0) dealDamage(p.target, p.dmg, p.src);
     } else {
       p.x += dx / d * step; p.y += dy / d * step;
-      p.ang = Math.atan2(dy, dx);
+      p.vx = dx / d; p.vy = dy / d;
     }
   }
   B.projs = B.projs.filter(p => !p.hit);

@@ -14,11 +14,11 @@
 html, body { margin: 0; height: 100%; background: #0c0b10; color: var(--text);
   font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR', sans-serif; }
 button { font: inherit; color: inherit; cursor: pointer; }
-#app { max-width: 520px; margin: 0 auto; min-height: 100%; background: var(--bg); position: relative; }
+#app { max-width: 520px; margin: 0 auto; height: 100%; background: var(--bg); position: relative; overflow: hidden; }
 .hidden { display: none !important; }
 
 /* ---------- 생성 화면 ---------- */
-#setup { padding: 20px 16px 40px; }
+#setup { padding: 20px 16px 40px; height: 100%; overflow-y: auto; }
 .logo { text-align: center; margin: 18px 0 22px; }
 .logo h1 { margin: 4px 0 0; font-size: 34px; letter-spacing: 2px;
   background: linear-gradient(180deg, #fff3c4, #ffb347); -webkit-background-clip: text; background-clip: text; color: transparent;
@@ -48,8 +48,12 @@ button { font: inherit; color: inherit; cursor: pointer; }
 
 /* ---------- 상단 ---------- */
 #topbar { display: flex; align-items: center; gap: 10px; padding: 8px 12px; background: linear-gradient(180deg, #2a2240, #1d1a28); border-bottom: 1px solid var(--line); }
-.portrait { width: 44px; height: 44px; border-radius: 12px; background: var(--panel2); display: grid; place-items: center; font-size: 26px; border: 2px solid var(--gold); position: relative; }
-.portrait small { position: absolute; right: -6px; bottom: -6px; font-size: 14px; }
+/* 메인 화면: 전장이 화면을 가득 채우고, 탭 내용은 시트로 올라온다 */
+#game { display: flex; flex-direction: column; height: 100%; position: relative; }
+#topbar, #controls, #tabs { flex-shrink: 0; }
+.portrait { width: 46px; height: 46px; border-radius: 12px; background: radial-gradient(#3a3156, #1b1726); border: 2px solid var(--gold); position: relative; overflow: hidden; flex-shrink: 0; }
+#tb-portrait-cv { width: 100%; height: 100%; display: block; }
+#tb-stars { position: absolute; left: 0; right: 0; bottom: 0; text-align: center; font-size: 9px; color: var(--gold); letter-spacing: -1px; text-shadow: 0 0 3px #000; }
 .tb-info { flex: 1; min-width: 0; }
 .tb-name { font-weight: 800; font-size: 15px; }
 .tb-name .lv { color: var(--gold); font-size: 12px; }
@@ -57,8 +61,8 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .tb-cur { text-align: right; font-size: 13px; line-height: 1.5; }
 .tb-cur b { color: var(--gold); }
 
-#field { position: relative; background: #000; }
-#cv { display: block; width: 100%; aspect-ratio: 2 / 1; }
+#field { position: relative; background: #000; flex: 1; min-height: 0; }
+#cv { display: block; width: 100%; height: 100%; touch-action: manipulation; }
 
 #controls { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: var(--panel); border-bottom: 1px solid var(--line); }
 .stage-info { flex: 1; min-width: 0; font-size: 13px; }
@@ -69,12 +73,17 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .skill-btn #sk-cd { position: absolute; inset: 0; display: grid; place-items: center; font-size: 13px; font-weight: 800; background: rgba(0, 0, 0, .6); }
 .skill-btn #sk-cd:empty { display: none; }
 
-#tabs { display: flex; background: #18151f; border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 5; }
+#tabs { display: flex; height: 56px; background: #18151f; border-top: 1px solid var(--line); position: relative; z-index: 12; }
 #tabs button { flex: 1; background: none; border: none; padding: 8px 0 6px; font-size: 18px; display: flex; flex-direction: column; align-items: center; gap: 2px; opacity: .55; border-bottom: 2px solid transparent; }
 #tabs button span { font-size: 11px; font-weight: 700; }
-#tabs button.active { opacity: 1; border-bottom-color: var(--gold); }
+#tabs button.active { opacity: 1; border-bottom-color: var(--gold); background: rgba(255, 211, 77, .06); }
 
-#panel { padding: 12px 12px 60px; }
+#sheet { position: absolute; left: 0; right: 0; bottom: 56px; max-height: 68%; display: flex; flex-direction: column; background: var(--bg); border: 1px solid var(--line); border-bottom: none; border-radius: 18px 18px 0 0; box-shadow: 0 -10px 30px rgba(0, 0, 0, .55); z-index: 11; animation: sheet-up .22s ease-out; }
+.sheet-head { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; border-bottom: 1px solid var(--line); font-size: 15px; }
+@keyframes sheet-up { from { transform: translateY(30px); opacity: 0; } to { transform: none; opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { #sheet { animation: none; } }
+
+#panel { padding: 12px 12px 24px; overflow-y: auto; flex: 1; min-height: 0; overscroll-behavior: contain; }
 .sec { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 12px; margin-bottom: 12px; }
 .sec h3 { margin: 0 0 10px; font-size: 15px; display: flex; justify-content: space-between; align-items: center; }
 .sec h3 small { color: var(--muted); font-weight: 500; font-size: 12px; }
@@ -118,6 +127,9 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .promo-path { display: flex; align-items: stretch; gap: 4px; margin-bottom: 10px; }
 .promo-step { flex: 1; text-align: center; padding: 10px 4px; border-radius: 10px; background: var(--panel2); font-size: 12px; border: 2px solid transparent; }
 .promo-step b { display: block; font-size: 14px; margin-top: 2px; }
+.lord-prev { display: block; width: 100%; height: 72px; margin-bottom: 4px; }
+.promo-reveal { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 6px 0; color: var(--gold); font-size: 20px; }
+.promo-reveal canvas { width: 96px; height: 116px; border-radius: 12px; background: radial-gradient(#3a3156, #1b1726); }
 .promo-step.done { border-color: var(--ok); }
 .promo-step.cur { border-color: var(--gold); background: #33293f; }
 .req { font-size: 13px; padding: 4px 0; }

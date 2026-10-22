@@ -39,7 +39,7 @@
   <!-- 메인 게임 -->
   <section id="game" class="screen hidden">
     <header id="topbar">
-      <div class="portrait" id="tb-portrait"></div>
+      <div class="portrait" id="tb-portrait"><canvas id="tb-portrait-cv"></canvas><span id="tb-stars"></span></div>
       <div class="tb-info">
         <div class="tb-name"><span id="tb-name"></span> <span class="lv" id="tb-lv"></span></div>
         <div class="tb-title" id="tb-title"></div>
@@ -63,13 +63,17 @@
       </div>
     </div>
     <nav id="tabs">
-      <button data-tab="territory" class="active">🏰<span>영토</span></button>
+      <button data-tab="territory">🏰<span>영토</span></button>
       <button data-tab="lord">👑<span>영주</span></button>
       <button data-tab="summon">🎴<span>소환</span></button>
       <button data-tab="promo">⭐<span>전직</span></button>
       <button data-tab="nation">⚔️<span>국가</span></button>
     </nav>
-    <section id="panel"></section>
+    <!-- 탭 내용은 전장 위로 올라오는 시트에 표시 -->
+    <div id="sheet" class="hidden">
+      <div class="sheet-head"><b id="sheet-title"></b><button id="sheet-close" class="btn small" aria-label="닫기">✕</button></div>
+      <section id="panel"></section>
+    </div>
   </section>
 
   <div id="modal" class="hidden"><div class="modal-box" id="modal-box"></div></div>
