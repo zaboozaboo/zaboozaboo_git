@@ -119,15 +119,60 @@ const UI = {
     const p = $('#panel');
     p.innerHTML = UI['tab_' + UI.tab]();
     p.querySelectorAll('canvas[data-tier]').forEach(el => drawLordPreview(el, S.lord.cls, S.lord.gender, Number(el.dataset.tier)));
-    p.querySelectorAll('[data-act]').forEach(el => el.onclick = (e) => {
+    p.querySelectorAll('[data-act]').forEach(el => {
+      if (!UI.HOLD_ACTS.includes(el.dataset.act)) return;
+      // 강화 버튼: 꾹 누르고 있으면 연속 강화. 키보드(Enter/Space) 클릭은 1회.
+      el.onpointerdown = (e) => UI.startHold(el, e);
+      el.oncontextmenu = (e) => e.preventDefault();
+      el.onclick = (e) => { e.stopPropagation(); if (e.detail === 0) UI.act(el.dataset.act, el.dataset); };
+      el.classList.add('holdable');
+    });
+    p.querySelectorAll('[data-act]:not(.holdable)').forEach(el => el.onclick = (e) => {
       e.stopPropagation();
       UI.act(el.dataset.act, el.dataset);
     });
     UI.refresh();
   },
 
+  HOLD_ACTS: ['hlv', 'upg', 'lordlv'],
+
+  // 현재 비용(강화 대상이 최대치면 null)
+  holdCost(act, d) {
+    if (act === 'hlv') return S.heroes[d.id].level >= heroMaxLevel(d.id) ? null : heroLevelCost(d.id);
+    if (act === 'upg') { const u = UPGRADES.find(x => x.id === d.id); return u.max && S.upgrades[u.id] >= u.max ? null : upgradeCost(u); }
+    return lordLevelCost();
+  },
+
+  // 짧게 누르면 1회, 0.35초 이상 누르고 있으면 점점 빠르게 연속 강화.
+  // 스크롤하려고 버튼 위에서 시작한 터치(pointercancel)는 아무것도 하지 않는다.
+  startHold(el, e) {
+    if (el.disabled || UI.hold) return;
+    if (e.button !== undefined && e.button !== 0) return;
+    const act = el.dataset.act;
+    const h = UI.hold = { n: 0, timer: 0 };
+    const end = (ev) => {
+      clearTimeout(h.timer);
+      window.removeEventListener('pointerup', end); window.removeEventListener('pointercancel', end);
+      UI.hold = null;
+      if (ev.type === 'pointerup' && h.n === 0) { UI.act(act, el.dataset); return; } // 짧은 탭
+      if (h.n > 0) { saveGame(); UI.renderTab(); if (h.n > 1) UI.toast(`연속 강화 +${h.n}`); }
+    };
+    const step = () => {
+      if (!UI.act(act, el.dataset, true)) { end({ type: 'stop' }); return; }
+      h.n++;
+      const cost = UI.holdCost(act, el.dataset);
+      if (cost === null) { end({ type: 'stop' }); return; }
+      el.dataset.cost = cost;
+      el.innerHTML = `${el.dataset.label} <b class="hold-n">+${h.n}</b> 💰${fmt(cost)}`;
+      UI.refresh();
+      h.timer = setTimeout(step, Math.max(45, 170 - h.n * 10)); // 누르고 있을수록 빨라진다
+    };
+    window.addEventListener('pointerup', end); window.addEventListener('pointercancel', end);
+    h.timer = setTimeout(step, 350);
+  },
+
   costBtn(label, cost, act, extra = '', cur = 'gold', block = false) {
-    return `<button class="btn small ${cur === 'gems' ? 'primary' : 'gold'}" data-act="${act}" ${extra} data-cost="${cost}" data-cur="${cur}" data-block="${block ? 1 : 0}">${label} ${cur === 'gems' ? '💎' : '💰'}${fmt(cost)}</button>`;
+    return `<button class="btn small ${cur === 'gems' ? 'primary' : 'gold'}" data-act="${act}" ${extra} data-label="${label}" data-cost="${cost}" data-cur="${cur}" data-block="${block ? 1 : 0}">${label} ${cur === 'gems' ? '💎' : '💰'}${fmt(cost)}</button>`;
   },
 
   // ---------- 영토 탭 ----------
@@ -148,34 +193,35 @@ const UI = {
     const owned = Object.keys(S.heroes).sort((a, b) =>
       RARITY_ORDER.indexOf(HERO_BY_ID[b].rarity) - RARITY_ORDER.indexOf(HERO_BY_ID[a].rarity) || S.heroes[b].level - S.heroes[a].level);
     const am = armyMult();
+    // 보유 카드는 카드 형태로 한 줄에 3~4장씩
     const list = owned.map(id => {
       const h = HERO_BY_ID[id], o = S.heroes[id], r = RARITY[h.rarity];
       const placed = S.slots.slice(0, sc).indexOf(id);
-      const lm = heroLevelMult(o);
-      const u = h.unit;
-      const kind = u.kind === 'melee' ? '근접' : u.kind === 'healer' ? '치유' : '원거리';
       const need = shardsForStar(o.stars);
       const maxLv = heroMaxLevel(id);
-      return `<div class="hero" style="--r:${r.color}">
-        <div class="ic">${h.icon}${placed >= 0 ? '<span class="placed-tag">배치중</span>' : ''}</div>
-        <div class="body">
-          <div class="nm"><span class="rbadge">${r.name}</span>${h.name}</div>
-          <div class="meta"><span class="stars">${'★'.repeat(o.stars)}${'☆'.repeat(MAX_STARS - o.stars)}</span> Lv.${o.level}/${maxLv} · ${h.building}</div>
-          <div class="meta"><b class="trait">${h.trait}</b> ${h.traitDesc}</div>
-          <div class="meta">${u.name} ${h.count}마리씩 (${kind}) · 정원 <b>${heroCap(id)}</b> · ${h.spawnCd}초마다</div>
-          <div class="meta">공 ${fmt(u.atk * am.atk * lm)} · 체 ${fmt(u.hp * am.hp * lm)}</div>
-          <div class="meta">조각 ${o.shards}/${o.stars >= MAX_STARS ? 'MAX' : need}</div>
-          <div class="acts">
-            ${o.level < maxLv ? UI.costBtn('레벨업', heroLevelCost(id), 'hlv', `data-id="${id}"`) : '<button class="btn small" disabled>최대 레벨</button>'}
-            ${o.stars < MAX_STARS && o.shards >= need ? `<button class="btn small primary" data-act="hstar" data-id="${id}">★ 승급</button>` : ''}
-            ${placed >= 0 ? `<button class="btn small" data-act="unplace" data-id="${id}">해제</button>` : `<button class="btn small on" data-act="place" data-id="${id}">배치</button>`}
-          </div>
-        </div></div>`;
+      const canStar = o.stars < MAX_STARS && o.shards >= need;
+      return `<div class="hcard ${placed >= 0 ? 'placed' : ''}" style="--r:${r.color}">
+        ${placed >= 0 ? '<span class="placed-tag">배치중</span>' : ''}
+        <button class="hc-top" data-act="hinfo" data-id="${id}" aria-label="${h.name} 상세">
+          <span class="rbadge">${r.name}</span>
+          <span class="hc-ic">${h.icon}</span>
+          <span class="hc-nm">${h.name}</span>
+          <span class="stars">${'★'.repeat(o.stars)}<i>${'★'.repeat(MAX_STARS - o.stars)}</i></span>
+          <span class="hc-meta">Lv.${o.level} · ${h.count}마리 · 정원 ${heroCap(id)}</span>
+          <span class="hc-trait">${h.trait}</span>
+          <span class="hc-shard"><i style="width:${o.stars >= MAX_STARS ? 100 : Math.min(100, o.shards / need * 100)}%"></i><b>${o.stars >= MAX_STARS ? 'MAX' : `조각 ${o.shards}/${need}`}</b></span>
+        </button>
+        <div class="hc-acts">
+          ${o.level < maxLv ? UI.costBtn('Lv↑', heroLevelCost(id), 'hlv', `data-id="${id}"`) : '<button class="btn small" disabled>MAX</button>'}
+          ${canStar ? `<button class="btn small primary" data-act="hstar" data-id="${id}">★ 승급</button>` : ''}
+          ${placed >= 0 ? `<button class="btn small" data-act="unplace" data-id="${id}">해제</button>` : `<button class="btn small on" data-act="place" data-id="${id}">배치</button>`}
+        </div>
+      </div>`;
     }).join('');
     return `<div class="sec"><h3>영토 배치 <small>${S.slots.slice(0, sc).filter(Boolean).length}/${sc} · 전직하면 슬롯 증가</small></h3>
       <div class="slots">${slots}</div>
-      <p class="hint">빈 터를 누르고 영웅의 [배치]를 누르면 그 자리에 건물이 세워집니다.<br>건물마다 부대 정원이 있어, 그 건물의 부하가 정원만큼 살아 있으면 소환을 멈추고 대기합니다.</p></div>
-      <div class="sec"><h3>보유 영웅 카드 <small>${owned.length}/${HEROES.length}종</small></h3>${list}</div>`;
+      <p class="hint">💡 강화 버튼은 꾹 누르고 있으면 연속으로 올라갑니다.<br>빈 터를 누르고 영웅의 [배치]를 누르면 그 자리에 건물이 세워집니다.<br>건물마다 부대 정원이 있어, 그 건물의 부하가 정원만큼 살아 있으면 소환을 멈추고 대기합니다.</p></div>
+      <div class="sec"><h3>보유 영웅 카드 <small>${owned.length}/${HEROES.length}종 · 카드를 누르면 상세</small></h3><div class="cards">${list}</div></div>`;
   },
 
   // ---------- 영주 탭 ----------
@@ -270,7 +316,8 @@ const UI = {
   },
 
   // ---------- 행동 ----------
-  act(a, d) {
+  // quiet: 꾹 누르기 연속 강화 중 — 저장/다시 그리기를 생략하고 성공 여부만 돌려준다
+  act(a, d, quiet) {
     if (a === 'slot') {
       const i = Number(d.i);
       UI.selSlot = UI.selSlot === i ? null : i;
@@ -286,8 +333,11 @@ const UI = {
       const i = S.slots.indexOf(d.id);
       if (i >= 0) S.slots[i] = null;
     } else if (a === 'hlv') {
-      if (!spend(heroLevelCost(d.id))) return;
+      if (S.heroes[d.id].level >= heroMaxLevel(d.id) || !spend(heroLevelCost(d.id))) return;
       S.heroes[d.id].level++;
+    } else if (a === 'hinfo') {
+      UI.showHero(d.id);
+      return;
     } else if (a === 'hstar') {
       const o = S.heroes[d.id];
       const need = shardsForStar(o.stars);
@@ -296,7 +346,7 @@ const UI = {
       UI.toast(`${HERO_BY_ID[d.id].name} ★${o.stars} 승급!`);
     } else if (a === 'upg') {
       const u = UPGRADES.find(x => x.id === d.id);
-      if (!spend(upgradeCost(u))) return;
+      if ((u.max && S.upgrades[u.id] >= u.max) || !spend(upgradeCost(u))) return;
       S.upgrades[u.id]++;
       if (u.id === 'castle') { const old = B.pCastle.max; B.pCastle.max = castleMaxHp(); B.pCastle.hp += B.pCastle.max - old; }
     } else if (a === 'lordlv') {
@@ -327,8 +377,27 @@ const UI = {
       UI.modal('<h2>데이터 초기화</h2><p>모든 진행 상황이 삭제됩니다. 정말 초기화할까요?</p>', [{ label: '취소' }, { label: '초기화', cls: 'danger', fn: resetGame }]);
       return;
     }
+    if (quiet) return true;
     saveGame();
     UI.renderTab();
+  },
+
+  // 카드 상세: 특성 설명과 능력치
+  showHero(id) {
+    const h = HERO_BY_ID[id], o = S.heroes[id], r = RARITY[h.rarity], u = h.unit;
+    const am = armyMult(), lm = heroLevelMult(o);
+    const kind = u.kind === 'melee' ? '근접' : u.kind === 'healer' ? '치유' : '원거리';
+    UI.modal(`<div class="hero-detail" style="--r:${r.color}">
+        <div class="hc-ic big">${h.icon}</div>
+        <h2><span class="rbadge">${r.name}</span>${h.name}</h2>
+        <p class="stars">${'★'.repeat(o.stars)}<i>${'★'.repeat(MAX_STARS - o.stars)}</i> Lv.${o.level}/${heroMaxLevel(id)}</p>
+        <p><b class="trait">${h.trait}</b><br>${h.traitDesc}</p>
+        <div class="statgrid">
+          <div>건물<b>${h.building}</b></div><div>부하<b>${u.name} (${kind})</b></div>
+          <div>한 번에<b>${h.count}마리</b></div><div>부대 정원<b>${heroCap(id)}명</b></div>
+          <div>공격력<b>${fmt(u.atk * am.atk * lm)}</b></div><div>체력<b>${fmt(u.hp * am.hp * lm)}</b></div>
+          <div>소환 주기<b>${h.spawnCd}초</b></div><div>조각<b>${o.stars >= MAX_STARS ? 'MAX' : `${o.shards}/${shardsForStar(o.stars)}`}</b></div>
+        </div></div>`, [{ label: '닫기' }]);
   },
 
   showSummon(res) {

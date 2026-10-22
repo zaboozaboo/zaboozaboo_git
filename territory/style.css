@@ -43,6 +43,9 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .btn.danger { background: linear-gradient(180deg, #ff7a8f, #d93a57); border-color: #d93a57; }
 .btn.small { padding: 6px 10px; font-size: 12px; border-radius: 8px; }
 .btn.wide { width: 100%; padding: 14px; font-size: 17px; }
+.holdable { user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; touch-action: manipulation; }
+.holdable:active:not(:disabled) { transform: scale(.96); filter: brightness(1.15); }
+.hold-n { color: #7a1fff; }
 .btn:disabled { opacity: .4; filter: grayscale(.6); cursor: default; }
 .btn.on { background: var(--accent); }
 
@@ -114,6 +117,29 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .hero .acts { display: flex; gap: 4px; margin-top: 6px; flex-wrap: wrap; }
 .hero .trait { color: var(--gold); font-weight: 800; }
 .rbadge { display: inline-block; font-size: 10px; font-weight: 900; padding: 1px 5px; border-radius: 4px; background: var(--r); color: #111; margin-right: 4px; vertical-align: 1px; }
+/* 보유 카드 그리드: 폰에서 3장, 넓으면 4장 */
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 8px; }
+.hcard { position: relative; display: flex; flex-direction: column; border-radius: 12px; background: linear-gradient(180deg, color-mix(in srgb, var(--r) 22%, var(--panel2)), var(--panel2) 55%); border: 2px solid color-mix(in srgb, var(--r) 70%, transparent); overflow: hidden; min-width: 0; }
+.hcard.placed { box-shadow: 0 0 0 2px var(--ok); }
+.hc-top { all: unset; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 6px 6px; text-align: center; min-width: 0; }
+.hc-top:focus-visible { outline: 2px solid var(--gold); outline-offset: -2px; }
+.hc-top .rbadge { align-self: flex-start; margin: 0; }
+.hc-ic { font-size: 34px; line-height: 1.1; margin: 2px 0; }
+.hc-ic.big { font-size: 56px; text-align: center; }
+.hc-nm { font-weight: 800; font-size: 12px; line-height: 1.25; min-height: 2.5em; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; word-break: keep-all; }
+.hcard .stars, .hero-detail .stars { color: var(--gold); font-size: 10px; letter-spacing: -1px; }
+.hcard .stars i, .hero-detail .stars i { font-style: normal; color: #ffffff22; }
+.hc-meta { font-size: 10px; color: var(--muted); white-space: nowrap; }
+.hc-trait { font-size: 10px; font-weight: 800; color: var(--gold); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.hc-shard { position: relative; display: block; flex-shrink: 0; width: 100%; height: 14px; border-radius: 7px; background: #0006; overflow: hidden; margin-top: 3px; }
+.hc-shard i { position: absolute; inset: 0 auto 0 0; background: color-mix(in srgb, var(--accent) 70%, transparent); }
+.hc-shard b { position: relative; display: block; font-size: 9px; line-height: 14px; font-weight: 700; }
+.hc-acts { display: flex; flex-direction: column; gap: 4px; padding: 4px 6px 6px; margin-top: auto; }
+.hc-acts .btn { width: 100%; padding: 5px 4px; font-size: 11px; white-space: nowrap; }
+.hcard .placed-tag { top: 6px; bottom: auto; left: auto; right: 6px; transform: none; z-index: 1; }
+.hero-detail h2 { display: flex; align-items: center; justify-content: center; gap: 6px; }
+.hero-detail p { margin: 6px 0; }
+.hero-detail .trait { color: var(--gold); }
 .placed-tag { position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%); font-size: 9px; background: var(--ok); color: #082; padding: 0 4px; border-radius: 4px; font-weight: 800; white-space: nowrap; }
 
 /* ---------- 리스트 ---------- */
