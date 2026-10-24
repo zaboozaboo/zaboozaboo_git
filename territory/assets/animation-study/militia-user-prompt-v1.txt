@@ -1,0 +1,29 @@
+2x2 sprite sheet, transparent background, four walk-cycle frames of the same
+chibi toy-style dwarf axeman from the reference: blue hood and tunic, brown beard,
+silver shoulder pads, brown chunky boots, short stubby legs.
+Camera: high front three-quarter view (about 35° above), character faces and walks
+toward the lower-right of the screen. Face, chest and both shoulders visible.
+
+Identical in all four frames: head, torso, arms, and axe are pixel-for-pixel the same
+size and position. Axe held in the screen-left hand, blade pointing screen-left,
+haft vertical. Only the legs change.
+
+Short stride, small steps. Legs described by screen position:
+"front leg" = the leg attached to the screen-left hip (closer to camera, drawn larger).
+"back leg" = the leg attached to the screen-right hip (farther, drawn smaller, partly hidden).
+
+Frame 1 (top-left), contact A: front leg steps forward to the lower-right, big boot
+low on screen, heel down. Back leg trails behind to the upper-left, only its toe visible.
+Frame 2 (top-right), passing A: front leg straight under the body, boot flat.
+Back leg bent, its small boot lifted slightly, tucked behind the front shin.
+Frame 3 (bottom-left), contact B: back leg steps forward to the lower-right — its boot
+is SMALL and sits HIGHER on screen than the big boot in frame 1, peeking out from
+behind. Front leg swings back toward the lower-left, big boot heel lifted, sole showing.
+Frame 4 (bottom-right), passing B: back leg straight under the body, mostly hidden.
+Front leg bent with knee raised, big boot lifted off the ground in front.
+
+Frame 1 and frame 3 must have clearly different silhouettes: in frame 1 the biggest boot
+is in front at lower-right; in frame 3 the biggest boot is behind at lower-left.
+
+Each character centered with generous empty margin on all sides. No ground, no shadow,
+no text.

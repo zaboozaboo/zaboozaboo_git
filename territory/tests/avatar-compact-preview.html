@@ -1,0 +1,30 @@
+<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>공용 기본 몸 · 걷기 시안 1</title>
+<style>*{box-sizing:border-box}body{margin:0;background:#20343e;color:#eee5cf;font:14px system-ui}main{max-width:920px;margin:auto;padding:16px}h1{font-size:22px;margin:0 0 8px}p{color:#becfc8;line-height:1.6}nav{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0;align-items:center}button,select{font:inherit;padding:9px 12px;background:#f0d495;color:#26333a;border:0;border-radius:8px}label{display:flex;align-items:center;gap:5px}canvas{display:block;width:100%;background:#acc19b;border-radius:14px;touch-action:none}small{line-height:1.7;color:#c1d1cc}#status{font-variant-numeric:tabular-nums}</style>
+<main><h1>공용 기본 몸 · 걷기 시안 1</h1><p>큰 머리와 짧게 굽힌 팔다리의 비율을 확인하는 시안입니다. 머리·몸통·양팔·양다리의 6파츠이며 손발은 팔다리에 포함됩니다.</p>
+<nav><select id="mode" aria-label="동작"><option value="walk">걷기</option><option value="idle">서 있기</option></select><button id="pause">일시정지</button><button id="step">한 프레임</button><label>재생<select id="rate"><option value="1">보통</option><option value="0.25">느리게 ×0.25</option></select></label><label>이동 속도<input id="speed" type="range" min="0.15" max="0.4" step="0.05" value="0.30"></label><label><input id="bones" type="checkbox">관절 표시</label></nav>
+<canvas id="stage" width="960" height="650"></canvas><p id="status">준비 중</p><small>가까운 다리는 밝은색, 먼 다리는 어두운색입니다. 초록 점은 접지한 발, 노란 점은 공중의 발입니다.<br>오른쪽 아래에는 약 23px·46px·69px 높이로 같은 동작을 표시합니다. 렌더링은 2D Canvas이며 WebGL이나 실시간 3D 엔진을 사용하지 않습니다.</small></main>
+<script src="../js/avatar-compact-rig.js"></script><script>
+const canvas=document.getElementById('stage'),c=canvas.getContext('2d'),R=CompactAvatarRig;let t=0,last=0,paused=false;
+const el=id=>document.getElementById(id);el('pause').onclick=()=>{paused=!paused;el('pause').textContent=paused?'재생':'일시정지';};el('step').onclick=()=>{paused=true;t+=1/30;el('pause').textContent='재생';render();};el('mode').onchange=()=>{t=0;render();};el('speed').oninput=()=>{t=0;render();};
+function avatar(p,ox,oy,s,bones){
+ const project=v=>[ox+(v[0]-p.root-v[1])*.707*s,oy+((v[0]-p.root+v[1])*.405-v[2]*.82)*s];
+ const point=(v,r,color)=>{const a=project(v);c.fillStyle=color;c.beginPath();c.arc(a[0],a[1],r*s,0,Math.PI*2);c.fill();};
+ const line=(a,b,r,color)=>{a=project(a);b=project(b);c.strokeStyle='#344750';c.lineCap='round';c.lineWidth=(r*2+.012)*s;c.beginPath();c.moveTo(...a);c.lineTo(...b);c.stroke();c.strokeStyle=color;c.lineWidth=r*2*s;c.stroke();};
+ const poly=(vs,color)=>{c.beginPath();vs.map(project).forEach((a,i)=>i?c.lineTo(...a):c.moveTo(...a));c.closePath();c.fillStyle=color;c.fill();c.strokeStyle='#58656a';c.lineWidth=Math.max(1,s*.006);c.stroke();};
+ const limb=(vs,r,color)=>{c.lineCap='round';c.lineJoin='round';c.beginPath();vs.map(project).forEach((v,i)=>i?c.lineTo(...v):c.moveTo(...v));c.strokeStyle='#58656a';c.lineWidth=(2*r+.012)*s;c.stroke();c.strokeStyle=color;c.lineWidth=2*r*s;c.stroke();};
+ const leg=(l,i)=>{const color=i?'#e6c6a0':'#9d9685';limb([l.hip,l.knee,l.ankle,R.add(l.ankle,[.13,0,-.025])],.09,color);if(bones){for(const v of [l.hip,l.knee,l.ankle])point(v,.018,'#40556b');point([l.ankle[0],l.ankle[1],0],.024,l.planted?'#387644':'#e3ae38');}};
+ const arm=(a,i)=>{const col=i?'#e6c6a0':'#9d9685';limb([a.shoulder,a.elbow,a.hand],.082,col);if(bones)for(const v of [a.shoulder,a.elbow,a.hand])point(v,.015,'#40556b');};
+ leg(p.legs[0],0);arm(p.arms[0],0);leg(p.legs[1],1);
+ line(p.pelvis,p.chest,.18,'#d4b38f');line(R.add(p.pelvis,[0,-.13,0]),R.add(p.pelvis,[0,.13,0]),.11,'#bba186');
+ point(p.head,.29,'#ebcda7');const eye=R.add(p.head,[.245,.09,.015]);point(eye,.019,'#344750');point(R.add(p.head,[.245,-.09,.015]),.016,'#344750');
+ arm(p.arms[1],1);
+
+}
+function render(){const p=R.pose(t,{mode:el('mode').value,speed:Number(el('speed').value)});c.clearRect(0,0,960,650);c.fillStyle='#acc19b';c.fillRect(0,0,960,650);
+ const s=310,ox=400,oy=430;const project=(x,y)=>[ox+(x-p.root-y)*.707*s,oy+(x-p.root+y)*.405*s];c.strokeStyle='#78917066';c.lineWidth=1;
+ for(let i=Math.floor(p.root)-5;i<Math.floor(p.root)+6;i++){c.beginPath();c.moveTo(...project(i,-4));c.lineTo(...project(i,4));c.stroke();}for(let i=-4;i<5;i++){c.beginPath();c.moveTo(...project(p.root-5,i));c.lineTo(...project(p.root+5,i));c.stroke();}
+ avatar(p,ox,oy,s,el('bones').checked);c.fillStyle='#20343e';c.fillRect(690,450,255,180);const display=960/canvas.getBoundingClientRect().width;avatar(p,730,550,20*display,false);avatar(p,815,550,40*display,false);avatar(p,910,550,60*display,false);c.fillStyle='#e9dfc5';c.font='16px system-ui';c.fillText('23px · 46px · 69px',720,595);
+ el('status').textContent=`${el('mode').selectedOptions[0].textContent} · ${t.toFixed(2)}초 · 접지 ${p.legs.filter(l=>l.planted).length}발`;
+}
+function tick(now){if(!paused)t+=Math.min(last?(now-last)/1000:0,.05)*Number(el('rate').value);last=now;render();requestAnimationFrame(tick);}requestAnimationFrame(tick);
+</script></html>

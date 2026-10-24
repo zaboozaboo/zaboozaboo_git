@@ -1,0 +1,4 @@
+.DS_Store
+# Local work log and visual QA captures; retain on disk, omit from source control.
+/HANDOFF.md
+/territory/research/

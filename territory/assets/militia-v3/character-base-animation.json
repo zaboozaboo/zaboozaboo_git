@@ -1,0 +1,142 @@
+{
+  "version": 3,
+  "direction": "front-right",
+  "description": "Militia derived from approved character-base-v1. Independent empty-hand costume sheets; axe separately attached. Uses approved clip timing.",
+  "sheets": {
+    "toddle": {
+      "file": "militia-walk.png",
+      "columns": 4,
+      "rows": 1
+    },
+    "actions": {
+      "file": "militia-actions-fixed.png",
+      "columns": 6,
+      "rows": 3
+    }
+  },
+  "clips": {
+    "walk": {
+      "sheet": "toddle",
+      "row": 0,
+      "durations": [
+        0.24,
+        0.2,
+        0.24,
+        0.2
+      ],
+      "labels": [
+        "왼쪽 발 앞으로",
+        "발 모으기",
+        "오른쪽 발 앞으로",
+        "발 모으기"
+      ],
+      "sockets": [
+        {
+          "grip": [
+            0.285,
+            0.72
+          ],
+          "angle": -2.45
+        },
+        {
+          "grip": [
+            0.29,
+            0.725
+          ],
+          "angle": -2.42
+        },
+        {
+          "grip": [
+            0.285,
+            0.71
+          ],
+          "angle": -2.48
+        },
+        {
+          "grip": [
+            0.29,
+            0.725
+          ],
+          "angle": -2.42
+        }
+      ],
+      "equipment": "axe"
+    },
+    "club": {
+      "sheet": "actions",
+      "row": 1,
+      "durations": [
+        0.24,
+        0.18,
+        0.16,
+        0.09,
+        0.18,
+        0.25
+      ],
+      "labels": [
+        "준비",
+        "뒤로 들기",
+        "정점",
+        "휘두르기",
+        "마무리",
+        "회복"
+      ],
+      "sockets": [
+        {
+          "grip": [
+            0.31,
+            0.66
+          ],
+          "angle": -2.4
+        },
+        {
+          "grip": [
+            0.29,
+            0.44
+          ],
+          "angle": -2.55
+        },
+        {
+          "grip": [
+            0.32,
+            0.29
+          ],
+          "angle": -1.9
+        },
+        {
+          "grip": [
+            0.83,
+            0.62
+          ],
+          "angle": 0.12
+        },
+        {
+          "grip": [
+            0.74,
+            0.74
+          ],
+          "angle": 0.65
+        },
+        {
+          "grip": [
+            0.36,
+            0.67
+          ],
+          "angle": -2.4
+        }
+      ],
+      "equipment": "axe"
+    }
+  },
+  "equipment": {
+    "axe": {
+      "file": "equipment/axe-dimensional.png",
+      "kind": "melee",
+      "pivot": [
+        0.27,
+        0.38
+      ],
+      "lengthInBodyHeights": 0.78
+    }
+  }
+}

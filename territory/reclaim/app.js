@@ -1,0 +1,54 @@
+'use strict';
+const $=id=>document.getElementById(id),R=Reclaim;
+let state;try{state=R.restore(localStorage.getItem(R.KEY));}catch{state=R.fresh();}
+let selected=R.owns(state,'camp')?'keep':'camp',battle=null,paused=false,last=0,accumulator=0,resultShown=false;
+const atlas={},reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+function save(){try{localStorage.setItem(R.KEY,JSON.stringify(state));}catch{$('save-status').textContent='저장 공간을 사용할 수 없어 이번 플레이는 유지되지 않을 수 있어요.';}}
+function img(group,i){return atlas[group]?.[i]?.url||'';}
+function spriteHTML(group,i){return `<img src="${img(group,i)}" alt="">`;}
+function mapUI(){
+ $('gold').textContent=Math.floor(state.gold);$('home-title').textContent=R.owns(state,'keep')?'햇살 숲 영지':R.owns(state,'camp')?'민병 본거지':'작은 야영지';
+ $('chapter').textContent=R.owns(state,'keep')?'되찾은 왕국, 다음 상대':'우리의 땅을 되찾을 시간';
+ $('objective').textContent=!R.owns(state,'camp')?'먼저 포로 야영지를 공격하세요. 구출한 민병들이 곧바로 함께 싸웁니다.':!R.owns(state,'range')?'요새에 바로 도전하거나, 사격장을 먼저 되찾아 지원군을 확보하세요.':!state.hans?'사격장을 되찾았습니다. 한스를 영입해 민병대를 지휘하게 하세요.':!R.owns(state,'keep')?'배럭을 키우고, 궁수 지원과 한스의 지휘로 요새를 공략하세요.':'같은 군대로 기사 로웬에게 도전하세요. 실제 유저가 아닌 서열전 연습 상대입니다.';
+ const positions={camp:[24,59],range:[77,59],keep:[50,25],rival:[83,23]};
+ $('nodes').innerHTML=Object.entries(R.places).filter(([k])=>k!=='rival'||R.owns(state,'keep')).map(([k,p])=>`<button class="node ${selected===k?'selected':''} ${R.owns(state,k)?'owned':''}" data-place="${k}" style="left:${positions[k][0]}%;top:${positions[k][1]}%" ${R.unlocked(state,k)?'':'disabled'}>${spriteHTML(k==='rival'?'allies':'buildings',k==='camp'?2:k==='range'?3:0)}<b>${R.owns(state,k)?'⚑ ':''}${p.name.split(' · ')[0]}</b><span>${R.owns(state,k)?'확보 · 반복 토벌':R.unlocked(state,k)?'공략 가능':'본거지 확보 후'}</span></button>`).join('');
+ const p=R.places[selected],owned=R.owns(state,selected);
+ const rewards={camp:'민병 막사 영구 해금 · 구출한 민병 즉시 합류',range:'궁수 훈련소 확보 · 이후 전투에 측면 궁수 지원',keep:'햇살 숲 탈환 · NPC 서열전 개방',rival:'서열 20 → 19위 · 연습 상대'};
+ $('target').innerHTML=`<div class="tag">${selected==='rival'?'NPC 서열전 연습':owned?'확보한 영토':'탈환 목표'}</div><h3>${p.name}</h3><p>${p.sub}</p><div class="reward">${owned?'반복 토벌 · 최초 해금 보상은 다시 지급되지 않습니다':rewards[selected]}<br>골드 +${owned?Math.round(p.reward*.3):p.reward}</div><p>${selected==='keep'?'수비대가 강합니다. 민병 막사 Lv.3 확장과 사격장 지원을 준비해 보세요.':selected==='range'?'근접 수비대 뒤에서 적 궁수가 공격합니다. 민병 강화가 도움이 됩니다.':'승패는 실제 전투로 결정됩니다.'}</p><button id="attack">${owned?'다시 도전':'공격 시작'} →</button>`;
+ $('army').innerHTML=['melee','ranged'].map((k,i)=>{const open=R.owns(state,i?'range':'camp'),lv=state.levels[k];return `<section class="card army-card">${spriteHTML('buildings',i?3:2)}<div><h3>${i?'궁수 훈련소':'민병 막사'} ${open?'Lv.'+lv:'· 미확보'}</h3><p>${open?(i?'15초마다 측면 지원':'9초마다 본거지 출격')+' · '+(lv>=3?3:2)+'명<br>공격·체력 +'+Math.round((lv-1)*23)+'% · '+(lv<3?'Lv.3에서 분대 2 → 3명':'확장된 분대 운영 중'):(i?'사격장 탈환으로 확보':'포로 야영지 탈환으로 확보')}</p></div><button data-upgrade="${k}" ${!open||lv>=6||state.gold<R.cost(state,k)?'disabled':''}>${lv>=6?'실험판 최대 Lv.6':'배럭 강화 · '+R.cost(state,k)+' 골드'}</button></section>`;}).join('');
+ $('hero').innerHTML=`<div class="tag">지휘관 · 첫 영입 확정</div><h3>${state.hans?'한스 · 민병대 지휘관':'한스가 합류를 기다립니다'}</h3><p>한 명으로 전장에 등장합니다. 12초마다 주변 민병에게 4초 동안 진군 명령: 이동속도 +65%, 공격력 +25%.</p>${state.hans?`<label><input id="equip" type="checkbox" ${state.equipped?'checked':''}> 민병대 지휘관으로 배치</label>`:`<button id="recruit" ${R.owns(state,'range')?'':'disabled'}>${R.owns(state,'range')?'탈환 보상으로 한스 영입':'사격장 탈환 시 첫 영입 개방'}</button>`}`;
+ $('history').replaceChildren(...state.history.slice().reverse().map(t=>{const p=document.createElement('p');p.textContent=t;return p;}));
+ $('nodes').querySelectorAll('button').forEach(b=>b.onclick=()=>{selected=b.dataset.place;mapUI();});$('attack').onclick=start;
+ document.querySelectorAll('[data-upgrade]').forEach(b=>b.onclick=()=>{if(R.upgrade(state,b.dataset.upgrade)){save();mapUI();}});
+ if($('recruit'))$('recruit').onclick=()=>{if(R.recruit(state)){save();mapUI();}};
+ if($('equip'))$('equip').onchange=e=>{state.equipped=e.target.checked;save();};
+}
+function start(){battle=new R.Battle(state,selected,{noSupport:$('no-support').checked,noHans:$('no-hans').checked});paused=false;accumulator=0;resultShown=false;$('pause').textContent='일시 정지';$('map-view').hidden=true;$('battle-view').hidden=false;$('battle-title').textContent=battle.def.name;$('battle-sub').textContent=selected==='rival'?'NPC 연습전 · 실제 유저 아님':'REALM RECLAMATION';window.scrollTo(0,0);}
+function finishUI(){resultShown=true;save();const r=battle.report;$('result-label').textContent=r.win?'VICTORY':'REGROUP';$('result-title').textContent=r.win?(battle.key==='rival'?'서열 19위 달성':r.first?'우리의 깃발을 세웠습니다':'토벌 완료'):'부대를 정비할 시간';
+ const reward=r.first?{camp:'민병 막사를 확보했습니다. 이제 분대가 정기적으로 출격합니다.',range:'사격장이 아군 거점이 됐습니다. 다음 전투부터 왼쪽 길로 궁수 지원이 도착합니다. 한스 영입도 열렸습니다.',keep:'햇살 숲을 되찾았습니다. 기사 로웬과의 서열전 연습이 열렸습니다.',rival:'NPC 영주를 넘어섰습니다. 국가전과 실제 유저 경쟁은 이번 실험에 포함되지 않습니다.'}[battle.key]:'';
+ $('result-body').innerHTML=`<p>${reward||(!r.win?'전열 강화 또는 사격장 확보 후 재도전해 보세요. 구출·탈환한 영토와 배럭 성장은 유지됩니다.':'반복 토벌 보상을 획득했습니다.')}</p><p class="reward">골드 +${r.gold}</p><p>전투 ${r.time}초 · 적 처치 ${r.kills}<br>측면 지원 ${r.supports}회 · 한스 지휘 ${r.commands}회</p>`;$('result').showModal();}
+$('return').onclick=()=>{$('result').close();battle=null;$('battle-view').hidden=true;$('map-view').hidden=false;mapUI();};$('result').addEventListener('cancel',e=>e.preventDefault());
+$('pause').onclick=()=>{paused=!paused;$('pause').textContent=paused?'전투 재개':'일시 정지';};$('retreat').onclick=()=>{if(battle&&!battle.done&&confirm('후퇴할까요? 처치 보상 일부를 받고 정비할 수 있습니다.'))battle.finish(false);};
+$('reset').onclick=()=>{if(confirm('실험판의 진행만 초기화할까요? 기존 게임 저장은 유지됩니다.')){state=R.fresh();selected='camp';save();mapUI();}};
+// Assets use the original authored atlas and militia animation, without loading original save or game scripts.
+async function loadArt(){for(const [key,file,cols,rows] of [['allies','toy-allies',5,4],['enemies','toy-enemies',4,5],['buildings','toy-buildings',4,3]]){try{const image=await new Promise((resolve,reject)=>{const im=new Image;im.onload=()=>resolve(im);im.onerror=reject;im.src='../assets/'+file+'.png';});atlas[key]=unpackAtlas(image,cols,rows,true);}catch{$('save-status').textContent='일부 그림을 불러오지 못해 기본 도형으로 표시합니다.';}}await MilitiaCombat.load();mapUI();}
+const canvas=$('battle'),ctx=canvas.getContext('2d');
+function imageAt(group,index,x,y,height){const a=atlas[group]?.[index];if(!a)return false;ctx.drawImage(a.image,x-height*a.ratio/2,y-height,height*a.ratio,height);return true;}
+function text(t,x,y,size=11,color='#f4eed6'){ctx.font=`600 ${size}px system-ui`;ctx.fillStyle=color;ctx.textAlign='center';ctx.fillText(t,x,y);}
+function bar(x,y,w,f,color){ctx.fillStyle='#203329';ctx.fillRect(x-w/2,y,w,4);ctx.fillStyle=color;ctx.fillRect(x-w/2,y,w*Math.max(0,f),4);}
+function draw(){const b=battle;if(!b)return;const rect=canvas.getBoundingClientRect(),dpr=Math.min(devicePixelRatio||1,2);if(canvas.width!==Math.round(rect.width*dpr)||canvas.height!==Math.round(rect.height*dpr)){canvas.width=Math.round(rect.width*dpr);canvas.height=Math.round(rect.height*dpr);}ctx.setTransform(1,0,0,1,0,0);ctx.fillStyle='#92a574';ctx.fillRect(0,0,canvas.width,canvas.height);const scale=Math.min(canvas.width/320,canvas.height/600);ctx.setTransform(scale,0,0,scale,(canvas.width-320*scale)/2,0);
+ const g=ctx.createLinearGradient(0,0,0,600);g.addColorStop(0,'#7c9366');g.addColorStop(1,'#b2bd83');ctx.fillStyle=g;ctx.fillRect(0,0,320,600);
+ ctx.strokeStyle='#d6c49a';ctx.lineWidth=57;ctx.beginPath();ctx.moveTo(160,570);ctx.bezierCurveTo(125,410,190,260,160,70);ctx.stroke();ctx.lineWidth=26;ctx.beginPath();ctx.moveTo(0,340);ctx.lineTo(110,335);ctx.lineTo(155,290);ctx.stroke();
+ for(let i=0;i<24;i++){const x=(i*79+21)%320,y=(i*97+30)%550;ctx.fillStyle='#67815c';ctx.beginPath();ctx.ellipse(x,y,3,1.5,0,0,Math.PI*2);ctx.fill();}
+ imageAt('buildings',0,160,95,72);bar(160,18,160,b.enemyHp/b.def.hp,'#d86c5f');text('적 거점 '+Math.max(0,Math.ceil(b.enemyHp)),160,14,10);
+ imageAt('buildings',2,160,590,62);bar(160,590,130,b.homeHp/550,'#79bdd1');
+ if(R.owns(state,'range')){imageAt('buildings',3,22,355,48);text('사격장 →',37,370,9,'#344b35');}
+ if(b.key==='camp'&&!b.rescued){for(let i=0;i<3;i++)imageAt('allies',6,62+i*20,308,28);ctx.strokeStyle='#6b5841';ctx.lineWidth=3;ctx.strokeRect(45,265,80,48);for(let x=50;x<125;x+=12){ctx.beginPath();ctx.moveTo(x,265);ctx.lineTo(x,313);ctx.stroke();}text('포로 · 경비병 2명 처치',86,255,9,'#352f27');}
+ for(const e of b.effects){if(e.type==='arrow'){ctx.strokeStyle='#f8e4b2';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(e.x,e.y-15);ctx.lineTo(e.tx,e.ty-15);ctx.stroke();}else if(e.type==='command'||e.type==='arrival'||e.type==='rescue'){ctx.strokeStyle=e.type==='command'?'#ffe5a0':'#bbf3df';ctx.globalAlpha=Math.min(1,e.life);ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(e.x,e.y,e.type==='command'?100:35,22,0,0,Math.PI*2);ctx.stroke();ctx.globalAlpha=1;}else{ctx.fillStyle='#fff4ce';ctx.beginPath();ctx.arc(e.tx,e.ty-15,5,0,Math.PI*2);ctx.fill();}}
+ for(const u of [...b.units].sort((a,c)=>a.y-c.y)){ctx.fillStyle=u.team?'#6b272750':'#244c4c50';ctx.beginPath();ctx.ellipse(u.x,u.y,11,4,0,0,Math.PI*2);ctx.fill();let height=u.kind==='lord'?42:u.kind==='hans'?38:29;let painted=false;if(u.kind==='militia'){ctx.save();ctx.translate(u.x,u.y);painted=MilitiaCombat.paint(ctx,u,b.t,height,reduced);ctx.restore();}if(!painted)painted=imageAt(u.team?'enemies':'allies',u.team?(u.kind==='bow'?1:0):u.kind==='lord'?0:u.kind==='hans'?8:7,u.x,u.y+(reduced?0:u.moving?Math.sin(b.t*9+u.id)*1.5:0),height);if(!painted){ctx.fillStyle=u.team?'#b64949':'#4e7caa';ctx.fillRect(u.x-8,u.y-height,16,height);}
+ if(u.flash>0){ctx.fillStyle='#fff8';ctx.beginPath();ctx.arc(u.x,u.y-14,8,0,Math.PI*2);ctx.fill();}bar(u.x,u.y-height-6,23,u.hp/u.maxHp,u.team?'#d35454':'#69aada');if(u.kind==='hans'){ctx.fillStyle='#eac871';ctx.fillRect(u.x+12,u.y-45,2,40);ctx.beginPath();ctx.moveTo(u.x+14,u.y-45);ctx.lineTo(u.x+31,u.y-40);ctx.lineTo(u.x+14,u.y-32);ctx.fill();text('한스',u.x,u.y-height-12,9,'#4a381c');}if(u.buff>0)text('↑',u.x,u.y-height-12,12,'#fff0a1');}
+ const event=b.events[b.events.length-1];$('event').textContent=b.t-event.t<4?event.text:paused?'일시 정지':'';
+ $('production').innerHTML=`<div>민병 ${b.count('militia')}명 · ${R.owns(state,'camp')?'분대 출격':'구출 대기'}<progress max="9" value="${9-Math.max(0,b.spawnAt-b.t)}"></progress></div><div>궁수 ${b.count('archer')}명 · ${R.owns(state,'range')?(b.options.noSupport?'지원 제외':'측면 지원'):'사격장 미확보'}<progress max="15" value="${15-Math.max(0,b.supportAt-b.t)}"></progress></div>`;
+}
+function frame(now){const dt=Math.min(.05,(now-(last||now))/1000);last=now;if(battle){if(!paused&&!document.hidden){accumulator+=dt;while(accumulator>=.05){battle.step(.05);accumulator-=.05;}}draw();if(battle.done&&!resultShown)finishUI();}requestAnimationFrame(frame);}
+mapUI();loadArt();requestAnimationFrame(frame);

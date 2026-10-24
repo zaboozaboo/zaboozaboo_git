@@ -1,0 +1,17 @@
+/* Shared toy-like art direction: broad surfaces, rounded controls, quiet chrome. */
+#game{--casual-ink:#23434b;--casual-slate:#365661;--casual-cream:#fff3d6;}
+#battle-top,#topbar,.sheet-head{background:#365661;border-bottom-color:#28434e;box-shadow:none;}
+#deployment-panel{background:#557a78;border-top:3px solid #9cb79b;}
+#tabs{background:#2b4653;border-top:3px solid #dfc48b;}
+#tabs button{color:#ceded9;}
+#tabs button.active,.lobby-mode #tabs button.active{background:#446772;color:#fff0c1;box-shadow:inset 0 -3px #f3cc77;}
+#sheet{background:#e8eddb;}
+.sec{border:1px solid #b8cbb5;background:#f8f8e9;box-shadow:0 3px #c8d6be;border-radius:14px;}
+.btn.primary,.btn.gold,#lobby-battle{background:#f6cd74;border-color:#a47d43;color:#4e3c25;box-shadow:inset 0 2px #ffe5a3,0 3px #a47d43;}
+#battle-objective,.lobby-heading{background:#3f625a;border-color:#8cac87;}
+#panel .unit-tier,#panel .reserve-unit.unit-tier.placed{background:var(--tier-light);box-shadow:0 3px var(--tier-dark);border-width:2px;border-radius:12px;}
+.tier-metalwork,.unit-tier[data-rarity="H"]::after{display:none;}
+.unit-rarity{border-radius:5px;}
+#btn-skill{background:#547e9b;box-shadow:0 3px #315365;border-radius:12px;}
+#btn-auto{background:#5b896a;border-radius:12px;}
+#btn-boss{background:#b86e51;border-radius:12px;box-shadow:0 3px #754b3b;}

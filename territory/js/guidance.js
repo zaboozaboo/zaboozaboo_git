@@ -4,13 +4,14 @@ function deploymentInfo(i) {
   const id=S.slots[i]; if(!id) return null;
   const h=HERO_BY_ID[id],alive=slotAlive(0,i,id),cap=heroCap(id);
   ensureDice();
-  const cycle=diceCooldown()/S.settings.speed,progress=S.dice.progress;
-  return {id,h,alive,cap,cycle,progress,full:alive>=cap,seconds:(1-progress)*cycle,count:Math.min(diceHand(S.dice.history).mult,Math.max(0,cap-alive))};
+  const cycle=diceCooldown()/S.settings.speed,cost=productionCost(id),charge=S.dice.charge[id]||0,progress=charge/cost;
+  return {id,h,alive,cap,cycle,progress,full:alive>=cap,seconds:(1-progress)*cycle,cost,charge,count:Math.floor(charge/cost)};
 }
 function nextBattleAction() {
   if(B.mode!=='stage') return {title:'적 성문을 무너뜨리세요',detail:'부대를 지키고 스킬로 전선을 밀어내세요.',label:'부대 확인',tab:'territory'};
+  if(!hasVanguard())return {title:'5단계 성 · 선발대 해금',detail:'햇살 숲을 얻으면 매 원정에 선발병 2명이 먼저 출격합니다.',label:'영토 보상 보기',tab:'kingdom'};
   const land=typeof availableLand==='function'?availableLand():null;
-  if(land)return {title:land.name+' 확보!',detail:`${fmt(land.cost)} 골드로 개척하고 시설을 세우세요.`,label:'영토 개척',tab:'kingdom'};
+  if(land)return {title:land.name+' 확보!',detail:`${fmt(land.cost)} 골드로 확보한 영토에 시설을 세우세요.`,label:'영토 개척',tab:'kingdom'};
   const stage=B.stage||S.stage,boss=Math.ceil(stage/5)*5;
   const growth=kingdomGrowth(),canGrow=!growth.complete&&!growth.locked&&S.gold>=growth.cost;
   if(S.farming) return {title:`${Math.min(S.maxStage,S.stage+1)}단계 재도전 준비`,detail:'반복 사냥으로 골드 획득 → 부대 강화 → 다음 단계 돌파',label:canGrow?'왕국 성장':'돌파 도전',tab:canGrow?'lord':null,boss:!canGrow};
@@ -21,24 +22,26 @@ function refreshBattleGuide() {
   const strip=document.getElementById('deployment');if(!strip)return;
   ensureFormation();
   refreshDiceHUD();
-  document.getElementById('formation-open').onclick=()=>UI.openSheet('territory');
-  const key=JSON.stringify([S.slots,slotCount(),S.formation,S.dice.faces]);
+  const key=JSON.stringify([S.slots,slotCount(),S.formation]);
   if(strip.dataset.roster!==key){
     strip.dataset.roster=key;
     strip.innerHTML=Array.from({length:5},(_,i)=>{
       const locked=i>=slotCount(),id=locked?null:S.slots[i],tier=PROMOTIONS.findIndex(p=>p.slots>i);
-      const faces=S.dice.faces.map((v,n)=>v===i?n+1:null).filter(Boolean);
-      return `<button class="deploy-card ${locked?'locked':''}" data-slot="${i}" aria-label="${locked?tier+'차 전직 해금':id?HERO_BY_ID[id].unit.name+' 편성':'빈 슬롯 편성'}"><span class="deploy-orb"><span class="orb-inner">${locked?'<span class="slot-lock">잠금</span>':id?heroArt(id):'<span class="empty-slot">＋</span>'}</span><span class="spawn-burst"></span></span><b>${locked?tier+'차 전직':id?HERO_BY_ID[id].unit.name:'빈 슬롯'}</b><small class="deploy-rank">${FORMATION_NAMES[locked?unlockRank(i):S.formation[i]]}</small><span class="assigned-dice">${locked?'—':faces.map(n=>dieFace(n)).join('')||'미지정'}</span><small class="deploy-count"></small></button>`;
+      return `<button class="deploy-card ${locked?'locked':''}" data-slot="${i}" aria-label="${locked?tier+'차 전직 해금':id?HERO_BY_ID[id].unit.name+' 편성':'빈 슬롯 편성'}"><span class="deploy-orb"><span class="orb-inner">${locked?'<span class="slot-lock">잠금</span>':id?heroArt(id):'<span class="empty-slot">＋</span>'}</span><span class="spawn-burst"></span></span><span class="assigned-dice">${id?'0 / '+productionCost(id):locked?tier+'차 전직':'편성'}</span></button>`;
     }).join('');
     strip.querySelectorAll('button').forEach(b=>b.onclick=()=>{const i=Number(b.dataset.slot);UI.openSheet(i>=slotCount()?'promo':'territory');if(i<slotCount()){UI.selSlot=i;UI.renderTab();}});
   }
   strip.querySelectorAll('button').forEach((el,i)=>{
-    const locked=i>=slotCount(),d=locked?null:deploymentInfo(i),event=B.diceCue,selected=!!d&&event&&event.until>Date.now()&&event.slot===i;
-    el.style.setProperty('--progress',((!locked&&d)?S.dice.progress*100:0)+'%');
-    el.classList.toggle('dice-selected',!!selected);
-    el.querySelector('.deploy-count').textContent=locked?'':d?`${d.alive}/${d.cap}명`:'';
-    el.querySelector('.spawn-burst').textContent=selected?(event.count?'+'+event.count:'정원') : '';
-    el.querySelectorAll('.assigned-dice .die-face').forEach(face=>face.classList.toggle('picked',!!selected&&Number(face.dataset.face)===event.face));
+    const locked=i>=slotCount(),d=locked?null:deploymentInfo(i),event=B.diceCue,r=event?.results?.find(r=>r.slot===i&&r.id===d?.id),active=!!r&&event.until>Date.now();
+    const elapsed=active?Date.now()-event.at:9999;
+    const shown=typeof firstBattlePhase!=='undefined'&&firstBattlePhase==='full'&&i===0?d.cost:d?(elapsed<380&&r?r.before:elapsed<700&&r?Math.min(r.cost,r.before+event.face):d.charge):0;
+    el.style.setProperty('--progress',(d?shown/d.cost*100:0)+'%');
+    el.style.setProperty('--summon-color',d?summonColor(d.id):'#aaa');
+    el.classList.toggle('dice-selected',!!active&&elapsed>=380);
+    el.classList.toggle('charge-produced',!!active&&r.count>0&&elapsed>=700);
+    el.querySelector('.assigned-dice').textContent=d?`${shown} / ${d.cost}`:locked?PROMOTIONS.findIndex(p=>p.slots>i)+'차 전직':'편성';
+    el.querySelector('.spawn-burst').textContent=active?(elapsed<700?'+'+event.face:r.count?r.count+'명 출격':'+'+event.face+' 충전'):'';
+
   });
   animateProductionCue();
   const action=nextBattleAction();
@@ -54,6 +57,4 @@ function refreshBattleGuide() {
       if(upgrade){upgrade.closest('.kingdom-growth').classList.add('guided-upgrade');upgrade.focus({preventScroll:true});}
     }
   };
-  const rearExposed=B.units.some(u=>u.team===0&&u.hp>0&&unitRank(u)>0)&&!B.units.some(u=>u.team===0&&u.hp>0&&unitRank(u)===0);
-  document.getElementById('army-summary').textContent=rearExposed?'전열 부재 · 후속 부대 노출':`편성 부대 · ${armyCount()}/${armyCap()}명`;
 }

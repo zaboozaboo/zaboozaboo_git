@@ -11,7 +11,8 @@ function startMain() {
   initRender($('#cv'));
   UI.initMain();
   B.mode = 'stage';
-  startStage(S.stage);
+  if(preparingFirstExpedition()){resetField(false);B.stage=1;B.pCastle={hp:castleMaxHp(),max:castleMaxHp()};B.eCastle=null;B.queue=[];}
+  else {startStage(S.stage);beginFirstBattleGuide();if(territoryGuidePaused())MobileShell.show(S.territoryTutorial==='map'?'lobby':'battle');}
   lastFrame = performance.now();
   requestAnimationFrame(frame);
 }
@@ -20,9 +21,9 @@ function frame(now) {
   if (document.hidden) { lastFrame = now; requestAnimationFrame(frame); return; }
   const elapsed = Math.max(0, (now - lastFrame) / 1000);
   const dt = Math.min(0.05, elapsed);
-  accrueLordMerit(elapsed);
+  if(S.firstExpedition!==false&&!(typeof firstBattlePaused==='function'&&firstBattlePaused()))accrueLordMerit(elapsed);
   lastFrame = now;
-  for (let i = 0; i < S.settings.speed; i++) updateBattle(dt);
+  for (let i = 0; S.firstExpedition!==false && !(typeof firstBattlePaused==='function'&&firstBattlePaused()) && i < S.settings.speed; i++) updateBattle(dt);
   if(MobileShell.mode==='battle') render();
   uiTimer += dt; saveTimer += dt;
   if (uiTimer > 0.25) { uiTimer = 0; UI.refresh(); }

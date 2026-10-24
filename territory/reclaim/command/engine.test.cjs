@@ -1,0 +1,12 @@
+const assert=require('node:assert/strict'),Battle=require('./engine');
+function tick(b,seconds){for(let i=0;i<seconds*60;i++)b.tick(1/60);}
+function play(size){const b=new Battle(size),ids=b.units.map(u=>u.id);while(!b.done&&b.time<180){const h=b.hero,t=b.enemies.reduce((a,v)=>!a||Math.hypot(v.x-h.x,v.y-h.y)<Math.hypot(a.x-h.x,a.y-h.y)?v:a,null);if(!t)break;const dx=t.x-h.x,dy=t.y-h.y,d=Math.hypot(dx,dy);b.move(d>65?dx/d:0,d>65?dy/d:0);if(d<220)b.charge();b.tick(1/60);assert(b.units.every(u=>Number.isFinite(u.x)&&Number.isFinite(u.y)));}assert.deepEqual(b.units.map(u=>u.id),ids);return b;}
+const solo=play(0),half=play(15),full=play(30);assert.equal(solo.result,'defeat');assert.equal(solo.stats.armyDamage,0);assert.equal(full.result,'victory');assert(full.stats.armyDamage>solo.stats.heroDamage*20);assert(full.stats.armyDamage>full.stats.heroDamage*10);assert(half.enemies.length>full.enemies.length);assert.equal(full.units.filter(u=>!u.team&&u.kind==='bow').length,10);
+const travel=new Battle();const x=travel.hero.x;travel.move(1,0);tick(travel,1);assert(travel.hero.x>x+90);travel.move(0,0);const stopped=travel.hero.x;tick(travel,.2);assert(Math.abs(travel.hero.x-stopped)<4);assert(travel.allies.some(u=>u.x>u.homeX+20));
+const remote=new Battle();for(const u of remote.allies){u.y=100;u.x=50;}assert(remote.charge());assert.equal(remote.participants,0);assert(remote.allies.every(u=>!u.chargeUntil));assert(!remote.charge());
+const dead=new Battle();dead.hero.hp=0;assert(!dead.charge());
+// Same telegraphed strike: remaining inside hurts; moving out before impact avoids it.
+function smash(escape){const b=new Battle(0);for(const u of b.enemies)if(u.kind!=='boss')u.hp=0;b.hero.x=300;b.hero.y=250;b.boss.x=300;b.boss.y=180;b.boss.windup={x:300,y:250,until:.5};b.groups[2].active=true;if(escape){b.hero.x=480;b.hero.y=400;}tick(b,.6);return b.hero.hp;}
+assert(smash(true)>smash(false));
+const shield=new Battle(0),target=shield.units.find(u=>u.kind==='shield');shield.hero.y=target.y+20;shield.damage(shield.hero,target,20);const frontal=target.maxHp-target.hp;target.hp=target.maxHp;shield.hero.y=target.y-20;shield.damage(shield.hero,target,20);assert(target.maxHp-target.hp>frontal);
+console.log('PASS: drag movement model, stop, followers, charge cooldown/proximity, real army damage, directional shield, dodgeable boss warning, no spawning.');for(const b of [solo,half,full])console.log(b.size,b.result,b.time.toFixed(1)+'s',b.enemies.length+' enemies remain',b.stats);

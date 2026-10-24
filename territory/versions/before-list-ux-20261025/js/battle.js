@@ -1,0 +1,623 @@
+// 전투 엔진 — 영토에서 쏟아져 나오는 부대 vs 적
+'use strict';
+
+// 전장 좌표계: x = 전선 방향(0 = 아군 성, W = 적 진영), y = 좌우 폭(0 ~ LANE_W).
+// 화면에는 세로로 그려진다(아군 성이 아래, 적이 위). W는 화면 비율에 맞춰 setWorld()에서 정한다.
+const LANE_W = 320;
+const GROUND_TOP = 16, GROUND_BOT = LANE_W - 16;
+const P_CASTLE_X = 70;        // 아군 성 전면
+let W = 600;
+let E_CASTLE_X, LAIR_X, ALLY_MAX_X; // 적 성 전면 / 몬스터 소굴 입구 / 아군 전진 한계
+const LAIR_MOUTH = [LANE_W * 0.22, LANE_W * 0.78]; // 소굴 입구의 좌우 범위
+const AGGRO = 240;
+
+function setWorld(len) {
+  W = Math.round(Math.max(420, Math.min(900, len)));
+  E_CASTLE_X = W - 70;
+  LAIR_X = W - 64;
+  ALLY_MAX_X = W - 80;
+}
+setWorld(900);
+
+// 영토 슬롯(건물) 위치: 성 바로 앞에 좌우로 늘어선다. 열리는 순서대로 가운데 → 바깥.
+const BUILDING_POS = [0.5, 0.27, 0.73, 0.07, 0.93].map((f, i) => ({ x: i % 2 ? 112 : 102, y: LANE_W * f }));
+
+let uidSeq = 1;
+
+const B = {
+  mode: 'stage', units: [], projs: [], fx: [], texts: [],
+  pCastle: null, eCastle: null,
+  queue: [], queueT: 0, queueTotal: 0,
+  enemySpawners: [], spawnT: [], deployDelay: [],
+  time: 0, timeLimit: 0,
+  buffs: { rally: 0, sanctuary: 0 },
+  lordRespawn: 0, eLordRespawn: 0,
+  skillT: 0,
+  ended: false, endDelay: 0, onEnd: null, special: null,
+  shake: 0, stageBanner: 0,
+  deco: [],
+};
+
+function makeDeco() {
+  B.deco = [];
+  for (let i = 0; i < 90; i++) B.deco.push({ x: Math.random() * 1000, y: rand(0, LANE_W), r: rand(1, 3), t: Math.random() });
+}
+
+function region(stage) { return REGIONS[Math.floor((stage - 1) / 10) % REGIONS.length]; }
+const isBossStage = (stage) => stage % 5 === 0;
+
+// 전직할수록 영주 체구가 커진다
+const lordSize = (promo) => 10 + promo * 1.6;
+
+// ---------- 유닛 생성 ----------
+function makeUnit(team, def, mult, x, y, extra = {}) {
+  return {
+    id: uidSeq++, team, def,
+    name: def.name, kind: def.kind,
+    maxHp: def.hp * mult.hp, hp: def.hp * mult.hp,
+    atk: def.atk * mult.atk, heal: (def.heal || 0) * mult.atk,
+    range: def.range, speed: def.speed * rand(0.92, 1.08), atkCd: def.atkCd,
+    cdT: rand(0, def.atkCd), x, y, size: def.size || 7,
+    color: def.color, proj: def.proj, splash: def.splash || 0,
+    flying: !!def.flying, boss: !!def.boss,
+    target: null, retarget: 0, anim: 0, flash: 0, walk: Math.random() * 10,
+    ...extra,
+  };
+}
+
+function heroMult(id, scale) {
+  if (scale) return { atk: scale, hp: scale };
+  const am = armyMult();
+  const lm = heroLevelMult(S.heroes[id]);
+  return { atk: am.atk * lm, hp: am.hp * lm };
+}
+
+function spawnHero(team, heroId, pos, scale, tint, slot, n) {
+  const hero = HERO_BY_ID[heroId];
+  const mult = heroMult(heroId, scale);
+  if(team===0 && Number.isInteger(slot) && slot<slotCount()) { ensureFormation();pos=formationPosition(slot); }
+  n = n || hero.count;
+  for (let i = 0; i < n; i++) {
+    const x = team === 0 ? pos.x + 10 : W - pos.x - 10;
+    // 3마리/5마리가 대열을 지어 건물에서 쏟아져 나온다
+    const row = i - (n - 1) / 2;
+    const u = makeUnit(team, hero.unit, mult, x + rand(-4, 4) - Math.abs(row) * 5 * (team === 0 ? 1 : -1), pos.y + row * 17 + rand(-2, 2), { heroId, tint, slot, formationRow:team===0?S.formation?.[slot]:undefined });
+    B.units.push(u);
+  }
+}
+
+function spawnLord(team, opts) {
+  let st, cls, gender, promo;
+  if (team === 0) { st = lordStats(); cls = S.lord.cls; gender = S.lord.gender; promo = S.lord.promo; }
+  else { cls = opts.cls; gender = opts.gender; promo = opts.promo; const c = CLASSES[cls].lord; st = { ...c, hp: c.hp * opts.scale * 1.5, atk: c.atk * opts.scale, heal: (c.heal || 0) * opts.scale }; }
+  const def = { ...st, name: team === 0 ? S.lord.name : opts.name, size: lordSize(promo), color: '#fff' };
+  const x = team === 0 ? P_CASTLE_X + 20 : E_CASTLE_X - 20;
+  const u = makeUnit(team, def, { atk: 1, hp: 1 }, x, (GROUND_TOP + GROUND_BOT) / 2, { isLord: true, cls, gender, promo });
+  u.maxHp = st.hp; u.hp = st.hp; u.atk = st.atk; u.heal = st.heal;
+  B.units.push(u);
+  return u;
+}
+
+function spawnEnemy(key, stage, opts = {}) {
+  const def = ENEMIES[key];
+  const m = stageMult(stage);
+  const bossMul = def.boss ? (1 + stage / 40) : 1;
+  // 화면 오른쪽 몬스터 소굴 입구에서 기어 나온다
+  const u = makeUnit(1, def, { atk: m * bossMul, hp: m * bossMul }, W - (def.boss ? 200 : 145), rand(LAIR_MOUTH[0], LAIR_MOUTH[1]), { monster: true, key, duty:opts.duty||'assault' });
+  B.lairPulse = def.boss ? 1 : 0.4;
+  u.gold = goldPerKill(stage) * (def.boss ? 15 : 1);
+  B.units.push(u);
+  return u;
+}
+
+// ---------- 전투 시작 ----------
+const armyCount = () => B.units.reduce((a, u) => a + (u.team === 0 && !u.isLord && !u.isVanguard ? 1 : 0), 0);
+// 특정 건물(슬롯)에서 나와 살아 있는 부하 수
+const slotAlive = (team, slot, heroId) => B.units.reduce((a, u) => a + (u.team === team && u.slot === slot && u.heroId === heroId ? 1 : 0), 0);
+
+// 건물 하나를 진행시키고, 정원에 여유가 있으면 분대를 내보낸다
+function tickSpawner(team, slot, heroId, pos, t, rate, cap, scale, tint) {
+  const hero = HERO_BY_ID[heroId];
+  t = Math.min(1, t + rate / hero.spawnCd);
+  if (t < 1) return t;
+  const room = cap - slotAlive(team, slot, heroId);
+  if (room <= 0) return 1; // 정원이 찼으면 대기
+  spawnHero(team, heroId, pos, scale, tint, slot, Math.min(hero.count, room));
+  B.fx.push({ type: 'ring', x: team === 0 ? pos.x : W - pos.x, y: pos.y, r: 4, max: 22, t: 0, life: 0.35, color: RARITY[hero.rarity].color });
+  return 0;
+}
+
+function resetField(keepAllies) {
+  B.units = keepAllies ? B.units.filter(u => u.team === 0) : [];
+  B.projs = []; B.fx = []; B.texts = []; B.skillCue = null; B.openingDice=0;
+  B.ended = false; B.endDelay = 0; B.time = 0;
+  if(typeof resetBattleCamera==='function')resetBattleCamera();
+  ensureFormation();
+  B.spawnT = [0, 0, 0, 0, 0];
+  let order=0;B.deployDelay=S.slots.map((id,i)=>id&&i<slotCount()?order++*.8:0);
+  if (!keepAllies) { B.lordRespawn = 0.5; }
+}
+
+// Each expedition starts fresh; only permanent progression and the roster survive.
+function startStage(stage) {
+  B.mode='stage'; B.failed=false; B.special=null;
+  resetField(false);
+  beginStageDice();
+  B.diceCue=null; B.skillT=0; B.buffs={rally:0,sanctuary:0};
+  B.stage=stage; B.fortress=typeof castleLand==='function'&&!!castleLand(stage);
+  B.pCastle={hp:castleMaxHp(),max:castleMaxHp()};
+  const hp=stageMult(stage)*(B.fortress?300:90);
+  B.eCastle={hp,max:hp};
+  const reg=region(stage),n=Math.min(6+Math.floor(stage*.35),28);
+  B.queue=[];B.queueTotal=0;
+  // Visible defenders hold their ground while the attacking army musters.
+  const defenders=Math.min(3,Math.max(2,Math.floor(n/3)));
+  for(let i=0;i<defenders;i++){
+    const u=spawnEnemy(pick(reg.enemies),stage,{duty:'guard'});
+    u.x=W-175-(i%2)*24;u.y=LANE_W*(i+1)/(defenders+1);
+  }
+  if(isBossStage(stage)) {const boss=spawnEnemy(reg.boss,stage,{duty:'guard'});boss.x=W-125;boss.y=LANE_W/2;}
+  spawnEnemy(pick(reg.enemies),stage);
+  B.queueT=3.5; B.timeLimit=isBossStage(stage)?90:0;
+  B.stageBanner=2.2; B.lordRespawn=.3;
+  spawnVanguard();
+  if(typeof territoryGuideStage==='function')territoryGuideStage(stage);
+}
+
+// Territory support has no roster slot, dice face or recurring respawn.
+function spawnVanguard(){
+ if(!hasVanguard())return;
+ const am=armyMult(),def=HERO_BY_ID.militia.unit;
+ for(let i=0;i<2;i++){
+  const u=makeUnit(0,def,{atk:am.atk*.5,hp:am.hp*.7},120,LANE_W/2+(i?22:-22),{isVanguard:true,name:'햇살 숲 선발병'});
+  B.units.push(u);B.fx.push({type:'ring',x:u.x,y:u.y,r:4,max:20,t:0,life:.7,color:'#87e1c0'});
+ }
+}
+function marchMultiplier(u){
+ if(B.mode!=='stage'||u.team!==0)return 1;
+ // Travel only: acceleration ends before the unit reaches any engagement.
+ if(B.units.some(o=>o.team!==u.team&&o.hp>0&&Math.hypot(o.x-u.x,o.y-u.y)<Math.max(180,u.range+o.size+60)))return 1;
+ if(B.eCastle&&B.eCastle.hp>0&&E_CASTLE_X-u.x<Math.max(180,u.range+50))return 1;
+ return 2.2;
+}
+
+// 국가전 / 서열전
+function startSpecial(spec, onEnd) {
+  B.mode = spec.mode;
+  B.special = spec;
+  B.onEnd = onEnd;
+  B.failed = false;
+  // 별도 전투 종료 후 현재 스테이지를 새 원정으로 재시작한다.
+  B.stash = { units: B.units.filter(u => u.team === 0), castle: B.pCastle, lordRespawn: B.lordRespawn };
+  resetField(false);
+  B.pCastle = { hp: castleMaxHp(), max: castleMaxHp() };
+  const eMax = 800 * spec.scale * 1.2;
+  B.eCastle = { hp: eMax, max: eMax };
+  // 양측 모두 개전과 동시에 첫 분대가 출격한다
+  B.enemySpawners = spec.deck.map((id, i) => ({ id, t: 1, pos: BUILDING_POS[i] }));
+  B.spawnT = B.spawnT.map(() => 1);
+  B.queue = []; B.queueTotal = 0;
+  B.timeLimit = 75;
+  B.stageBanner = 2.2;
+  B.eLordRespawn = 0.5;
+}
+
+// ---------- 스킬 ----------
+function skillReady() { return B.skillT <= 0 && B.units.some(u => u.isLord && u.team === 0); }
+
+function castSkill() {
+  if (!skillReady()) return false;
+  const cls = S.lord.cls;
+  const lord = B.units.find(u => u.isLord && u.team === 0);
+  const power = promoInfo().mult;
+  B.skillT = CLASSES[cls].skill.cd;
+  if(typeof GameAudio!=='undefined'&&typeof MobileShell!=='undefined'&&MobileShell.mode==='battle')GameAudio.play('skill');
+  B.skillCue = { name: CLASSES[cls].skill.name, t: 1.4 };
+  if (cls === 'knight') {
+    B.buffs.rally = 8;
+    addText(lord.x, lord.y, '돌격하라!', '#ffd166', 18, 44);
+    B.fx.push({ type: 'ring', x: lord.x, y: lord.y, r: 10, max: 260, t: 0, life: 0.6, color: '#ffd166' });
+  } else if (cls === 'mage') {
+    const foes = B.units.filter(u => u.team === 1);
+    for (let i = 0; i < 3; i++) {
+      let tx, ty;
+      if (foes.length) {
+        const f = foes.find(u => u.boss) && i === 0 ? foes.find(u => u.boss) : pick(foes);
+        tx = f.x; ty = f.y;
+      } else { tx = rand(W * 0.5, W * 0.85); ty = rand(GROUND_TOP + 30, GROUND_BOT - 30); }
+      B.fx.push({ type: 'meteor', x: tx, y: ty, t: -i * 0.25, life: 0.7, dmg: lord.atk * 14 * power, done: false });
+    }
+  } else if (cls === 'priest') {
+    for (const u of B.units) if (u.team === 0) { u.hp = Math.min(u.maxHp, u.hp + u.maxHp * 0.6); B.fx.push({ type: 'spark', x: u.x, y: u.y, up: 12, t: 0, life: 0.8 }); }
+    B.pCastle.hp = Math.min(B.pCastle.max, B.pCastle.hp + B.pCastle.max * 0.25);
+    B.buffs.sanctuary = 5;
+    addText(lord.x, lord.y, '성역!', '#fff3b0', 18, 44);
+    B.fx.push({ type: 'ring', x: lord.x, y: lord.y, r: 10, max: 300, t: 0, life: 0.8, color: '#fff3b0' });
+  }
+  return true;
+}
+
+// ---------- 유틸 ----------
+// up: 화면에서 위로 띄울 높이
+function addText(x, y, txt, color = '#fff', size = 12, up = 0) {
+  if (B.texts.length > 50) B.texts.shift();
+  B.texts.push({ x, y, txt, color, size, up, t: 0 });
+}
+
+function dealDamage(target, dmg, src) {
+  if (target.hp <= 0) return;
+  if (target.team === 0 && B.buffs.sanctuary > 0) dmg *= 0.5;
+  target.hp -= dmg;
+  target.flash = 0.12;
+  if (B.fx.length < 180) B.fx.push({ type:'impact', x:target.x, y:target.y, up:14, t:0, life:.24, color:target.team===0?'#ef9e81':'#f4dca3' });
+  if (target.boss || target.isLord || (src && src.isLord)) addText(target.x, target.y + rand(-8, 8), fmt(dmg), target.team === 0 ? '#ff8080' : '#ffe08a', target.boss ? 14 : 11, target.size * 2.4 + 6);
+}
+
+function damageCastle(team, dmg) {
+  const c = team === 0 ? B.pCastle : B.eCastle;
+  if (!c) return;
+  if (team === 0 && B.buffs.sanctuary > 0) dmg *= 0.5;
+  c.hp -= dmg;
+  if (team === 0) B.shake = Math.min(B.shake + 0.08, 0.3);
+}
+
+function teamAtkMult(u) {
+  let m = 1;
+  if (u.team === 0 && B.buffs.rally > 0) m *= 1.6;
+  return m;
+}
+
+function nearestFoe(u) {
+  let best = null, bd = Infinity;
+  for (const o of B.units) {
+    if (o.team === u.team || o.hp <= 0) continue;
+    const dx = o.x - u.x, dy = o.y - u.y;
+    const d = dx * dx + dy * dy;
+    if (d < bd) { bd = d; best = o; }
+  }
+  return best && bd < AGGRO * AGGRO ? best : null;
+}
+
+function hurtAlly(u) {
+  let best = null, br = 0.92;
+  for (const o of B.units) {
+    if (o.team !== u.team || o.hp <= 0) continue;
+    const r = o.hp / o.maxHp;
+    if (r < br && Math.hypot(o.x - u.x, o.y - u.y) <= u.range) { br = r; best = o; }
+  }
+  return best;
+}
+
+function fire(u, target, isHeal) {
+  const tx = target ? target.x : (u.team === 0 ? E_CASTLE_X + 20 : P_CASTLE_X - 20);
+  const ty = target ? target.y : u.y;
+  B.projs.push({
+    x: u.x + (u.team === 0 ? 6 : -6), y: u.y, tx, ty, target,
+    team: u.team, type: isHeal ? 'holy' : (u.proj || 'arrow'),
+    dmg: isHeal ? 0 : u.atk * teamAtkMult(u), heal: isHeal ? u.heal : 0,
+    splash: isHeal ? 0 : u.splash, castle: !target, src: u,
+    speed: u.proj === 'arrow' || u.proj === 'bolt_x' ? 420 : 300,
+  });
+}
+
+// ---------- 갱신 ----------
+function updateBattle(dt) {
+  B.time += dt;
+  if (B.skillCue) B.skillCue.t = Math.max(0, B.skillCue.t - dt);
+  if (B.stageBanner > 0) B.stageBanner -= dt;
+  if (B.shake > 0) B.shake = Math.max(0, B.shake - dt);
+  if (B.lairPulse > 0) B.lairPulse = Math.max(0, B.lairPulse - dt);
+  B.buffs.rally = Math.max(0, B.buffs.rally - dt);
+  B.buffs.sanctuary = Math.max(0, B.buffs.sanctuary - dt);
+  if (B.skillT > 0) B.skillT -= dt;
+
+  if (!B.ended) {
+    spawnPhase(dt);
+    if (S.settings.autoSkill && skillReady() && B.units.some(u => u.team === 1 && u.x < W - 40)) castSkill();
+  }
+
+  for (const u of B.units) if (u.hp > 0) updateUnit(u, dt);
+  separate();
+  confine();
+  updateProjs(dt);
+  updateFx(dt);
+
+  // 사망 처리
+  for (const u of B.units) {
+    if (u.hp <= 0 && !u.dead) {
+      u.dead = true;
+      if (B.fx.filter(f => f.type === 'fall').length < 24) B.fx.push({ type:'fall', x:u.x, y:u.y, t:0, life:.42, unit:{...u} });
+      B.fx.push({ type: 'poof', x: u.x, y: u.y, t: 0, life: 0.5, color: u.team === 0 ? '#ffffff' : u.color, size: u.size });
+      if (u.team === 1 && u.gold) {
+        const g = u.gold;
+        S.gold += g; S.stats.kills++;
+        addText(u.x, u.y, '+' + fmt(g), '#ffd34d', u.boss ? 16 : 11, 18);
+        if (u.boss) B.shake = 0.4;
+      }
+      if (u.isLord) { if (u.team === 0) B.lordRespawn = 6; else B.eLordRespawn = 8; }
+    }
+  }
+  B.units = B.units.filter(u => !u.dead);
+  for (const t of B.texts) t.t += dt;
+  B.texts = B.texts.filter(t => t.t < 1);
+
+  checkEnd(dt);
+}
+
+function spawnPhase(dt) {
+  tickDice(dt);
+  if (B.lordRespawn > 0) { B.lordRespawn -= dt; if (B.lordRespawn <= 0) spawnLord(0); }
+
+  if (B.mode === 'stage') {
+    // Assaults continue while the enemy base stands; living cap bounds the field.
+    if (B.eCastle.hp>0) {
+      B.queueT=Math.max(0,B.queueT-dt);
+      const active=B.units.filter(u=>u.team===1&&u.duty==='assault'&&u.hp>0).length;
+      if(B.queueT<=0&&active<24){
+        spawnEnemy(pick(region(B.stage).enemies),B.stage);
+        B.queueT=3.5;
+      }
+    }
+  } else {
+    const sp = B.special;
+    B.enemySpawners.forEach((s, i) => {
+      s.t = tickSpawner(1, i, s.id, s.pos, s.t, dt * sp.spawnRate, HERO_BY_ID[s.id].cap, sp.scale, sp.color);
+    });
+    if (B.eLordRespawn > 0) { B.eLordRespawn -= dt; if (B.eLordRespawn <= 0) spawnLord(1, sp.lord); }
+  }
+}
+
+function updateUnit(u, dt) {
+  u.moving = false;
+  u.cdT -= dt;
+  if (u.anim > 0) u.anim -= dt;
+  if (u.flash > 0) u.flash -= dt;
+  if (u.pendingMeleeHit) {
+    resolveMilitiaHit(u);
+    if (u.pendingMeleeHit) return;
+  }
+  u.retarget -= dt;
+  if (u.retarget <= 0 || !u.target || u.target.hp <= 0) { u.target = nearestFoe(u); u.retarget = 0.3; }
+  const formationX=formationLimit(u);
+  const spd = u.speed * (u.team === 0 && B.buffs.rally > 0 ? 1.4 : 1) * marchMultiplier(u);
+
+  // 힐러
+  if (u.kind === 'healer' && u.cdT <= 0) {
+    if (u.def.healAll) {
+      let any = false;
+      for (const o of B.units) if (o.team === u.team && o.hp > 0 && o.hp < o.maxHp && Math.hypot(o.x - u.x, o.y - u.y) <= u.range) { o.hp = Math.min(o.maxHp, o.hp + u.heal * 0.6); any = true; }
+      if (any) { B.fx.push({ type: 'ring', x: u.x, y: u.y, r: 6, max: u.range, t: 0, life: 0.5, color: '#fff3b0' }); }
+    } else {
+      const h = hurtAlly(u);
+      if (h) { fire(u, h, true); u.cdT = u.atkCd; u.anim = 0.25;
+      u.meleeStartedAt = B.time; return; }
+    }
+  }
+
+  // A changed rank reforms by walking, never teleporting an existing unit.
+  if(Number.isFinite(formationX)&&u.x>formationX+6) {
+    u.x-=Math.min(spd*dt,u.x-formationX);u.walk+=dt*spd*.25;u.moving=true;return;
+  }
+  // Only garrison units are tethered to the defensive line.
+  const guarding=B.mode==='stage'&&u.team===1&&u.duty==='guard';
+  const defenseLine=W*.62;
+  if(guarding&&u.target&&u.target.x<defenseLine)u.target=null;
+  if(guarding&&u.x<defenseLine){u.target=null;u.x=Math.min(defenseLine,u.x+spd*dt);u.walk+=dt*spd*.25;u.moving=true;return;}
+  const t = u.target;
+  if (t) {
+    const dx = t.x - u.x, dy = t.y - u.y;
+    const d = Math.hypot(dx, dy);
+    const reach = u.range + t.size;
+    if (d > reach) {
+      u.x += Math.min(dx / d * spd * dt, Math.max(0,formationX-u.x)); if(guarding)u.x=Math.max(defenseLine,u.x); u.y += dy / d * spd * dt; u.walk += dt * spd * 0.25; u.moving = true;
+    } else if (u.cdT <= 0) {
+      attack(u, t);
+    }
+    // 화면 좌우(= 전장 폭 방향)로 몸을 돌린다
+    if (Math.abs(dy) > 4) u.face = dy >= 0 ? 1 : -1;
+    return;
+  }
+
+  if(guarding)return;
+
+  // 목표 없음 — 행군 또는 성 공격
+  const dir = u.team === 0 ? 1 : -1;
+  u.face = u.face || (u.team === 0 ? 1 : -1);
+  let castleX = null;
+  if (u.team === 1) castleX = P_CASTLE_X;
+  else if (B.eCastle) castleX = E_CASTLE_X;
+  if (castleX !== null) {
+    const dist = Math.abs(castleX - u.x);
+    if (dist > u.range) { u.x += Math.min(dir * spd * dt, Math.max(0,formationX-u.x)); u.walk += dt * spd * 0.25; u.moving = true; }
+    else if (u.cdT <= 0) {
+      u.cdT = u.atkCd; u.anim = 0.25;
+      u.meleeStartedAt = B.time;
+      if (u.kind === 'melee') {
+        if (isAnimatedMilitia(u)) queueMilitiaHit(u,null,u.team===0?1:0);
+        else damageCastle(u.team === 0 ? 1 : 0, u.atk * teamAtkMult(u));
+      }
+      else fire(u, null, false);
+    }
+  } else {
+    // 스테이지 모드에서 적이 없으면 전선까지 전진 후 대기
+    const hold = W * 0.62 + (u.id % 7) * 8 - (u.kind === 'melee' ? 0 : 60);
+    if (u.x < Math.min(hold,formationX)) { u.x += Math.min(spd * dt,Math.max(0,formationX-u.x)); u.walk += dt * spd * 0.25; u.moving = true; }
+  }
+  u.y = Math.max(GROUND_TOP + 8, Math.min(GROUND_BOT - 4, u.y));
+}
+
+function attack(u, t) {
+  u.cdT = u.atkCd; u.anim = 0.25;
+      u.meleeStartedAt = B.time;
+  if (u.kind === 'melee') {
+    if(isAnimatedMilitia(u)) queueMilitiaHit(u,t);
+    else applyMeleeHit(u,t);
+  } else fire(u, t, false);
+}
+
+// Frame 5 begins at .76s in the authored 1.22s swing: axe contact + trail.
+function isAnimatedMilitia(u){return u.kind==='melee'&&!u.monster&&!u.isLord&&(u.heroId==='militia'||u.isVanguard);}
+function militiaSwingDuration(u){return Math.min(1.22,Math.max(.35,(u.atkCd||1.4)*.85));}
+function queueMilitiaHit(u,target,castleTeam=null){
+  u.meleeStartedAt=B.time;
+  u.meleeDuration=militiaSwingDuration(u);
+  u.pendingMeleeHit={at:B.time+u.meleeDuration*(.76/1.22),target,castleTeam};
+}
+function resolveMilitiaHit(u){
+  const hit=u.pendingMeleeHit;
+  if(!hit)return;
+  if(u.hp<=0){u.pendingMeleeHit=null;return;}
+  if(B.time<hit.at)return;
+  // Consume first, including invalid targets: never transfer or repeat a hit.
+  u.pendingMeleeHit=null;
+  if(hit.castleTeam!==null) {
+    const castle=hit.castleTeam===0?B.pCastle:B.eCastle;
+    if(castle&&castle.hp>0)damageCastle(hit.castleTeam,u.atk*teamAtkMult(u));
+  } else if(hit.target&&hit.target.hp>0)applyMeleeHit(u,hit.target);
+}
+
+function applyMeleeHit(u,t){
+  dealDamage(t,u.atk*teamAtkMult(u),u);
+  if(B.fx.length<180)B.fx.push({type:'slash',x:t.x,y:t.y,up:8,t:0,life:.2,face:u.face});
+}
+
+// 모든 유닛을 전장 안에 가둔다. 아군은 소굴(또는 적 성) 앞을 넘지 못한다.
+function confine() {
+  for (const u of B.units) {
+    const maxX = u.team === 0 ? ALLY_MAX_X : W - 20;
+    const minX = u.team === 1 ? P_CASTLE_X - 10 : 20;
+    if (u.x > maxX) u.x = maxX;
+    if (u.x < minX) u.x = minX;
+    u.y = Math.max(GROUND_TOP + 8, Math.min(GROUND_BOT - 4, u.y));
+  }
+}
+
+function separate() {
+  const us = B.units;
+  for (let i = 0; i < us.length; i++) {
+    const a = us[i];
+    for (let j = i + 1; j < us.length; j++) {
+      const b = us[j];
+      if (a.flying !== b.flying) continue;
+      const dx = b.x - a.x, dy = b.y - a.y;
+      const min = (a.size + b.size) * 1.5; // 겹쳐도 하나하나 구분되도록 간격을 둔다
+      const d2 = dx * dx + dy * dy;
+      if (d2 < min * min && d2 > 0.0001) {
+        const d = Math.sqrt(d2), push = (min - d) * 0.5;
+        const nx = dx / d, ny = dy / d;
+        const wa = a.boss ? 0.1 : 1, wb = b.boss ? 0.1 : 1;
+        a.x -= nx * push * wa; a.y -= ny * push * wa;
+        b.x += nx * push * wb; b.y += ny * push * wb;
+      }
+    }
+  }
+}
+
+function updateProjs(dt) {
+  for (const p of B.projs) {
+    if (p.target && p.target.hp > 0) { p.tx = p.target.x; p.ty = p.target.y; }
+    const dx = p.tx - p.x, dy = p.ty - p.y;
+    const d = Math.hypot(dx, dy);
+    const step = p.speed * dt;
+    if (d <= step + 2) {
+      p.hit = true;
+      if (p.heal) { if (p.target && p.target.hp > 0) { p.target.hp = Math.min(p.target.maxHp, p.target.hp + p.heal); B.fx.push({ type: 'spark', x: p.tx, y: p.ty, up: 10, t: 0, life: 0.5 }); } }
+      else if (p.castle) damageCastle(p.team === 0 ? 1 : 0, p.dmg);
+      else if (p.splash) {
+        B.fx.push({ type: 'boom', x: p.tx, y: p.ty, t: 0, life: 0.35, r: p.splash, color: p.type === 'fire' ? '#ff8c42' : '#8ab4ff' });
+        for (const o of B.units) if (o.team !== p.team && o.hp > 0 && Math.hypot(o.x - p.tx, o.y - p.ty) <= p.splash + o.size) dealDamage(o, o === p.target ? p.dmg : p.dmg * 0.6, p.src);
+      } else if (p.target && p.target.hp > 0) dealDamage(p.target, p.dmg, p.src);
+    } else {
+      p.x += dx / d * step; p.y += dy / d * step;
+      p.vx = dx / d; p.vy = dy / d;
+    }
+  }
+  B.projs = B.projs.filter(p => !p.hit);
+}
+
+function updateFx(dt) {
+  for (const f of B.fx) {
+    f.t += dt;
+    if (f.type === 'meteor' && !f.done && f.t >= f.life) {
+      f.done = true;
+      B.shake = 0.35;
+      B.fx.push({ type: 'boom', x: f.x, y: f.y, t: 0, life: 0.5, r: 75, color: '#ff6b2b' });
+      for (const o of B.units) if (o.team === 1 && o.hp > 0 && Math.hypot(o.x - f.x, o.y - f.y) <= 75 + o.size) dealDamage(o, f.dmg, { isLord: true });
+    }
+  }
+  B.fx = B.fx.filter(f => f.t < f.life || (f.type === 'meteor' && !f.done));
+}
+
+function checkEnd(dt) {
+  if (B.ended) {
+    B.endDelay -= dt;
+    if (B.endDelay <= 0) finishBattle();
+    return;
+  }
+  const timeUp = B.timeLimit > 0 && B.time >= B.timeLimit;
+  if (B.mode === 'stage') {
+    if (B.pCastle.hp <= 0 || timeUp) endWith('lose', timeUp ? '시간 초과!' : '원정 캠프가 무너졌다!');
+    else if (B.eCastle.hp<=0 && !B.units.some(u=>u.team===1&&u.duty==='guard'&&u.hp>0)) endWith('win',B.fortress?'성 함락 · 영토 획득':'적 캠프 격파');
+  } else {
+    if (B.pCastle.hp <= 0) endWith('lose', '패배...');
+    else if (B.eCastle.hp <= 0) endWith('win', '승리!');
+    else if (timeUp) {
+      const mine = B.pCastle.hp / B.pCastle.max, theirs = B.eCastle.hp / B.eCastle.max;
+      endWith(mine > theirs ? 'win' : 'lose', mine > theirs ? '판정승!' : '판정패...');
+    }
+  }
+}
+
+function endWith(result, msg) {
+  B.ended = true;
+  B.result = result;
+  B.resultMsg = msg;
+  B.victoryAt=Date.now();
+  B.endDelay = B.mode === 'stage' ? (result === 'win' ? (B.fortress?2.4:1.6) : 1.6) : 2.0;
+}
+
+function finishBattle() {
+  if (B.mode === 'stage') {
+    const st = B.stage;
+    if(typeof JourneyGuide!=='undefined')JourneyGuide.victory(st,B.result==='win',st>=S.maxStage);
+    if (B.result === 'win') {
+      if (st >= S.maxStage) {
+        // 최초 클리어 보상
+        const gem = isBossStage(st) ? 30 : 3;
+        S.gems += gem;
+
+        if (window.UI&&typeof CombatFeedback==='undefined') UI.toast(`스테이지 ${st} 최초 클리어! 💎${gem}`);
+      }
+      const acquired=typeof conquerLand==='function'?conquerLand(st):null;
+      S.maxStage = Math.max(S.maxStage, st + 1);
+      const guided=acquired&&typeof territoryGuideConquest==='function'&&territoryGuideConquest(st);
+      if(acquired&&window.UI&&!guided&&typeof CombatFeedback!=='undefined')CombatFeedback.conquest={stage:st,lands:ownedLands(),until:Date.now()+5000};
+      if (!S.farming) S.stage = st + 1;
+    } else {
+      B.failed = true;
+      S.farming = true;
+      S.stage = Math.max(1, st - 1);
+      if (window.UI) UI.toast(isBossStage(st) ? '보스 도전 실패! 이전 스테이지에서 힘을 기르자' : '방어 실패! 한 단계 후퇴');
+    }
+    saveGame();
+    startStage(S.stage);
+  } else {
+    const cb = B.onEnd;
+    const res = { result: B.result, dmgRatio: 1 - Math.max(0, B.eCastle.hp) / B.eCastle.max };
+    const st = B.stash;
+    B.stash = null;
+    B.units = st ? st.units : [];
+    B.pCastle = st ? st.castle : null;
+    B.lordRespawn = st ? st.lordRespawn : 0.3;
+    B.mode = 'stage';
+    startStage(S.stage);
+    if (cb) cb(res);
+  }
+}
+
+function challengeBoss() {
+  if (B.mode !== 'stage') return;
+  S.farming = false;
+  S.stage = Math.min(S.maxStage, S.stage + 1);
+  startStage(S.stage);
+}

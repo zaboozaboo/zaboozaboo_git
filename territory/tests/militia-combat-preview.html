@@ -1,0 +1,31 @@
+<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>민병 · 걷기와 근접 공격</title>
+<style>body{margin:20px;background:#23353a;color:#eee7d5;font:15px system-ui}main{max-width:1050px;margin:auto}h1{font-size:23px}p{line-height:1.6}canvas{display:block;width:100%;background:#afbb9f;border-radius:12px}button,select{padding:10px;margin:5px;background:#ead6a8;border:0;border-radius:6px;font:inherit}h2{font-size:15px}#status{min-height:24px}</style>
+<main><h1>민병 · 아장아장과 도끼 공격</h1><p>걷기 4프레임 · 근접 공격 6프레임</p><button id="walk">아장아장</button><button id="attack">공격</button><button id="play">일시정지</button><button id="step">한 프레임</button><select id="speed" aria-label="재생 속도"><option value="1">보통</option><option value="0.25">느리게</option></select><label><input type="checkbox" id="weapon" checked>무기 표시</label><select id="kind" aria-label="근접무기"><option value="axe">도끼</option><option value="sword">칼</option><option value="club">몽둥이</option></select><canvas id="stage" width="1050" height="390" aria-label="민병 확대 재생과 작은 크기"></canvas><p id="status"></p><h2>프레임 순서</h2><canvas id="strip" width="1200" height="250" aria-label="민병 동작 프레임"></canvas></main>
+<script>
+const $=id=>document.getElementById(id),load=src=>new Promise((ok,no)=>{const im=new Image;im.onload=()=>ok(im);im.onerror=()=>no(Error(src));im.src=src;});
+const clips={
+ attack:{file:'../assets/militia-toy-v1/attack.png',cols:3,rows:2,durations:[.26,.20,.20,.10,.16,.30],labels:['준비','들어 올리기','정점','베기','마무리','회복'],grips:[[.735,.723],[.70,.49],[.85,.59],[.804,.665],[.66,.78],[.765,.707]],angles:[-1.14,-3*Math.PI/4,-Math.PI/3,-Math.PI/6,Math.PI/6,-1.14]},
+ walk:{file:'../assets/militia-toy-v1/walk.png',cols:4,rows:1,durations:[.24,.20,.24,.20],labels:['한 걸음','발 모으기','반대 걸음','발 모으기'],grips:[[.862,.733],[.837,.740],[.842,.733],[.842,.740]],angles:[-1.10,-1.14,-1.18,-1.14]}
+};
+const defs={axe:{file:'../militia-material-study/axe-side-toy-v2.png',pivot:[.28,.37],tip:[.83,.89],length:.59},sword:{file:'../militia-material-study/sword-toy-v1.png',pivot:[.25,.49],tip:[.94,.49],length:.59},club:{file:'club.svg',pivot:[.09,.5],tip:[.96,.5],length:.52}},weapons={};
+let action='attack',t=0,last=0,paused=false,ready=false,trail;
+function current(){const ds=clips[action].durations;let r=t%ds.reduce((a,b)=>a+b,0);for(let i=0;i<ds.length;i++){if(r<ds[i])return i;r-=ds[i];}return ds.length-1;}
+// Whole-frame registration only. No limbs are segmented or transformed.
+function measure(clip){const im=clip.image,cv=document.createElement('canvas');cv.width=im.width;cv.height=im.height;const c=cv.getContext('2d',{willReadFrequently:true});c.drawImage(im,0,0);const p=c.getImageData(0,0,cv.width,cv.height).data,cw=im.width/clip.cols,ch=im.height/clip.rows;
+ clip.aspect=cw/ch;clip.anchors=clip.durations.map((_,i)=>{let l=cw,r=0,b=0,top=ch;const ox=i%clip.cols*cw,oy=Math.floor(i/clip.cols)*ch;for(let y=0;y<ch;y++)for(let x=0;x<cw;x++){if(p[((oy+y)*im.width+ox+x)*4+3]>160){top=Math.min(top,y);if(y>=ch*.84){l=Math.min(l,x);r=Math.max(r,x);b=Math.max(b,y);}}}return {x:(l+r)/2/cw,y:(b+1)/ch,top:top/ch};});
+ clip.visibleHeight=clip.anchors[0].y-clip.anchors[0].top;
+}
+function draw(ctx,clip,i,cx,baseline,height){const size=height/clip.visibleHeight,width=size*clip.aspect,a=clip.anchors[i];const x=cx-a.x*width,y=baseline-a.y*size,im=clip.image,cw=im.width/clip.cols,ch=im.height/clip.rows;
+ const gx=x+clip.grips[i][0]*width,gy=y+clip.grips[i][1]*size,angle=clip.angles[i],def=defs[$('kind').value],weapon=weapons[$('kind').value],w=size*def.length,h=w*weapon.height/weapon.width;
+ if($('weapon').checked){if(clip===clips.attack&&i===4){const dx=(def.tip[0]-def.pivot[0])*w,dy=(def.tip[1]-def.pivot[1])*h,tx=gx+Math.cos(angle)*dx-Math.sin(angle)*dy,ty=gy+Math.sin(angle)*dx+Math.cos(angle)*dy,ts=size*.70;ctx.save();ctx.globalAlpha=.65;ctx.drawImage(trail,tx-.43*ts,ty-.86*ts,ts,ts);ctx.restore();}
+ ctx.save();ctx.translate(gx,gy);ctx.rotate(angle);ctx.drawImage(weapon,-def.pivot[0]*w,-def.pivot[1]*h,w,h);ctx.restore();}
+ // Far-hand equipment is always behind the complete dressed body frame.
+ ctx.drawImage(im,i%clip.cols*cw,Math.floor(i/clip.cols)*ch,cw,ch,x,y,width,size);
+}
+function render(){if(!ready)return;const clip=clips[action],i=current(),c=$('stage').getContext('2d');c.clearRect(0,0,1050,390);c.strokeStyle='#8c9f7e';c.beginPath();c.moveTo(60,345);c.lineTo(990,345);c.stroke();draw(c,clip,i,330,345,275);[24,46,72].forEach((h,j)=>draw(c,clip,i,650+j*125,345,h));c.fillStyle='#334633';c.font='15px system-ui';[24,46,72].forEach((h,j)=>c.fillText(h+'px',630+j*125,375));$('status').textContent=`${action==='walk'?'아장아장':'공격'} · ${i+1} / ${clip.durations.length} · ${clip.labels[i]}${paused?' · 정지':''}`;
+ const q=$('strip').getContext('2d'),count=clip.durations.length,cell=1200/count;q.clearRect(0,0,1200,250);for(let j=0;j<count;j++){if(j===i){q.fillStyle='#ead6a877';q.fillRect(j*cell,0,cell,250);}draw(q,clip,j,(j+.49)*cell,215,155);q.fillStyle='#293a33';q.font='15px system-ui';q.fillText(`${j+1} ${clip.labels[j]}`,j*cell+20,240);}}
+for(const name of ['walk','attack'])$(name).onclick=()=>{action=name;t=0;render();};
+$('play').onclick=()=>{paused=!paused;$('play').textContent=paused?'재생':'일시정지';render();};$('step').onclick=()=>{const ds=clips[action].durations,n=(current()+1)%ds.length;t=ds.slice(0,n).reduce((a,b)=>a+b,0)+.00001;paused=true;$('play').textContent='재생';render();};$('kind').onchange=render;$('weapon').onchange=render;
+Promise.all([Promise.all(Object.values(clips).map(async clip=>{clip.image=await load(clip.file);measure(clip);})),Promise.all(Object.entries(defs).map(async([k,d])=>weapons[k]=await load('../assets/melee-base-v1/'+d.file))),load('../assets/melee-base-v1/slash-trail.png').then(im=>trail=im)]).then(()=>{ready=true;render();}).catch(e=>$('status').textContent='이미지 로드 실패: '+e.message);
+function tick(now){if(!paused&&ready)t+=Math.min(last?(now-last)/1000:0,.05)*Number($('speed').value);last=now;render();requestAnimationFrame(tick);}requestAnimationFrame(tick);
+</script></html>

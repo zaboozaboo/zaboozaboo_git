@@ -1,0 +1,46 @@
+<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>베이스 · 반대손 검 휘두르기</title><style>body{background:#23353a;color:#eee7d5;font:15px system-ui;margin:24px}main{max-width:950px;margin:auto}canvas{width:100%;background:#afbb9f;border-radius:12px}button,select{padding:10px;margin:6px;background:#ead6a8;border:0;border-radius:6px}h1{font-size:23px}</style><main><h1>베이스 · 화면 오른쪽 손으로 검 휘두르기</h1><p>준비 → 들어 올리기 → 정점 → 베기 → 마무리 → 회복</p><button id="play">일시정지</button><button id="step">한 프레임</button><select id="speed" aria-label="재생 속도"><option value="1">보통</option><option value="0.25">느리게</option></select><label><input type="checkbox" id="weapon" checked>검 표시</label><canvas id="stage" width="950" height="430"></canvas><p id="status"></p><canvas id="strip" width="1140" height="220"></canvas></main><script>
+const load=src=>new Promise((ok,no)=>{const i=new Image;i.onload=()=>ok(i);i.onerror=no;i.src=src;});
+const durations=[.26,.20,.20,.10,.16,.30],labels=['준비','들어 올리기','정점','베기','마무리','회복'];
+const grips=[[.719,.738],[.68,.49],[.758,.565],[.809,.665],[.61,.78],[.683,.728]],angles=[-1.14,-3*Math.PI/4,-Math.PI/3,-Math.PI/6,Math.PI/6,-1.14];
+let footAnchors=[],body,sword,trail,t=0,paused=false,previous=0;const $=id=>document.getElementById(id);
+function current(){let r=t%1.22;for(let i=0;i<6;i++){if(r<durations[i])return i;r-=durations[i];}return 5;}
+// Measure the planted feet in each original cell; translate only, never rescale poses.
+function measureFeet(image){
+ const cv=document.createElement('canvas');cv.width=image.width;cv.height=image.height;
+ const c=cv.getContext('2d',{willReadFrequently:true});c.drawImage(image,0,0);
+ const pixels=c.getImageData(0,0,cv.width,cv.height).data,cw=image.width/3,ch=image.height/2;
+ return Array.from({length:6},(_,i)=>{
+  const ox=i%3*cw,oy=Math.floor(i/3)*ch;let left=cw,right=0,bottom=0;
+  for(let yy=Math.floor(ch*.84);yy<ch;yy++)for(let xx=0;xx<cw;xx++){
+   if(pixels[((oy+yy)*cv.width+ox+xx)*4+3]>160){left=Math.min(left,xx);right=Math.max(right,xx);bottom=Math.max(bottom,yy);}
+  }
+  return {x:(left+right)/2/cw,y:(bottom+1)/ch};
+ });
+}
+function draw(ctx,i,x,y,size){
+ x+=(footAnchors[0].x-footAnchors[i].x)*size;y+=(footAnchors[0].y-footAnchors[i].y)*size;
+ const cw=body.width/3,ch=body.height/2,sx=i%3*cw,sy=Math.floor(i/3)*ch;
+ const paintBody=()=>ctx.drawImage(body,sx,sy,cw,ch,x,y,size,size);
+ const gx=x+grips[i][0]*size,gy=y+grips[i][1]*size,w=size*.59,h=w*sword.height/sword.width;
+ const paintSword=()=>{ctx.save();ctx.translate(gx,gy);ctx.rotate(angles[i]);ctx.drawImage(sword,-w*.25,-h*.49,w,h);ctx.restore();};
+ // The weapon belongs to the far hand: draw it behind the unit in every frame.
+ if($('weapon').checked){
+  if(i===4&&trail){
+   // Anchor the lower end of the painted trail to the actual sword-tip pixel.
+   const tipLocalX=(.94-.25)*w,tipLocalY=(.49-.49)*h;
+   const tipX=gx+Math.cos(angles[i])*tipLocalX-Math.sin(angles[i])*tipLocalY;
+   const tipY=gy+Math.sin(angles[i])*tipLocalX+Math.cos(angles[i])*tipLocalY;
+   const trailSize=size*.70;
+   ctx.save();ctx.globalAlpha=.65;
+   ctx.drawImage(trail,tipX-trailSize*.43,tipY-trailSize*.86,trailSize,trailSize);
+   ctx.restore();
+  }
+  paintSword();
+ }
+ paintBody();
+}
+function render(){if(!body||!sword)return;const i=current(),c=$('stage').getContext('2d');c.clearRect(0,0,950,430);draw(c,i,260,80,300);$('status').textContent=`${i+1} / 6 · ${labels[i]}`;const q=$('strip').getContext('2d');q.clearRect(0,0,1140,220);for(let j=0;j<6;j++){if(i===j){q.fillStyle='#ead6a877';q.fillRect(j*190,0,190,220);}draw(q,j,j*190+20,25,140);q.fillStyle='#293a33';q.fillText(`${j+1} ${labels[j]}`,j*190+20,215);}}
+$('play').onclick=()=>{paused=!paused;$('play').textContent=paused?'재생':'일시정지';};$('step').onclick=()=>{const n=(current()+1)%6;t=durations.slice(0,n).reduce((a,b)=>a+b,0)+.00001;paused=true;$('play').textContent='재생';render();};
+Promise.all([load('../assets/character-base-sword-v1/swing-windup-v7.png'),load('../assets/militia-side-dressed-v1/equipment/sword-v2.png'),load('../assets/character-base-sword-v1/slash-trail.png')]).then(([a,b,c])=>{body=a;sword=b;trail=c;footAnchors=measureFeet(a);render();}).catch(()=>$('status').textContent='이미지 로드 실패');
+function tick(now){if(!paused)t+=Math.min(previous?(now-previous)/1000:0,.05)*Number($('speed').value);previous=now;render();requestAnimationFrame(tick);}requestAnimationFrame(tick);
+</script></html>

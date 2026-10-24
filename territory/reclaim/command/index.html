@@ -1,0 +1,9 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>군대를 이끌고 · 돌격 조작판</title><link rel="stylesheet" href="../crowd.css"><link rel="stylesheet" href="style.css"></head><body><main id="game">
+<header><div><small>군대 조작 실험</small><h1>내 군대와 함께 돌격</h1></div><a href="../">이전 전선판 ↗</a></header>
+<section class="comparison"><div class="sizes"><button data-size="0">영웅 혼자</button><button data-size="15">군대 15명</button><button data-size="30" aria-pressed="true">군대 30명</button></div><small>같은 적 · 선택 시 재시작</small></section>
+<section id="field"><canvas id="battle" aria-label="드래그로 군대를 이동시키는 전장"></canvas><div class="counts"><span class="blue">군대 <b id="allies"></b></span><span class="red">적 <b id="enemies"></b></span><span class="health">영웅 <b id="hp"></b></span></div>
+<div id="notice"></div><div id="intro"><small id="intro-army">검병 20 · 궁수 10</small><h2>방향을 잡고<br>함께 휩쓰세요</h2><p>전장을 드래그하면 군대가 따라옵니다.<br>손을 떼면 정지 · 돌격은 마지막 이동 방향<br>붉은 원은 적 군단장의 공격 예고입니다.</p><button id="start" disabled>아트 준비 중…</button></div>
+<div id="result" hidden><h2 id="outcome"></h2><p id="report"></p><button id="replay">다시 출전</button></div>
+<button id="pause" hidden aria-label="전투 일시 정지">Ⅱ</button><div id="joystick-hint">전장을 드래그하여 이동</div>
+</section><section class="controls"><div><b id="ready">군대 집결 중</b><small id="stats">병사가 실제로 접근해 공격합니다.</small></div><button id="charge" disabled><b>돌격</b><small id="cooldown">검병 쇄도 + 일제 사격</small></button></section>
+<footer><span>드래그 / WASD 이동 · Space 돌격</span><a href="../../index.html">기존 게임 ↗</a></footer></main><script src="../art.js"></script><script src="engine.js"></script><script src="game.js"></script></body></html>

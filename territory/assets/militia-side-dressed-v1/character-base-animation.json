@@ -1,0 +1,72 @@
+{
+  "version": 1,
+  "direction": "front-right",
+  "description": "Weapon-free body frames. Sockets are normalized coordinates inside original sheet cells; x right, y down. weapon angle is radians clockwise from screen right. No body mirroring.",
+  "sheets": {
+    "toddle": {
+      "file": "walk-hair-v4.png",
+      "columns": 4,
+      "rows": 1
+    }
+  },
+  "clips": {
+    "walk": {
+      "sheet": "toddle",
+      "row": 0,
+      "durations": [
+        0.24,
+        0.2,
+        0.24,
+        0.2
+      ],
+      "labels": [
+        "왼쪽 발 앞으로",
+        "발 모으기",
+        "오른쪽 발 앞으로",
+        "발 모으기"
+      ],
+      "sockets": [
+        {
+          "grip": [
+            0.862,
+            0.733
+          ],
+          "angle": -1.1
+        },
+        {
+          "grip": [
+            0.837,
+            0.74
+          ],
+          "angle": -1.14
+        },
+        {
+          "grip": [
+            0.842,
+            0.733
+          ],
+          "angle": -1.18
+        },
+        {
+          "grip": [
+            0.842,
+            0.74
+          ],
+          "angle": -1.14
+        }
+      ],
+      "equipment": "sword"
+    }
+  },
+  "equipment": {
+    "sword": {
+      "file": "equipment/sword-v2.png",
+      "kind": "melee",
+      "pivot": [
+        0.25,
+        0.49
+      ],
+      "lengthInBodyHeights": 0.62
+    }
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "status": "preview-awaiting-user-review",
+  "body": "attack-short-stance-v3.png",
+  "sha256": "094762db7b96dd21f3584e9d837fab40b9a0fb319efa09b662a6ef1e8487022a",
+  "base": "../melee-base-v1/body.png",
+  "walk": "../militia-side-dressed-v1/walk-hair-v4.png",
+  "weapon": "../melee-base-v1/axe-large-v3.png",
+  "grid": [
+    3,
+    2
+  ],
+  "durations": [
+    0.26,
+    0.2,
+    0.2,
+    0.1,
+    0.16,
+    0.3
+  ],
+  "grips": [
+    [
+      0.735,
+      0.723
+    ],
+    [
+      0.7,
+      0.49
+    ],
+    [
+      0.85,
+      0.59
+    ],
+    [
+      0.804,
+      0.665
+    ],
+    [
+      0.66,
+      0.78
+    ],
+    [
+      0.765,
+      0.707
+    ]
+  ],
+  "notes": "Full drawn outfit frames; no rigging or limb slicing. Equipment behind unit. Preview registers full frames to foot baseline. Existing approved sources unchanged.",
+  "revision": "Original short leg proportions restored; modest outward feet in frames 4 and 5. Replaces rejected wide stance v2."
+}

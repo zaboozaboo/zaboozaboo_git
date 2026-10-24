@@ -1,0 +1,13 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>왕국 탈환 · 군대의 물결</title><link rel="stylesheet" href="crowd.css"></head><body>
+<main id="game"><header><img id="hero-portrait" alt="기사 영주"><div><small>햇살 숲 · 왕국 탈환</small><h1>다시, 우리의 깃발 아래</h1></div><a href="../hero-line-version/">이전판 ↗</a></header>
+<section class="comparison" aria-label="병력 규모 비교"><div class="sizes"><button data-size="40">40명</button><button data-size="80">80명</button><button data-size="120">120명</button><button data-size="1000" aria-pressed="true">1,000명</button></div><small>양군 시작 총원 / 변경 시 다시 시작</small></section>
+<section id="field"><canvas id="battle" aria-label="병졸이 대치하고 양측 영웅이 돌파와 방어를 맡는 전장"></canvas>
+<div class="counts"><span class="blue">아군 <b id="allies">0</b></span><span class="red">적군 <b id="enemies">0</b></span></div>
+<div id="notice" aria-live="polite"></div>
+<div id="intro"><small>적 점령지를 뚫는 반격</small><h2>영웅이 길을 열면<br>밀고 올라가세요</h2><p>병졸이 버티는 전선을 영웅으로 뚫으세요.<br>적 군단장이 진격을 막아섭니다.</p><button id="start" disabled>전장 준비 중…</button><span id="load"></span></div>
+<div id="result" hidden><small id="outcome-sub"></small><h2 id="outcome"></h2><p id="report"></p><button id="replay">같은 규모 다시 하기</button></div>
+<button id="hero-command" disabled aria-label="영웅 돌파 베기"><b>돌파 베기</b><small id="command-time">전투 대기</small></button><button id="pause" aria-label="전투 일시 정지" hidden>Ⅱ</button><span id="clock">0:00</span>
+</section>
+<section class="command"><div class="command-head"><b>병졸은 전선 유지 · 영웅은 돌파</b></div><small id="hint"></small></section>
+<footer><span>● 아군 · 파랑 <span class="enemy-key">◆ 적군 · 붉은색</span></span><span id="performance"></span><a href="../../index.html">기존 게임 ↗</a></footer></main>
+<script src="art.js"></script><script src="crowd-engine.js"></script><script src="crowd.js"></script></body></html>

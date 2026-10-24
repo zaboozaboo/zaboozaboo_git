@@ -1,0 +1,20 @@
+const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
+const c=vm.createContext({console,Math,Date,assert,window:{},document:{addEventListener(){}},localStorage:{setItem(){}}});
+for(const f of ['data','state','kingdom','dice','formation','battle','first-camp','ui'])vm.runInContext(fs.readFileSync(`territory/js/${f}.js`,'utf8'),c);
+vm.runInContext(`
+newGame({name:'gate',gender:'m',cls:'knight',nation:'aurum'});prepareFirstExpedition();
+assert.equal(acknowledgeExpedition('duel'),false);
+S.firstExpedition=true;S.maxStage=11;assert.equal(expeditionAccess('duel').ready,false);
+S.territoryTutorial='done';S.lord.promo=1;S.maxStage=6;assert.equal(expeditionAccess('duel').ready,false);
+S.maxStage=7;assert.equal(expeditionAccess('duel').ready,true);assert.equal(expeditionAccess('duel').unlocked,false);
+S.fieldGuideSeen={expedition:true};assert.equal(expeditionAccess('duel').unlocked,false);
+UI.toast=()=>{};const war=S.daily.war,duel=S.daily.duel;UI.startWar('sylvan');UI.startDuel(19);
+assert.equal(S.daily.war,war);assert.equal(S.daily.duel,duel);
+assert.equal(acknowledgeExpedition('duel'),true);assert.equal(expeditionAccess('duel').unlocked,true);
+assert.equal(expeditionAccess('war').ready,false);S.expeditionProgress.duelCompleted=true;
+assert.equal(expeditionAccess('war').ready,false);S.maxStage=11;
+assert.equal(expeditionAccess('war').ready,true);assert.equal(expeditionAccess('war').unlocked,false);
+assert.equal(acknowledgeExpedition('war'),true);assert.equal(expeditionAccess('war').unlocked,true);
+newGame({name:'old',gender:'m',cls:'knight',nation:'aurum'});S.stats.wars=1;assert.equal(expeditionAccess('war').unlocked,true);
+console.log('PASS: ordered gates, required intro, optional hint cannot unlock, locked handlers preserve attempts, legacy participants preserved.');
+`,c);

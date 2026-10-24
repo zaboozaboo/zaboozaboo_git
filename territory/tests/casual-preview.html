@@ -1,0 +1,14 @@
+<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>캐주얼 전장 · 플레이 미리보기</title>
+<style>*{box-sizing:border-box}body{margin:0;background:#10272d;color:#e7d8ac;font:12px system-ui;display:flex;align-items:center;flex-direction:column;height:100dvh}header{height:34px;flex-shrink:0;display:flex;align-items:center;gap:16px}button{background:none;border:1px solid #799084;border-radius:5px;color:inherit;padding:3px 8px;cursor:pointer}iframe{border:0;width:min(100%,430px);flex:1;min-height:0;background:#193632}</style>
+<header><span>캐주얼 전장 미리보기 · 저장 없음</span><select id="scene" aria-label="미리보기 전투"><option value="4">캠프 공략</option><option value="5">성 공략</option></select><button id="restart">다시 플레이</button></header><iframe sandbox="allow-scripts allow-same-origin" title="캐주얼 전장 플레이"></iframe>
+<script>
+async function restart(){
+ const html=await fetch('../index.html',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('load');return r.text()});
+ const base=new URL('../',location.href).href;
+ const isolated='<script>loadGame=()=>{newGame({name:"미리보기 영주",gender:"f",cls:"knight",nation:"aurum"});S.stage='+document.getElementById("scene").value+';S.maxStage=5;S.gold=1000;S.firstExpedition=true;S.battleTutorial="done";S.territoryTutorial="done";return S;};saveGame=()=>true;showOffline=()=>{};resetSavedProgress=()=>false;<\/script>';
+ document.querySelector('iframe').srcdoc=html.replace('<head>','<head><script>Object.defineProperty(window,"localStorage",{value:{getItem:()=>null,setItem:()=>{},removeItem:()=>{},clear:()=>{}},configurable:false});<\/script><base href="'+base+'">').replace('</body>',isolated+'</body>');
+}
+document.getElementById('restart').onclick=restart;
+document.getElementById('scene').onchange=restart;
+restart().catch(()=>document.querySelector('header span').textContent='미리보기를 불러오지 못했습니다. 새로고침해 주세요.');
+</script></html>

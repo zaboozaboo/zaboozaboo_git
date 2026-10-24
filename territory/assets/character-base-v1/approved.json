@@ -1,0 +1,13 @@
+{
+  "approvedOn": "2026-10-24",
+  "status": "사용자가 기본 베이스로 승인. 맨손 아장아장/근접/활 동작. 원본 보존, 파생 캐릭터는 별도 제작.",
+  "files": {
+    "character-base-actions-v1.png": "ae9c39926a0a7bb9ecc834941462d398b3181b7e2458d18ca8eb81e8dcd804b3",
+    "character-base-animation.json": "ea180b769ba792566b33e2b58bbc7c86b3e595aebc4bc8a3a9d073c73bb3ef38",
+    "character-base-design-v1.png": "b9ffcdaee6e92f5fa0b0c89ac00f788c7c6961ad50f9cb76344da5fe932572e6",
+    "character-base-toddle-v3.png": "15c58d5097f141215c4ac9c7ed9dbb4d6f9ffbd6b5c21cb190aea7b57a7d269f",
+    "equipment/bow.svg": "21ec6b555a4530efe3c8f6dff9c42224a9dfc152c8fa6015199d309311100d52",
+    "equipment/club.svg": "bb57130d97a66938042963ca711045c0139010c438e94882f47dfdef921e1bf8",
+    "player.js": "ce562bc32feb481da172bd7a42d47ee481c71d2b62818686ddec3725d0df4897"
+  }
+}

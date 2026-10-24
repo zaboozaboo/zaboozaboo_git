@@ -1,0 +1,13 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>왕국 탈환 · 군대의 물결</title><link rel="stylesheet" href="crowd.css"></head><body>
+<main id="game"><header><div><small>햇살 숲 · 왕국 탈환</small><h1>다시, 우리의 깃발 아래</h1></div><a href="../small-front-version/">이전판 ↗</a></header>
+<section class="comparison" aria-label="병력 규모 비교"><div class="sizes"><button data-size="40">40명</button><button data-size="80" aria-pressed="true">80명</button><button data-size="120">120명</button></div><small>시작 총원 · 포로 포함 / 변경 시 다시 시작</small></section>
+<section id="field"><canvas id="battle" aria-label="파란 아군과 붉은 적군이 대치하고 후방 포로가 합류하는 전장"></canvas>
+<div class="counts"><span class="blue">아군 <b id="allies">0</b></span><span class="captive">포로 <b id="captives">0</b></span><span class="red">적군 <b id="enemies">0</b></span></div>
+<div id="notice" aria-live="polite"></div>
+<div id="intro"><small>후방에서 시작되는 반격</small><h2>구한 군대와 함께<br>밀고 올라가세요</h2><p>앞의 군대가 버티는 동안 후방 포로를 구하고<br>길게 이어진 적 진영을 돌파하세요.</p><button id="start" disabled>전장 준비 중…</button><span id="load"></span></div>
+<div id="result" hidden><small id="outcome-sub"></small><h2 id="outcome"></h2><p id="report"></p><button id="replay">같은 규모 다시 하기</button></div>
+<button id="pause" aria-label="전투 일시 정지" hidden>Ⅱ</button><span id="clock">0:00</span>
+</section>
+<section class="command"><div class="command-head"><b>후방 포로 해방</b><label><input id="auto" type="checkbox" checked> 자동 구출 · 비교용</label></div><div id="rescue-buttons"><button data-prison="0">왼쪽 포로</button><button data-prison="1">중앙 포로</button><button data-prison="2">오른쪽 포로</button></div><small id="hint">자동 구출은 매번 6·14·22초에 같은 순서로 진행합니다.</small></section>
+<footer><span>● 아군 · 파랑 <span class="enemy-key">◆ 적군 · 붉은색</span></span><span id="performance"></span><a href="../../index.html">기존 게임 ↗</a></footer></main>
+<script src="art.js"></script><script src="crowd-engine.js"></script><script src="crowd.js"></script></body></html>

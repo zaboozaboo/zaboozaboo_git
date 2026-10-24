@@ -1,0 +1,67 @@
+<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>민병 · 공통 아바타 리그</title>
+<style>*{box-sizing:border-box}body{margin:0;background:#20343e;color:#eee5cf;font:14px system-ui}main{max-width:920px;margin:auto;padding:16px}h1{font-size:22px;margin:0 0 8px}p{color:#becfc8;line-height:1.6}nav{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0;align-items:center}button,select{font:inherit;padding:9px 12px;background:#f0d495;color:#26333a;border:0;border-radius:8px}label{display:flex;align-items:center;gap:5px}canvas{display:block;width:100%;background:#acc19b;border-radius:14px;touch-action:none}small{line-height:1.7;color:#c1d1cc}#status{font-variant-numeric:tabular-nums}</style>
+<main><h1>민병 · 걷기 / 도끼 공격</h1><p>같은 기본 몸에 두건·튜닉·어깨 보호대·부츠를 입혔습니다. 외형을 바꿔도 관절과 동작은 같습니다.</p>
+<nav><label>외형<select id="skin"><option value="militia">민병</option><option value="bare">기본 몸</option></select></label><select id="mode" aria-label="동작"><option value="walk">걷기</option><option value="attack">도끼 공격</option><option value="idle">서 있기</option></select><button id="pause">일시정지</button><button id="step">한 프레임</button><label>재생<select id="rate"><option value="1">보통</option><option value="0.25">느리게 ×0.25</option></select></label><label>이동 속도<input id="speed" type="range" min="0.2" max="0.8" step="0.05" value="0.55"></label><label><input id="bones" type="checkbox">관절 표시</label></nav>
+<canvas id="stage" width="960" height="650"></canvas><p id="status">준비 중</p><small>가까운 다리는 밝은색, 먼 다리는 어두운색입니다. 초록 점은 접지한 발, 노란 점은 공중의 발입니다.<br>오른쪽 아래에는 작은 전투 크기로 같은 동작을 표시합니다. 렌더링은 2D Canvas이며 WebGL이나 실시간 3D 엔진을 사용하지 않습니다.</small></main>
+<script src="../js/avatar-rig.js"></script><script>
+const canvas=document.getElementById('stage'),c=canvas.getContext('2d'),R=AvatarRig;let t=0,last=0,paused=false;
+const el=id=>document.getElementById(id);el('pause').onclick=()=>{paused=!paused;el('pause').textContent=paused?'재생':'일시정지';};el('step').onclick=()=>{paused=true;t+=1/30;el('pause').textContent='재생';render();};el('mode').onchange=()=>{t=0;render();};el('skin').onchange=()=>render();el('speed').oninput=()=>{t=0;render();};
+function avatar(p,ox,oy,s,bones){
+ const dressed=el('skin').value==='militia';
+ const between=(a,b,k)=>a.map((v,i)=>v+(b[i]-v)*k);
+ const project=v=>[ox+(v[0]-p.root-v[1])*.707*s,oy+((v[0]-p.root+v[1])*.405-v[2]*.82)*s];
+ const point=(v,r,color)=>{const a=project(v);c.fillStyle=color;c.beginPath();c.arc(a[0],a[1],r*s,0,Math.PI*2);c.fill();};
+ const line=(a,b,r,color)=>{a=project(a);b=project(b);c.strokeStyle='#344750';c.lineCap='round';c.lineWidth=(r*2+.012)*s;c.beginPath();c.moveTo(...a);c.lineTo(...b);c.stroke();c.strokeStyle=color;c.lineWidth=r*2*s;c.stroke();};
+ const poly=(vs,color)=>{c.beginPath();vs.map(project).forEach((a,i)=>i?c.lineTo(...a):c.moveTo(...a));c.closePath();c.fillStyle=color;c.fill();c.strokeStyle='#58656a';c.lineWidth=Math.max(1,s*.006);c.stroke();};
+ const leg=(l,i)=>{
+  const color=dressed?(i?'#eee0bd':'#aaac9b'):(i?'#e6c6a0':'#9d9685');
+  line(l.hip,l.knee,.085,color);line(l.knee,l.ankle,.068,color);
+  if(dressed){const cuff=between(l.knee,l.ankle,.30);line(cuff,l.ankle,.083,i?'#825239':'#574637');line(cuff,between(l.knee,l.ankle,.40),.092,i?'#a7794c':'#766047');}
+  line(R.add(l.ankle,[-.045,0,-.02]),R.add(l.ankle,[.14,0,-.035]),dressed?.087:.073,dressed?(i?'#94613d':'#64513c'):(i?'#ebd0aa':'#999382'));
+  if(bones){for(const v of [l.hip,l.knee,l.ankle])point(v,.018,'#40556b');point([l.ankle[0],l.ankle[1],0],.024,l.planted?'#387644':'#e3ae38');}
+ };
+ const arm=(a,i)=>{
+  line(a.shoulder,a.elbow,dressed?.077:.065,dressed?(i?'#317ece':'#225a9d'):(i?'#e6c6a0':'#9d9685'));
+  line(a.elbow,a.hand,.055,i?'#e6c6a0':'#9d9685');
+  if(dressed){line(between(a.elbow,a.hand,.35),between(a.elbow,a.hand,.83),.065,i?'#926548':'#674e39');point(a.shoulder,.105,i?'#c8d5d9':'#879ba8');point(R.add(a.shoulder,[-.012,0,.035]),.068,i?'#edf0df':'#acbcc2');}
+  point(a.hand,.07,i?'#e6c6a0':'#9d9685');
+  if(bones)for(const v of [a.shoulder,a.elbow,a.hand])point(v,.015,'#40556b');
+ };
+ leg(p.legs[0],0);arm(p.arms[0],0);leg(p.legs[1],1);
+ line(p.pelvis,p.chest,.18,dressed?'#2169b6':'#d4b38f');
+ if(dressed){
+  const v=(x,y,z)=>R.add(p.pelvis,[x,y,z]);
+  poly([v(-.10,-.18,.12),v(.12,-.18,.12),v(.16,-.22,-.13),v(-.13,-.22,-.13)],'#194d8d');
+  poly([v(.12,-.18,.12),v(.12,.18,.12),v(.16,.22,-.13),v(.13,.02,-.10),v(.16,-.22,-.13)],'#3988d0');
+  poly([v(-.10,.18,.12),v(.12,.18,.12),v(.16,.22,-.13),v(-.13,.22,-.13)],'#2469ad');
+  line(v(.13,-.17,.075),v(.13,.17,.075),.035,'#795238');
+  poly([v(.17,-.03,.11),v(.17,.045,.11),v(.17,.045,.04),v(.17,-.03,.04)],'#e7b957');
+  line(R.add(p.chest,[.04,-.13,.11]),R.add(p.chest,[.04,.13,.11]),.055,'#4594d7');
+ }else line(R.add(p.pelvis,[0,-.13,0]),R.add(p.pelvis,[0,.13,0]),.11,'#bba186');
+ if(dressed){
+  // Hood, face opening and beard share the head anchor; no independent bob.
+  point(R.add(p.head,[-.15,-.06,.06]),.16,'#17579e');
+  const h=project(p.head);c.save();c.translate(...h);c.scale(s,s);
+  const hood=c.createRadialGradient(-.08,-.10,.01,0,0,.25);hood.addColorStop(0,'#499be0');hood.addColorStop(1,'#18549d');c.fillStyle=hood;c.beginPath();c.arc(0,0,.25,0,Math.PI*2);c.fill();
+  c.fillStyle='#d7dfd1';c.beginPath();c.ellipse(.075,.045,.165,.195,-.28,0,Math.PI*2);c.fill();
+  c.fillStyle='#e9bd8c';c.beginPath();c.ellipse(.082,.054,.145,.174,-.28,0,Math.PI*2);c.fill();
+  c.fillStyle='#79503a';c.beginPath();c.moveTo(-.045,.09);c.quadraticCurveTo(.03,.13,.18,.07);c.quadraticCurveTo(.21,.19,.075,.235);c.quadraticCurveTo(-.035,.21,-.045,.09);c.fill();
+  c.fillStyle='#303c42';for(const [x,y] of [[.065,.022],[.175,-.01]]){c.beginPath();c.ellipse(x,y,.016,.024,0,0,Math.PI*2);c.fill();}
+  c.fillStyle='#e2ad78';c.beginPath();c.ellipse(.155,.062,.027,.022,0,0,Math.PI*2);c.fill();c.restore();
+ }else{point(p.head,.225,'#ebcda7');point(R.add(p.head,[.19,.075,.025]),.019,'#344750');point(R.add(p.head,[.19,-.075,.025]),.016,'#344750');}
+ arm(p.arms[1],1);
+ // Every axe vertex is transformed from the same hand-relative basis.
+ const a=p.axe,at=(u,v,depth=0)=>R.add(a.hand,R.add(R.mul(a.shaft,u),R.add(R.mul(a.blade,v),[0,depth,0])));
+ line(at(-.12,0),at(.40,0),.028,'#8d5837');
+ const contour=[[.43,-.025],[.46,.17],[.36,.24],[.23,.19],[.29,-.025]];
+ poly(contour.map(([u,v])=>at(u,v,-.022)),'#8596a2');poly(contour.map(([u,v])=>at(u,v,.022)),'#cbd8de');poly([at(.46,.17,-.022),at(.46,.17,.022),at(.36,.24,.022),at(.36,.24,-.022)],'#edf3f1');
+ point(a.hand,.052,'#e6c6a0');if(bones)point(a.hand,.014,'#455c71');
+}
+function render(){const p=R.pose(t,{mode:el('mode').value,speed:Number(el('speed').value)});c.clearRect(0,0,960,650);c.fillStyle='#acc19b';c.fillRect(0,0,960,650);
+ const s=270,ox=440,oy=490;const project=(x,y)=>[ox+(x-p.root-y)*.707*s,oy+(x-p.root+y)*.405*s];c.strokeStyle='#78917066';c.lineWidth=1;
+ for(let i=Math.floor(p.root)-5;i<Math.floor(p.root)+6;i++){c.beginPath();c.moveTo(...project(i,-4));c.lineTo(...project(i,4));c.stroke();}for(let i=-4;i<5;i++){c.beginPath();c.moveTo(...project(p.root-5,i));c.lineTo(...project(p.root+5,i));c.stroke();}
+ avatar(p,ox,oy,s,el('bones').checked);c.fillStyle='#20343e';c.fillRect(765,470,180,160);avatar(p,855,595,45,false);c.fillStyle='#e9dfc5';c.font='16px system-ui';c.fillText('전투 크기',810,620);
+ el('status').textContent=`${el('mode').selectedOptions[0].textContent} · ${t.toFixed(2)}초 · 접지 ${p.legs.filter(l=>l.planted).length}발`;
+}
+function tick(now){if(!paused)t+=Math.min(last?(now-last)/1000:0,.05)*Number(el('rate').value);last=now;render();requestAnimationFrame(tick);}requestAnimationFrame(tick);
+</script></html>

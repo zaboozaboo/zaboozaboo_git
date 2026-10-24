@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#2b4653"><title>영토, 나의 영토 · 민병 구출</title><link rel="stylesheet" href="rescue.css"></head>
+<body><main id="game">
+<header class="topbar"><div class="lord-portrait"><img id="lord-portrait" alt="기사 영주"><span>Lv.1</span></div><div class="identity"><small>햇살 숲의 영주</small><b>나의 작은 왕국</b></div><div class="currency"><i class="icon coin"></i><strong id="gold">0</strong><button id="settings" aria-label="설정 및 버전 비교">☰</button></div></header>
+<div class="chapter"><span>01 <b>포로 야영지</b></span><span id="chapter-state">첫 번째 탈환</span></div>
+<section id="field"><canvas id="scene" aria-label="민병 구출 전투"></canvas>
+<div class="objectives" aria-label="전투 진행"><span id="goal-1" class="active">경비병 격파</span><i></i><span id="goal-2">민병 구출</span><i></i><span id="goal-3">거점 탈환</span></div>
+<div id="moment" aria-live="polite"><small id="moment-sub"></small><b id="moment-title"></b></div>
+<div id="speech" hidden>영주님! 저희도 함께 싸우겠습니다!</div>
+<div id="intro"><small>첫 번째 이야기</small><h1>다시, 우리의<br><em>깃발 아래</em></h1><p>갇힌 민병들을 구하고<br>빼앗긴 야영지를 되찾으세요.</p><button id="start" disabled>전장 준비 중…</button><span id="load-status">기존 왕국의 아트를 불러옵니다</span></div>
+<div class="battle-tools" hidden id="battle-tools"><button id="pause" aria-label="전투 일시 정지">Ⅱ</button><button id="sound" aria-label="소리 켜고 끄기">♪</button></div>
+<div id="skill-wrap" hidden><button id="skill"><i class="icon sword"></i><b>돌격 명령</b><span id="skill-time">사용 가능</span></button></div>
+<div id="victory" hidden><div class="victory-medal">⚑</div><small id="end-sub">햇살 숲 · 첫 거점</small><h2 id="end-title">우리의 땅을 되찾았습니다</h2><div class="spoils"><span><img id="reward-unit" alt="민병"><b>민병 막사 확보</b></span><span><i class="icon coin"></i><b id="reward-gold">+110</b></span></div><button id="continue">내 거점 보기 →</button></div>
+</section>
+<section class="deployment"><div class="deployment-title"><b>나의 군대 <strong id="army-count">1</strong></b><span id="formation-status">영주 홀로 출전</span></div><div class="unit-slots"><button class="unit-card lord-card" data-panel="army"><img id="lord-card" alt="영주"><span>영주</span><strong>1</strong></button><button id="militia-card" class="unit-card locked" data-panel="army"><img id="militia-icon" alt="민병"><span id="militia-label">구출 대기</span><strong id="militia-count">🔒</strong></button><div class="empty-slot">＋</div><div class="empty-slot">＋</div><div class="empty-slot">＋</div></div></section>
+<nav aria-label="왕국 메뉴"><button disabled title="이번 전투에서는 열리지 않습니다"><i class="icon recruit"></i>영입</button><button data-panel="army"><i class="icon shield"></i>편성</button><button data-panel="kingdom" class="home"><i class="icon castle"></i>왕국</button><button data-panel="growth"><i class="icon crown"></i>성장</button><button disabled title="이번 전투에서는 열리지 않습니다"><i class="icon sword"></i>원정</button></nav>
+<dialog id="sheet"><header><h2 id="sheet-title"></h2><button id="close-sheet" aria-label="닫기">✕</button></header><div id="sheet-content"></div></dialog>
+</main><script src="art.js"></script><script src="../../js/militia-combat.js"></script><script src="rescue-engine.js"></script><script src="rescue.js"></script></body></html>

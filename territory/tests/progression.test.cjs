@@ -1,0 +1,28 @@
+const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');let saved;
+const c=vm.createContext({console,Math,Date,assert,window:{},document:{addEventListener(){}},localStorage:{setItem:(k,v)=>saved=v,getItem:()=>saved}});
+for(const f of ['data','state','kingdom','dice','formation','battle','first-camp','progression','ui'])vm.runInContext(fs.readFileSync(`territory/js/${f}.js`,'utf8'),c);
+vm.runInContext(`
+UI.toast=()=>{};UI.renderTab=()=>{};UI.showSummon=()=>{};
+newGame({name:'path',gender:'m',cls:'knight',nation:'aurum'});assert.equal(featureAccess('promo').unlocked,true,'legacy is preserved');
+prepareFirstExpedition();recruitFirstCompanion();S.slots[0]='militia';S.firstExpedition=true;S.gold=10000;S.lord.merit=10000;
+for(const id of Object.keys(featureRules()).filter(id=>id!=='recruit'))assert.equal(featureAccess(id).unlocked,false);
+assert.equal(featureAccess('recruit').unlocked,true,'recruitment is available before hero upgrades');
+assert.equal(learnFeature('growth'),false);
+const gold=S.gold,gems=S.gems,summons=S.stats.summons;
+S.fieldGuideSeen={growth:true,hero:true};assert.equal(featureAccess('growth').unlocked,false);
+assert.equal(advanceKingdomGrowth(0),null);assert.equal(breakthroughLord(1),false);
+for(const [a,d] of [['kingdomgrow',{step:'0'}],['lordlv',{level:'1'}],['hlv',{id:'militia'}],['hstar',{id:'militia'}],['promo',{}]])UI.act(a,d,true);
+assert.equal(S.gold,gold);assert.equal(S.gems,gems);assert.equal(S.stats.summons,summons);assert.equal(S.heroes.militia.level,1);
+S.battleTutorial='done';S.maxStage=2;assert.equal(featureAccess('growth').unlocked,true);assert.ok(advanceKingdomGrowth(0));assert.equal(featureAccess('lord').ready,true);
+assert.equal(learnFeature('lord'),true);assert.equal(breakthroughLord(1),true);
+assert.equal(learnFeature('hero'),true);UI.act('hlv',{id:'militia'},true);assert.equal(S.heroes.militia.level,2);
+assert.equal(learnFeature('recruit'),true);UI.act('summon',{n:'1'},true);assert.equal(S.stats.summons,2);
+assert.equal(featureAccess('land').ready,false);S.maxStage=6;conquerLand(5);S.territoryTutorial='done';
+assert.equal(featureAccess('land').ready,true);
+assert.equal(learnFeature('land'),true);assert.equal(claimLand('grove','training'),true);
+assert.equal(learnFeature('promo'),true);assert.equal(expeditionAccess('duel').ready,false,'first promotion still required');
+S.lord.promo=1;S.maxStage=7;assert.equal(expeditionAccess('duel').ready,true);
+S.heroes.militia.shards=shardsForStar(1);assert.equal(learnFeature('star'),true);UI.act('hstar',{id:'militia'},true);assert.equal(S.heroes.militia.stars,2);
+saveGame();loadGame();assert.equal(featureAccess('hero').unlocked,true);assert.equal(featureAccess('recruit').unlocked,true);
+console.log('PASS: full ordered learning path, premature action guards, actual completion prerequisites, no hint-based unlock, save/load, legacy preservation.');
+`,c);

@@ -31,6 +31,8 @@ async function test() {
   for(const key of Object.keys(ENEMIES)) assert(Number.isInteger(ENEMY_ART[key]),'Missing enemy mapping: '+key);
   newGame({name:'검증',gender:'m',cls:'mage',nation:'aurum'});
   initRender(document.getElementById('cv'));
+  await MilitiaCombat.load();
+  assert(MilitiaCombat.ready,'Militia sprite sheets and axe loaded');
   let scenes=0, renderTime=0;
   for(const width of [320,375,500]) {
     document.getElementById('field').style.width=width+'px';fitCanvas();

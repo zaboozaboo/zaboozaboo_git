@@ -1,0 +1,25 @@
+/* Layout and interaction only; reuse the existing kingdom palette and artwork. */
+#sheet-views button{font-size:13px;min-height:44px;white-space:nowrap;}
+#sheet-views button:focus-visible,.ux-list-tools select:focus-visible{outline:3px solid var(--gold,#c9a453);outline-offset:-3px;}
+#panel [role=tabpanel]{min-width:0;}
+.ux-list-tools{display:flex;gap:10px;margin:12px 0;}
+.ux-list-tools label{flex:1;min-width:0;font-size:12px;font-weight:bold;}
+.ux-list-tools select{display:block;width:100%;min-height:44px;margin-top:4px;padding:6px;border:1px solid #82928a;border-radius:7px;background:var(--kingdom-paper,#ece9d8);color:var(--kingdom-ink,#28433e);font:inherit;}
+.ux-hero-row{display:flex;align-items:center;gap:8px;padding:12px 0;border-top:1px solid #75877855;}
+.ux-hero-detail{display:flex;align-items:center;flex:1;min-width:0;gap:9px;border:0;background:none;text-align:left;color:inherit;padding:0;min-height:70px;cursor:pointer;}
+.ux-hero-detail .hero-art{width:50px!important;height:65px!important;flex-shrink:0;}
+.ux-hero-detail>span:last-child{min-width:0;}
+.ux-hero-detail b,.ux-hero-detail small{display:block;line-height:1.5;overflow-wrap:anywhere;}
+.ux-hero-detail b{font-size:14px;}.ux-hero-detail small{font-size:11px;}
+.ux-row-actions{display:flex;flex-direction:column;gap:6px;flex:0 0 104px;}
+#panel .ux-row-actions .btn{min-height:44px;font-size:11px;padding:5px 7px;}
+.ux-empty{text-align:center;padding:24px 8px;font-size:13px;}.ux-empty .btn{min-height:44px;}
+.ux-land-row{display:flex;width:100%;align-items:center;gap:8px;border:0;border-top:1px solid #75877855;background:none;color:inherit;text-align:left;min-height:86px;padding:10px 0;cursor:pointer;}
+.ux-land-row .estate-building{position:static;width:48px;height:48px;flex:0 0 48px;transform:none;}
+.ux-land-row>span:not(.estate-building){flex:1;min-width:0;}.ux-land-row b,.ux-land-row small{display:block;line-height:1.5;}.ux-land-row b{font-size:14px;}.ux-land-row small{font-size:11px;}.ux-land-row strong{font-size:11px;white-space:nowrap;}
+#panel .ux-heroes h3{display:flex;justify-content:space-between;gap:8px;}
+#panel .growth-details summary{min-height:44px;display:flex;align-items:center;}
+.lobby-heading .ux-land-open{min-height:44px;padding:4px 8px;font-size:11px;flex-shrink:0;}
+.lobby-heading{flex-wrap:wrap;gap:5px;}
+/* Keep one promotion route in the lobby; the milestone retains its readiness signal. */
+#lobby .promotion-shortcut,#lobby-promo{display:none;}

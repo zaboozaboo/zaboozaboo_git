@@ -1,0 +1,211 @@
+{
+  "version": 1,
+  "direction": "front-right",
+  "description": "Weapon-free body frames. Sockets are normalized coordinates inside original sheet cells; x right, y down. weapon angle is radians clockwise from screen right. No body mirroring.",
+  "sheets": {
+    "toddle": {
+      "file": "character-base-toddle-v3.png",
+      "columns": 4,
+      "rows": 1
+    },
+    "actions": {
+      "file": "character-base-actions-v1.png",
+      "columns": 6,
+      "rows": 3
+    }
+  },
+  "clips": {
+    "walk": {
+      "sheet": "toddle",
+      "row": 0,
+      "durations": [
+        0.24,
+        0.2,
+        0.24,
+        0.2
+      ],
+      "labels": [
+        "왼쪽 발 앞으로",
+        "발 모으기",
+        "오른쪽 발 앞으로",
+        "발 모으기"
+      ],
+      "sockets": []
+    },
+    "club": {
+      "sheet": "actions",
+      "row": 1,
+      "durations": [
+        0.24,
+        0.18,
+        0.16,
+        0.09,
+        0.18,
+        0.25
+      ],
+      "labels": [
+        "준비",
+        "뒤로 들기",
+        "정점",
+        "휘두르기",
+        "마무리",
+        "회복"
+      ],
+      "sockets": [
+        {
+          "grip": [
+            0.31,
+            0.66
+          ],
+          "angle": -2.05
+        },
+        {
+          "grip": [
+            0.29,
+            0.44
+          ],
+          "angle": -2.0
+        },
+        {
+          "grip": [
+            0.32,
+            0.29
+          ],
+          "angle": -1.65
+        },
+        {
+          "grip": [
+            0.83,
+            0.62
+          ],
+          "angle": 0.2
+        },
+        {
+          "grip": [
+            0.74,
+            0.74
+          ],
+          "angle": 0.7
+        },
+        {
+          "grip": [
+            0.4,
+            0.67
+          ],
+          "angle": -2.05
+        }
+      ]
+    },
+    "bow": {
+      "sheet": "actions",
+      "row": 2,
+      "durations": [
+        0.25,
+        0.22,
+        0.24,
+        0.4,
+        0.12,
+        0.32
+      ],
+      "labels": [
+        "준비",
+        "조준",
+        "당기기",
+        "유지",
+        "발사",
+        "회복"
+      ],
+      "releaseFrame": 4,
+      "sockets": [
+        {
+          "grip": [
+            0.62,
+            0.68
+          ],
+          "draw": [
+            0.44,
+            0.68
+          ]
+        },
+        {
+          "grip": [
+            0.82,
+            0.55
+          ],
+          "draw": [
+            0.36,
+            0.6
+          ]
+        },
+        {
+          "grip": [
+            0.85,
+            0.55
+          ],
+          "draw": [
+            0.34,
+            0.54
+          ]
+        },
+        {
+          "grip": [
+            0.86,
+            0.55
+          ],
+          "draw": [
+            0.33,
+            0.55
+          ]
+        },
+        {
+          "grip": [
+            0.86,
+            0.55
+          ],
+          "draw": [
+            0.34,
+            0.5
+          ]
+        },
+        {
+          "grip": [
+            0.68,
+            0.68
+          ],
+          "draw": [
+            0.46,
+            0.68
+          ]
+        }
+      ]
+    }
+  },
+  "equipment": {
+    "club": {
+      "file": "equipment/club.svg",
+      "pivot": [
+        0.09,
+        0.5
+      ],
+      "lengthInBodyHeights": 0.52
+    },
+    "bow": {
+      "file": "equipment/bow.svg",
+      "pivot": [
+        0.76,
+        0.5
+      ],
+      "heightInBodyHeights": 0.72,
+      "stringTips": [
+        [
+          0.1714,
+          0.05
+        ],
+        [
+          0.1714,
+          0.95
+        ]
+      ]
+    }
+  }
+}

@@ -1,0 +1,146 @@
+/* Layout and interaction only; reuse the existing kingdom palette and artwork. */
+#sheet-views button{font-size:13px;min-height:44px;white-space:nowrap;}
+#sheet-views button:focus-visible,.ux-list-tools select:focus-visible{outline:3px solid var(--gold,#c9a453);outline-offset:-3px;}
+#panel [role=tabpanel]{min-width:0;}
+.ux-list-tools{display:flex;gap:10px;margin:12px 0;}
+.ux-list-tools label{flex:1;min-width:0;font-size:12px;font-weight:bold;}
+.ux-list-tools select{display:block;width:100%;min-height:44px;margin-top:4px;padding:6px;border:1px solid #82928a;border-radius:7px;background:var(--kingdom-paper,#ece9d8);color:var(--kingdom-ink,#28433e);font:inherit;}
+.ux-hero-row{display:flex;align-items:center;gap:8px;padding:12px 0;border-top:1px solid #75877855;}
+.ux-hero-detail{display:flex;align-items:center;flex:1;min-width:0;gap:9px;border:0;background:none;text-align:left;color:inherit;padding:0;min-height:70px;cursor:pointer;}
+.ux-hero-detail .hero-art{width:50px!important;height:65px!important;flex-shrink:0;}
+.ux-hero-detail>span:last-child{min-width:0;}
+.ux-hero-detail b,.ux-hero-detail small{display:block;line-height:1.5;overflow-wrap:anywhere;}
+.ux-hero-detail b{font-size:14px;}.ux-hero-detail small{font-size:11px;}
+.ux-row-actions{display:flex;flex-direction:column;gap:6px;flex:0 0 104px;}
+#panel .ux-row-actions .btn{min-height:44px;font-size:11px;padding:5px 7px;}
+.ux-empty{text-align:center;padding:24px 8px;font-size:13px;}.ux-empty .btn{min-height:44px;}
+.ux-land-row{display:flex;width:100%;align-items:center;gap:8px;border:0;border-top:1px solid #75877855;background:none;color:inherit;text-align:left;min-height:86px;padding:10px 0;cursor:pointer;}
+.ux-land-row .estate-building{position:static;width:48px;height:48px;flex:0 0 48px;transform:none;}
+.ux-land-row>span:not(.estate-building){flex:1;min-width:0;}.ux-land-row b,.ux-land-row small{display:block;line-height:1.5;}.ux-land-row b{font-size:14px;}.ux-land-row small{font-size:11px;}.ux-land-row strong{font-size:11px;white-space:nowrap;}
+#panel .ux-heroes h3{display:flex;justify-content:space-between;gap:8px;}
+#panel .growth-details summary{min-height:44px;display:flex;align-items:center;}
+.lobby-heading .ux-land-open{min-height:44px;padding:4px 8px;font-size:11px;flex-shrink:0;}
+.lobby-heading{flex-wrap:wrap;gap:5px;}
+/* Keep one promotion route in the lobby; the milestone retains its readiness signal. */
+#lobby .promotion-shortcut,#lobby-promo{display:none;}
+/* Game screens have a fixed stage. Only named collections own scroll. */
+#panel{overflow:hidden!important;padding:10px;display:flex;flex-direction:column;}
+#panel>[role=tabpanel]:not(.hidden){display:flex;flex:1;min-height:0;flex-direction:column;gap:8px;overflow:hidden;}
+#panel .ux-fill,#panel .ux-heroes,#panel .ux-land-section{display:flex;flex:1;flex-direction:column;min-height:0;overflow:hidden;margin:0;}
+#panel .ux-scroll{overflow-y:auto;overflow-x:hidden;min-height:0;flex:1;overscroll-behavior:contain;touch-action:pan-y;scrollbar-width:thin;scrollbar-color:#b39761 #314b4855;padding:0 4px 10px;}
+#panel .ux-scroll[hidden]{display:none;}
+#panel .ux-scroll:focus-visible{outline:2px solid #c5aa71;outline-offset:-2px;}
+#panel .ux-list-tools,#panel .ux-heroes>h3,#panel .ux-land-section>h3{flex-shrink:0;}
+#panel .ux-list-tools{margin:6px 0 10px;}
+.ux-stage{position:relative;isolation:isolate;overflow:hidden;flex:0 1 160px;min-height:70px;height:clamp(70px,18dvh,170px);border-radius:10px;border:1px solid #b49b69;background:radial-gradient(ellipse at 50% 0%,#b3d6b5,#688b77 50%,#284944);box-shadow:inset 0 0 35px #173c4366;margin:0 0 8px;}
+.ux-stage-land{position:absolute;inset:0;background:url('assets/kingdom-landscape.svg') center 62%/cover;opacity:.5;z-index:-1;}
+.ux-stage:after{content:'';position:absolute;inset:0;background:linear-gradient(transparent 30%,#153a3de6);pointer-events:none;}
+.ux-stage-art{position:absolute;inset:0 0 28px;display:flex;align-items:center;justify-content:center;gap:0;filter:drop-shadow(0 6px 3px #162e37aa);}
+.ux-stage-art .estate-building{width:110px;height:110px;position:static;transform:none;}
+.ux-stage-art .hero-art,.ux-stage-art .lord-art{width:95px!important;height:110px!important;}
+.ux-stage-caption{position:absolute;z-index:1;bottom:8px;left:14px;right:12px;display:flex;justify-content:space-between;align-items:end;gap:12px;color:#fff1cc;text-shadow:0 2px #234346;}
+.ux-stage-caption b{font-size:17px;}.ux-stage-caption small{font-size:10px;text-align:right;max-width:55%;}
+.ux-stage-army{flex:0 0 95px;min-height:70px;}.ux-stage-army .ux-stage-art{justify-content:flex-end;padding-right:20px;inset:0;}.ux-stage-army .hero-art{width:72px!important;height:90px!important;}.ux-stage-army .ux-stage-caption{align-items:start;flex-direction:column;gap:3px;right:140px;}.ux-stage-army .ux-stage-caption small{max-width:none;text-align:left;}
+#panel .ux-hero-row{padding:9px 5px;margin:5px 0;border:1px solid #b8b493;border-radius:9px;background:linear-gradient(105deg,#e8dfbd,#f4eed9 65%);box-shadow:0 2px #9b9c7c44;}
+#panel .ux-hero-detail .hero-art{background-color:#5d7e70;border-radius:7px;border-bottom:3px solid #38584f;box-shadow:inset 0 0 15px #183d4244;}
+#panel .ux-land-row{border:1px solid #a2ad92;border-radius:9px;margin:6px 0;background:linear-gradient(105deg,#dce3cb,#f2eddb);padding:9px 7px;}
+#panel .ux-command-board{flex-shrink:0;margin:0;background:linear-gradient(#335b54,#203f40);border:2px solid #ba9e65;box-shadow:inset 0 0 30px #112e3855;}
+#panel .reserve-section{display:flex;flex-direction:column;flex:1;min-height:0;margin:0;}
+#panel .reserve-grid{align-content:start;}
+#panel .kingdom-growth{flex:1;min-height:0;margin:0;display:flex;flex-direction:column;}
+#panel .kingdom-growth>.ux-stage{flex:1;}
+#panel .kingdom-growth>*:not(.ux-stage){flex-shrink:0;}
+#panel .growth-build{margin-top:auto;min-height:44px;}
+#panel .lord-upgrade{flex:1;min-height:0;margin:0;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:minmax(60px,1fr) auto;align-items:center;background:radial-gradient(ellipse at 30% 30%,#799e88,#345c55 65%,#24444a);border-color:#b39a64;padding:14px;}
+#panel .growth-portrait{height:100%;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(ellipse at 50% 80%,#d7dca955,transparent 65%);}
+#panel .growth-portrait .lord-art{width:100%!important;height:100%!important;max-height:260px;min-height:0;background-size:contain;}
+#panel .growth-action{grid-column:1/-1;}
+#panel .growth-identity{display:block;color:#f2e4bf;}.growth-identity h3{color:inherit!important;}
+#panel .growth-action #lord-breakthrough{min-height:44px;}
+#panel .ux-detail-open{flex-shrink:0;width:100%;min-height:44px;margin:0;}
+.ux-detail-list{max-height:65dvh;overflow-y:auto;overscroll-behavior:contain;}
+#panel [data-view=promo]>.sec{display:flex;flex-direction:column;flex:1;min-height:0;margin:0;gap:5px;}
+#panel [data-view=promo]>.sec>.ux-stage{flex:1;min-height:55px;margin:0;}
+#panel .ux-requirements{flex:0 1 auto;}
+#panel .ux-requirements .req{padding:5px 7px;margin:3px 0;min-height:28px;font-size:12px;}
+#panel [data-ux=duel],#panel [data-ux=war]{display:flex;flex-direction:column;flex:1;min-height:0;margin:0;}
+#panel [data-ux=war]>.ux-stage{flex:1;}
+.ux-ranking-switch{display:flex;gap:8px;flex-shrink:0;}.ux-ranking-switch button{flex:1;}.ux-ranking-switch [aria-pressed=true]{background:#e5c57f;color:#493c2a;}
+#panel .recruitment{display:flex;flex-direction:column;flex:1;min-height:0;margin:0;}
+#panel .recruitment .summon-stage{flex:1;min-height:70px;overflow:hidden;position:relative;}
+#panel .recruitment .recruit-lineup{height:100%;min-height:0;max-height:230px;}
+#panel .recruitment .recruit-display{height:100%;max-height:210px;}
+#panel .recruitment .summon-btns{flex-shrink:0;}
+#panel .land-detail{display:flex;flex-direction:column;flex:1;min-height:0;margin:0;}
+#panel .facility-choices{flex:1;min-height:0;align-items:stretch;}
+#panel .facility-choice{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:0;}
+#panel .facility-choice .estate-building{flex:0 1 110px;width:100px;height:110px;min-height:35px;}
+#lobby{overflow:hidden!important;}
+#lobby .kingdom-scene{flex:1 1 auto!important;min-height:0!important;}
+#lobby .lobby-play,#lobby #battle-objective,#lobby .lobby-heading{flex-shrink:0;}
+@media(max-height:700px){
+ #panel{padding:7px;gap:5px;}#panel>[role=tabpanel]:not(.hidden){gap:5px;}
+ .ux-stage-army{flex-basis:65px;min-height:65px;}.ux-stage-army .hero-art{height:65px!important;width:55px!important;}.ux-stage-caption b{font-size:14px;}
+ #panel .ux-heroes,#panel .ux-land-section{padding:8px;}
+ #panel .ux-list-tools label{font-size:10px;}#panel .ux-list-tools{margin:2px 0 5px;}
+ #panel .kingdom-growth>.ux-stage{min-height:45px;}.ux-stage-art .estate-building{width:80px;height:80px;}
+ #panel .growth-star-buff{font-size:10px;}#panel .growth-star-buff>div{margin-top:3px;}
+ #panel .roster-dock>p{font-size:10px;margin:4px 0;}#panel .roster-dock{padding:6px;}
+ #panel .recruit-banner h2{font-size:16px;margin:5px;}#panel .recruit-guarantee{font-size:11px;}
+ #panel .land-detail .vanguard-reward{display:none;}
+ #lobby .lobby-squad{display:none;}
+ #lobby #lobby-route{padding:4px 10px;}
+}
+.ux-stage-art .estate-building{height:100%;max-height:150px;width:auto;aspect-ratio:1;flex:0 1 auto;}
+.ux-stage:not(.ux-stage-army) .ux-stage-art .lord-art,.ux-stage:not(.ux-stage-army) .ux-stage-art .hero-art{height:100%!important;max-height:180px;width:auto!important;aspect-ratio:.8;}
+#panel .ux-scroll .row>b{color:#37594e;}
+#panel .growth-identity>small{display:block;color:#d6dfc1;font-size:11px;line-height:1.5;}
+.panel-open #journey-hint{display:none;}
+@media(max-height:620px){
+ #panel .ux-heroes>.ux-stage{flex-basis:48px;min-height:48px;margin-bottom:3px;}
+ #panel .ux-heroes>h3{font-size:12px;margin:3px 0;}
+ #panel .ux-heroes .ux-list-tools label{display:flex;align-items:center;gap:4px;}
+ #panel .ux-heroes .ux-list-tools select{margin:0;}
+ .ux-stage-army .ux-stage-caption{bottom:5px;left:9px;right:115px;}.ux-stage-army .ux-stage-art{padding-right:8px;}
+ #panel .ux-hero-row{padding:6px 4px;}.ux-hero-detail b{font-size:12px;}
+}
+#panel .kingdom-growth>.growth-build{order:30;margin-top:8px;}
+#panel .ux-scroll{scroll-padding-block:8px;}
+/* Actions, navigation, and read-only information have different visual grammar. */
+#sheet .sheet-head{min-height:40px;padding:4px 12px;gap:8px;flex-shrink:0;}
+#sheet #sheet-title{background:none;border:0;box-shadow:none;border-radius:0;padding:5px 0;min-height:0;font-size:16px;}
+#sheet .sheet-head>.ux-info{margin-left:auto;}
+.ux-info{flex:0 0 44px;width:44px;height:44px;min-height:44px;border:0;background:none;color:inherit;font:bold italic 17px Georgia,serif;cursor:pointer;display:grid;place-items:center;position:relative;}
+.ux-info:before{content:'';position:absolute;width:22px;height:22px;border:1.5px solid currentColor;border-radius:50%;}
+.ux-info:hover:before,.ux-info:focus-visible:before{background:#d4b56744;}.ux-info:focus-visible{outline:2px solid #e6c47a;outline-offset:-4px;}
+.ux-close-dock{display:none;position:absolute;inset:auto 0 0;height:var(--nav-height);z-index:13;pointer-events:none;}
+.panel-open>.ux-close-dock{display:block;}
+#tabs .ux-covered{visibility:hidden;}
+.ux-close-dock #sheet-close{position:absolute;left:var(--close-x);top:4px;pointer-events:auto;transform:translateX(-50%);width:44px;height:44px;min-height:44px!important;display:grid;place-items:center;padding:9px;border:1px solid #203a43;border-bottom:3px solid #172f38;border-radius:10px;background:linear-gradient(#63857d,#3b5b57);color:#fff1cc;box-shadow:inset 0 1px #c8d0b266;cursor:pointer;}
+.ux-close-dock #sheet-close:active{transform:translate(-50%,2px);box-shadow:none;border-bottom-width:1px;}
+#sheet-views{padding:0 8px;background:#2d4853;border-bottom:1px solid #1e343d;gap:0;}
+#sheet-views button,#sheet-views button.active{background:transparent;box-shadow:none;border-radius:0;border:0;border-bottom:3px solid transparent;color:#b9cdc9;min-height:44px;text-align:center;}
+#sheet-views button.active{color:#ffe3a1;border-bottom-color:#e5c075;background:linear-gradient(transparent,#d4bd6a18);}
+#sheet-views button:hover:not(.active){background:#ffffff0a;color:#fff0c7;}
+#panel .btn:not(:disabled){text-align:center;justify-content:center;cursor:pointer;}
+#panel .btn:disabled{background:transparent!important;box-shadow:none!important;border-color:transparent!important;color:#7e897a;filter:none;opacity:1;cursor:default;transform:none;}
+#panel .growth-current{display:flex;align-items:center;gap:8px;margin:8px 0 0;flex-shrink:0;}
+#panel .growth-current>div:nth-child(2){flex:1;min-width:0;}
+#panel .growth-current h4{font-size:16px;margin:0 0 5px;}
+#panel .growth-current p{font-size:11px;line-height:1.5;}
+#panel .growth-current .growth-build{flex:0 0 86px;width:86px;min-height:58px;margin:0;padding:7px 4px;gap:3px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;order:0;}
+#panel .growth-current .growth-build>b{font-size:14px;}
+#panel .growth-current .growth-build>span{justify-content:center;font-size:12px;}
+#panel .growth-node-icon{width:36px;height:42px;border:0;background:none;box-shadow:none;border-radius:0;}
+#panel .growth-node-icon .game-icon{width:32px;height:32px;}
+#panel .growth-star-buff{display:flex;align-items:center;gap:8px;background:none;border:0;border-top:1px solid #afb89a;border-radius:0;box-shadow:none;padding:4px 0 0;margin-top:10px;}
+#panel .growth-star-buff>b{font-size:11px;font-weight:normal;flex:1;}
+#panel .growth-star-buff>strong{font-size:12px;}
+#panel .growth-honors{background:none;box-shadow:none;}
+#panel .ux-stage-caption small:empty{display:none;}
+@media(max-width:360px){#panel .growth-node-icon{display:none;}#panel .growth-current h4{font-size:14px;}#panel .growth-current .growth-build{flex-basis:78px;width:78px;}#panel .growth-star-buff{gap:3px;}#panel .growth-star-buff>b{font-size:10px;}#panel .growth-star-buff>strong{font-size:11px;}}
+
+/* Scenery supports the content without reserving a separate illustration slot. */
+#panel .ux-ambient-land{position:relative;isolation:isolate;background:#e8e9da;}
+#panel .ux-ambient-land:before{content:'';position:absolute;inset:0;z-index:-1;pointer-events:none;background:url('assets/kingdom-landscape.svg') center/cover;opacity:.09;filter:blur(2px);}
+#panel .kingdom-growth.ux-ambient-land{flex:0 0 auto;}

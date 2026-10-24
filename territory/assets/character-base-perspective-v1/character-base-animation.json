@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "direction": "front-right-elevated",
+  "sheets": {
+    "toddle": {
+      "file": "walk.png",
+      "columns": 4,
+      "rows": 1
+    }
+  },
+  "clips": {
+    "walk": {
+      "sheet": "toddle",
+      "row": 0,
+      "durations": [
+        0.24,
+        0.2,
+        0.24,
+        0.2
+      ],
+      "labels": [
+        "왼발 내딛기",
+        "발 모으기",
+        "오른발 내딛기",
+        "발 모으기"
+      ],
+      "sockets": []
+    }
+  },
+  "equipment": {}
+}

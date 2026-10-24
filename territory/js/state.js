@@ -48,7 +48,7 @@ function newGame({ name, gender, cls, nation }) {
     upgrades: { atk: 0, hp: 0, spawn: 0, cap: 0, castle: 0, gold: 0 },
     heroes: { militia: { level: 1, stars: 1, shards: 0 }, archer: { level: 1, stars: 1, shards: 0 } },
     slots: ['militia', 'archer', null, null, null],
-    formation: cls==='knight'?[2,2,1,0,0]:[0,0,1,2,2],
+    formation: [0,1,1,0,1],
     daily: { date: todayStr(), war: 3, duel: 5, freeSummon: 1 },
     ladder,
     nationScore: { aurum: randInt(9000, 13000), sylvan: randInt(9000, 13000), ignis: randInt(9000, 13000) },
@@ -192,6 +192,7 @@ function rollRarity(minRarity) {
 }
 
 function summon(n) {
+  if(typeof featureAccess==='function'&&!featureAccess('recruit').unlocked)return [];
   const results = [];
   for (let i = 0; i < n; i++) {
     const guarantee = n >= 10 && i === n - 1 && !results.some(r => RARITY_ORDER.indexOf(r.rarity) >= 1);
@@ -208,6 +209,7 @@ function summon(n) {
 
 // ---------- 오프라인 보상 ----------
 function offlineReward() {
+  if(S.firstExpedition===false)return null;
   const elapsed = Math.min((Date.now() - (S.lastSave || Date.now())) / 1000, 8 * 3600);
   if (elapsed <= 0) return null;
   const merit = lordMeritRate() * elapsed;
@@ -231,4 +233,22 @@ function ensureLordMerit(){if(!Number.isFinite(S.lord.merit)||S.lord.merit<0)S.l
 function lordMeritRate(){return Math.max(1,Number.isInteger(S.stage)?S.stage:1);}
 function lordBreakthroughCost(){return Math.round(60*Math.pow(1.12,S.lord.level-1));}
 function accrueLordMerit(seconds){ensureLordMerit();if(!Number.isFinite(seconds)||seconds<=0)return 0;const amount=lordMeritRate()*Math.min(seconds,8*3600);S.lord.merit+=amount;return amount;}
-function breakthroughLord(expectedLevel){ensureLordMerit();const cost=lordBreakthroughCost();if(expectedLevel!==S.lord.level||S.lord.merit<cost)return false;S.lord.merit-=cost;S.lord.level++;return true;}
+function breakthroughLord(expectedLevel){if(typeof featureAccess==='function'&&!featureAccess('lord').unlocked)return false;ensureLordMerit();const cost=lordBreakthroughCost();if(expectedLevel!==S.lord.level||S.lord.merit<cost)return false;S.lord.merit-=cost;S.lord.level++;return true;}
+
+// Expedition gates use actual progress and explicit instruction acknowledgement.
+function expeditionAccess(mode) {
+  const veteran=S.firstExpedition===undefined&&(S.stats.wars>0||myRank()<S.ladder.length);
+  if(veteran)return {ready:true,unlocked:true,reason:''};
+  let reason='';
+  if(S.firstExpedition===false||S.firstExpedition===true&&S.territoryTutorial!=='done')reason='첫 원정과 햇살 숲 영토 안내를 완료하세요.';
+  else if(S.learning?.version===1&&S.lord.promo<1)reason='첫 전직을 완료하면 서열전 안내가 열립니다.';
+  else if(S.maxStage<7)reason='6단계를 클리어하면 서열전 안내가 열립니다.';
+  else if(mode==='war'&&!S.expeditionProgress?.duelCompleted)reason='서열전을 먼저 1회 완료하세요. 승패는 상관없어요.';
+  else if(mode==='war'&&S.maxStage<11)reason='10단계 성을 함락하면 국가전 안내가 열립니다.';
+  const ready=!reason,unlocked=ready&&!!S.expeditionProgress?.[mode+'Intro'];
+  return {ready,unlocked,reason:reason||(unlocked?'':'출전 방법을 먼저 확인하세요.')};
+}
+function acknowledgeExpedition(mode){
+  if(!['duel','war'].includes(mode)||!expeditionAccess(mode).ready)return false;
+  (S.expeditionProgress??={})[mode+'Intro']=true;saveGame();return true;
+}

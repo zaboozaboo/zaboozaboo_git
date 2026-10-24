@@ -1,0 +1,23 @@
+<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>민병 · 3·4번 걷기</title>
+<style>*{box-sizing:border-box}body{margin:0;background:#203c48;color:#f5eddb;font:15px system-ui;line-height:1.6}main{max-width:850px;margin:auto;padding:18px}h1{font-size:23px}p{color:#ceddd7}nav{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0}button,select{font:inherit;background:#f3d48d;color:#302f23;border:0;border-radius:8px;padding:9px 14px}.poses{display:grid;grid-template-columns:1fr 1fr;gap:12px}figure{margin:0}canvas{display:block;width:100%;aspect-ratio:1;background:#adc59e;border:2px solid #e8cf8d;border-radius:12px}.live{width:min(100%,340px);margin:20px auto}figcaption{text-align:center;padding:8px}#status{color:#ffe2a2}a{color:#ffe2a2}small{color:#c8d8cf}</style>
+<main><h1>민병 · 3·4번 걷기</h1><p>기존 시트의 아래쪽 두 장을 재생합니다. 머리·상체를 기준으로 4번의 위치를 보정했습니다.</p>
+<nav><button id="pause">일시정지</button><button id="step">한 장씩</button><label>속도 <select id="speed"><option value="1">1장/초</option><option value="2.5" selected>2.5장/초</option><option value="4">4장/초</option></select></label></nav>
+<figure class="live"><canvas id="live" width="512" height="512"></canvas><figcaption id="phase">이미지 준비 중</figcaption></figure>
+<figure><canvas id="small" width="512" height="100" style="aspect-ratio:512/100"></canvas><figcaption>작은 전투 크기</figcaption></figure>
+<div class="poses"><figure><canvas id="poseA" width="512" height="512"></canvas><figcaption>3번</figcaption></figure><figure><canvas id="poseB" width="512" height="512"></canvas><figcaption>4번 · 위치 보정</figcaption></figure></div>
+<p id="status" role="status">이미지 불러오는 중…</p><small>같은 배율로 전체 프레임을 표시합니다. 4번은 원본 기준 오른쪽 34px·아래 1px 이동. 팔다리와 도끼는 변형하지 않습니다.</small></main>
+<script>
+const image=new Image(),out=document.getElementById('status');let ready=false,paused=false,phase=0,last=0,time=0;
+function draw(id,index){
+ const canvas=document.getElementById(id),c=canvas.getContext('2d'),sw=image.naturalWidth/2,sh=image.naturalHeight/2;
+ const scale=(id==='small'?44:440)/Math.max(sw,sh),w=sw*scale,h=sh*scale;
+ c.clearRect(0,0,canvas.width,canvas.height);
+ c.drawImage(image,index*sw,sh,sw,sh,(canvas.width-w)/2+(index?34*scale:0),(canvas.height-h)/2+(index?scale:0),w,h);
+}
+image.onload=()=>{try{draw('poseA',0);draw('poseB',1);ready=true;out.textContent='두 프레임 준비 완료 · 전체 이미지 영역을 여백 안에 표시';}catch(e){out.textContent='표시 오류: '+e.message;}};
+image.onerror=()=>out.textContent='이미지를 불러오지 못했습니다. 서버 연결을 확인해 주세요.';
+image.src='../assets/animation-study/militia-user-prompt-v1.png';
+document.getElementById('pause').onclick=()=>{paused=!paused;document.getElementById('pause').textContent=paused?'재생':'일시정지';};
+document.getElementById('step').onclick=()=>{paused=true;phase=1-phase;time=0;document.getElementById('pause').textContent='재생';};
+function tick(now){const dt=last?Math.min((now-last)/1000,.1):0;last=now;if(ready){if(!paused){time+=dt;const interval=1/Number(document.getElementById('speed').value);if(time>=interval){phase=1-phase;time%=interval;}}draw('live',phase);draw('small',phase);document.getElementById('phase').textContent=(phase?'4번':'3번')+' · '+(paused?'정지':'재생');}requestAnimationFrame(tick);}requestAnimationFrame(tick);
+</script></html>

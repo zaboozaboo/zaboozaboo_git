@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="ko">
+<head><script>try{if(!localStorage.getItem('territory_before_reference_ux_20261025')){const s=localStorage.getItem('territory_save_v1');if(s)localStorage.setItem('territory_before_reference_ux_20261025',s)}}catch(e){}</script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>영토, 나의 영토!</title>
+  <meta name="theme-color" content="#142a34">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="mobile.css">
+  <link rel="stylesheet" href="game-shell.css?casual-61">
+  <link rel="stylesheet" href="kingdom-ui.css?v=shared-tabs-51">
+  <link rel="stylesheet" href="casual-theme.css?v=61">
+  <link rel="stylesheet" href="ux-navigation.css?v=4">
+</head>
+<body>
+<div id="app">
+  <section id="boot" class="screen" aria-label="게임 시작">
+    <div class="boot-art"></div><div class="boot-shade"></div><div class="boot-motes" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="boot-brand"><div class="brand-crest"><span class="game-icon" aria-hidden="true" style="background-position:20% 0%"></span></div><p>TERRITORY · MY KINGDOM</p><h1>영토,<br><strong>나의 영토!</strong></h1><div class="brand-rule"></div><span>작은 깃발 하나에서 시작되는 위대한 왕국</span></div>
+    <div class="boot-bottom"><p id="boot-status" role="status">왕국을 불러오는 중…</p><div id="boot-meter" role="progressbar" aria-label="게임 준비" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i id="boot-progress"></i></div><button id="boot-start" class="btn primary wide" disabled>왕국 준비 중…</button><small>영웅을 모으고 · 영토를 넓히고 · 왕국을 세우세요</small></div>
+  </section>
+  <!-- 캐릭터 생성 -->
+  <section id="setup" class="screen hidden">
+    <header class="creation-header"><span class="eyebrow">A NEW CHRONICLE</span><h1>당신의 이야기를 시작하세요</h1><p id="creation-subtitle">왕국이 기억할 이름을 알려주세요.</p></header>
+    <ol class="creation-steps" aria-label="영주 생성 단계"><li class="current">01 <span>영주</span></li><li>02 <span>직업</span></li><li>03 <span>국가</span></li></ol>
+    <div class="lord-showcase"><div class="showcase-orbit"></div><div id="setup-preview" class="lord-art" role="img" aria-label="선택한 영주 모습"></div><div class="showcase-copy"><span>YOUR LORD</span><strong id="setup-title">기사</strong><small id="setup-bonus"></small></div></div>
+    <div class="creation-page" data-step="0"><div class="setup-step"><h3><label for="in-name">영주의 이름</label><small>최대 8자</small></h3><input id="in-name" maxlength="8" placeholder="이름을 입력하세요" autocomplete="off"><p class="hint">비워두면 아서 또는 엘리스로 시작합니다.</p></div><div class="setup-step"><h3>영주의 모습</h3><div class="choice-row" id="ch-gender"><button class="choice" data-v="m"><span class="big"><span class="game-icon" aria-hidden="true" style="background-position:80% 75%"></span></span>남성 영주</button><button class="choice" data-v="f"><span class="big"><span class="game-icon" aria-hidden="true" style="background-position:20% 0%"></span></span>여성 영주</button></div></div></div>
+    <div class="creation-page hidden" data-step="1"><div class="setup-step"><h3>전장을 이끌 직업</h3><div class="choice-row" id="ch-class"></div></div><div class="class-detail"><p id="creation-class-desc"></p><span>고유 스킬</span><strong id="creation-skill"></strong><p id="creation-skill-desc"></p></div></div>
+    <div class="creation-page hidden" data-step="2"><div class="setup-step"><h3>깃발을 올릴 국가</h3><div class="choice-col" id="ch-nation"></div></div><p class="hint">국가의 축복은 왕국을 세우는 순간부터 적용됩니다.</p></div>
+    <footer class="creation-footer"><button id="creation-back" class="btn">이전</button><button id="creation-next" class="btn primary">직업 선택 →</button><button id="btn-start" class="btn primary hidden">왕국 건국하기 →</button><p>선택한 영주와 함께 첫 번째 전투가 시작됩니다.</p></footer>
+  </section>
+
+  <!-- 메인 게임 -->
+  <section id="game" class="screen hidden">
+    <header id="topbar">
+      <div class="portrait" id="tb-portrait"><div id="tb-portrait-art" class="lord-art" role="img" aria-label="내 영주"></div><span id="tb-stars"></span></div>
+      <div class="tb-info">
+        <div class="tb-name"><span id="tb-name"></span> <span class="lv" id="tb-lv"></span></div>
+        <div class="tb-title" id="tb-title"></div>
+      </div>
+      <div class="tb-cur">
+        <div><span class="game-icon" aria-hidden="true" style="background-position:100% 0%"></span> <b id="tb-gold">0</b></div>
+        <div><span class="game-icon" aria-hidden="true" style="background-position:80% 0%"></span> <b id="tb-gems">0</b></div>
+      </div>
+    </header>
+    <main id="lobby" aria-label="왕국 로비">
+      <div class="lobby-heading"><span id="lobby-status"></span><b id="lobby-best"></b><button class="btn small ux-land-open" data-open-panel="kingdom">영토 목록 ›</button></div>
+      <section class="kingdom-scene growing-kingdom" aria-label="내 왕국">
+        <div class="kingdom-sky"></div><div class="kingdom-hill hill-one"></div><div class="kingdom-hill hill-two"></div>
+        <div class="lobby-chapter"><small>나의 왕국</small><h2 id="lobby-region"></h2><b id="lobby-stage"></b></div>
+        <div id="kingdom-map-host"></div>
+        <button class="scene-shortcut promotion-shortcut" data-open-panel="promo"><span class="game-icon" style="background-position:20% 25%" aria-hidden="true"></span><b>전직</b></button>
+        <button class="scene-shortcut recruit-shortcut" id="lobby-recruit" data-open-panel="summon"><span class="game-icon" style="background-position:0% 25%" aria-hidden="true"></span><b id="lobby-recruit-badge"></b></button>
+        <div class="power-plaque">부대 전투력 <strong id="lobby-power"></strong></div>
+      </section>
+      <div id="lobby-route" aria-label="영토와 전직 성장"></div>
+      <section class="lobby-squad"><div><b>출전 부대</b><button data-open-panel="territory">진형 편성 ›</button></div><div id="lobby-deck"></div></section>
+    <div id="battle-objective"><div><b id="objective-title"></b><small id="objective-detail"></small></div><button id="objective-action" class="btn primary"></button></div>
+      <div class="lobby-play"><button id="lobby-battle"><span class="game-icon" aria-hidden="true" style="background-position:60% 0%"></span><b id="lobby-battle-label">전투로 돌아가기</b><span>▶</span></button><button id="lobby-challenge" class="hidden"></button><button id="lobby-promo" data-open-panel="promo"></button></div>
+    </main>
+    <header id="battle-top">      <div class="stage-info">
+        <div class="ct-row"><span id="ct-stage"></span><span id="ct-timer"></span></div>
+        <div class="wave" title="웨이브 진행도"><i id="ct-wave"></i></div>
+        <div id="ct-power"></div>
+      </div>
+</header>
+    <div id="field"><canvas id="cv" aria-label="전장 · 드래그하여 둘러보기"></canvas><button id="camera-return" hidden>전투로 복귀</button><button id="btn-boss" class="btn danger small hidden">보스 도전</button>    <section id="combat-actions" aria-label="전투 조작">
+      <div class="combat-skill"><button id="btn-skill" class="skill-btn"><span id="sk-icon"></span><span id="sk-cd"></span></button>
+      <button id="btn-auto" class="btn small">AUTO</button></div>
+    </section><button id="first-guide" class="hidden"><span>첫 번째 왕국 임무</span><b>영웅을 확인하고 부대를 성장시키세요</b><small>영토 관리 열기 →</small></button></div>
+
+    <section id="deployment-panel" aria-label="편성 부대와 주사위 생산"><section id="dice-hud" aria-label="자동 주사위 생산"></section><div id="deployment"></div></section>
+    <nav id="tabs" aria-label="왕국·전투 공통 메뉴">
+      <button data-tab="summon"><span class="game-icon" aria-hidden="true" style="background-position:0% 25%"></span><span>영입</span></button>
+      <button data-tab="territory"><span class="game-icon" aria-hidden="true" style="background-position:40% 0%"></span><span>부대</span></button>
+      <button data-tab="lobby" class="home-tab"><span class="game-icon" aria-hidden="true" style="background-position:0% 0%"></span><span>왕국</span></button>
+      <button data-tab="lord"><span class="game-icon" aria-hidden="true" style="background-position:20% 0%"></span><span>성장</span></button>
+      <button data-tab="nation"><span class="game-icon" aria-hidden="true" style="background-position:60% 0%"></span><span>대전</span></button>
+    </nav>
+    <!-- 탭 내용은 전장 위로 올라오는 시트에 표시 -->
+    <button id="sheet-backdrop" class="hidden" aria-label="메뉴 닫고 전장으로 돌아가기"></button>
+    <div id="sheet" class="hidden">
+      <div class="sheet-head"><b id="sheet-title"></b><button id="sheet-close" class="btn small" aria-label="닫기"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 7 10 10M17 7 7 17"/></svg></button></div>
+      <section id="panel"></section>
+    </div>
+  </section>
+
+  <div id="modal" class="hidden" role="dialog" aria-modal="true" aria-label="게임 알림"><div class="modal-box" id="modal-box"></div></div>
+  <div id="toast" role="status" aria-live="polite"></div>
+</div>
+
+<script src="js/presentation.js?v=unit-metalwork-29"></script>
+<script src="js/data.js?charge-37"></script>
+<script src="js/state.js?v=learning-path-56"></script>
+<script src="js/kingdom.js?v=learning-path-56"></script>
+<script src="js/dice.js?feedback-57"></script>
+<script src="js/formation.js?charge-37"></script>
+<script src="js/battle.js?militia-hit-65"></script>
+<script src="js/camera.js?feedback-57"></script>
+<script src="js/militia-combat.js?v=militia-toy-66"></script>
+<script src="js/render.js?militia-64"></script>
+<script src="js/audio.js"></script>
+<script src="js/progression.js?feedback-57"></script>
+<script src="js/combat-feedback.js?v=feedback-57"></script>
+<script src="js/ui.js?ux-2"></script>
+<script src="js/guidance.js?shared-tabs-49"></script>
+<script src="js/mobile-shell.js?ux-1"></script>
+<script src="js/first-camp.js?perspective-58"></script>
+<script src="js/journey-guide.js?feedback-57"></script>
+<script src="js/ux-navigation.js?v=4"></script>
+<script src="js/main.js?onboarding-46"></script>
+</body>
+</html>

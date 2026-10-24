@@ -1,0 +1,20 @@
+<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>민병 비율 · 기본 아바타</title><style>body{margin:0;background:#20343e;color:#eee5cf;font:15px system-ui}main{max-width:620px;margin:auto;padding:20px}h1{font-size:22px}canvas{width:100%;display:block;border-radius:16px;background:#adc59e}p{line-height:1.7;color:#c6d4ca}</style><main><h1>민병 비율 · 기본 아바타</h1><p>머리 · 몸통 · 양팔 · 양다리. 손발은 팔다리에 포함된 한 덩어리입니다.</p><canvas id="avatar" width="600" height="600"></canvas><p>정지 상태 · 옷과 무기 없음</p></main><script>
+const c=document.getElementById('avatar').getContext('2d');
+c.fillStyle='#adc59e';c.fillRect(0,0,600,600);
+function part(path,color){c.fillStyle=color;c.strokeStyle='#53615d';c.lineWidth=3;c.lineJoin='round';c.fill(new Path2D(path));c.stroke(new Path2D(path));}
+// Each limb is a single fixed bent silhouette, not separately articulated segments.
+// Far leg: hip to bent knee to small tucked boot, one piece.
+part('M 333 357 C 351 348 374 357 382 376 L 382 400 C 402 408 415 426 404 442 C 394 457 363 458 343 447 C 331 440 327 430 332 418 L 319 389 C 311 376 318 362 333 357 Z','#ad9980');
+// Far arm: shoulder, elbow bend, forearm and fist in a continuous outline.
+part('M 376 244 C 393 237 410 246 417 264 L 436 293 C 444 302 441 313 437 323 L 454 340 C 464 355 454 373 439 378 C 425 383 411 373 406 362 L 394 340 C 385 332 382 323 380 311 L 360 283 C 348 264 359 250 376 244 Z','#b5a188');
+// Near leg: short thigh, bent knee, broad boot facing diagonally down-left.
+part('M 269 355 C 291 345 319 355 324 375 C 327 389 320 400 310 409 L 320 425 C 328 440 318 458 302 469 C 287 480 261 486 244 476 C 227 468 227 449 237 436 L 259 415 L 248 392 C 241 375 252 361 269 355 Z','#e1c7a4');
+// Compact torso; neck and pelvis are contained in this one part.
+part('M 251 245 C 284 224 349 220 379 248 C 393 272 392 319 375 348 C 352 376 289 386 254 365 C 235 347 231 278 251 245 Z','#cdb391');
+// Near arm: bent elbow held close to body and forward fist, one solid part.
+part('M 244 255 C 259 261 264 277 255 291 L 235 321 L 248 334 C 261 340 265 356 258 370 C 251 384 231 388 218 379 L 198 358 C 187 349 184 337 190 324 L 207 281 C 213 262 230 249 244 255 Z','#ead1ae');
+// Large head in a high three-quarter view; face looks down-right.
+c.fillStyle='#efdab8';c.strokeStyle='#53615d';c.lineWidth=3;c.beginPath();c.ellipse(316,209,101,89,-.26,0,Math.PI*2);c.fill();c.stroke();
+c.fillStyle='#36464a';for(const [x,y] of [[340,225],[377,211]]){c.beginPath();c.ellipse(x,y,6,9,.15,0,Math.PI*2);c.fill();}
+c.fillStyle='#d8ba96';c.beginPath();c.ellipse(368,241,10,7,-.3,0,Math.PI*2);c.fill();
+</script></html>

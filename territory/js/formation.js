@@ -1,6 +1,6 @@
 'use strict';
-function unlockRank(i){return (S.lord.cls==='knight'?[2,2,1,0,0]:[0,0,1,2,2])[i];}
-const FORMATION_NAMES=['전열','중열','후열'];
+function unlockRank(i){return [0,1,1,0,1][i];}
+const FORMATION_NAMES=['전열','후열'];
 function ensureFormation() {
   if(!Array.isArray(S.formation)) S.formation=[];
   for(let i=0;i<5;i++) S.formation[i]=unlockRank(i);
@@ -13,7 +13,7 @@ function formationPosition(slot) {
   const rank=unlockRank(slot);
   const peers=Array.from({length:5},(_,i)=>unlockRank(i)===rank?i:-1).filter(i=>i>=0);
   const index=Math.max(0,peers.indexOf(slot));
-  return {x:166-rank*32,y:LANE_W*(index+1)/(peers.length+1)};
+  return {x:166-rank*48,y:LANE_W*(index+1)/(peers.length+1)};
 }
 // The foremost living earlier-rank squad anchors the formation. No stat multiplier.
 function formationLimit(u) {
@@ -24,7 +24,10 @@ function formationLimit(u) {
     if(ally.hp<=0||other<0||other>=rank)continue;
     if(!anchor||ally.x>anchor.x)anchor=ally;
   }
-  return anchor?anchor.x-(rank-unitRank(anchor))*38:Infinity;
+  if(!anchor)return Infinity;
+  // Rear melee units join contact instead of waiting permanently behind the front.
+  if(u.kind==='melee'&&anchor.target&&anchor.target.hp>0)return Infinity;
+  return anchor.x-38;
 }
 function moveRoster(from,to) {
   const count=slotCount();
@@ -45,10 +48,10 @@ function formationEditor() {
   const count=slotCount(),ids=S.slots.slice(0,count),active=ids.filter(Boolean);
   const warnings=[];
   if(!ids.some((id,i)=>id&&S.formation[i]===0&&HERO_BY_ID[id].unit.kind==='melee'))warnings.push('전열 근접 부대가 없습니다. 원거리·치유 부대가 먼저 노출될 수 있습니다.');
-  if(ids.some((id,i)=>id&&S.formation[i]===2&&HERO_BY_ID[id].unit.kind==='melee'))warnings.push('후열 근접 부대는 앞선 부대가 버티는 동안 공격에 늦게 합류합니다.');
+  if(ids.some((id,i)=>id&&S.formation[i]===1&&HERO_BY_ID[id].unit.kind==='melee'))warnings.push('후열 근접 부대는 뒤에서 출발해 전열 교전에 합류합니다.');
   const rows=FORMATION_NAMES.map((name,r)=>`<div class="formation-preview-row"><b>${name}</b>${ids.map((id,i)=>id&&S.formation[i]===r?`<span>${heroArt(id)}<small>${i+1}. ${HERO_BY_ID[id].unit.name}</small></span>`:'').join('')||'<small>비어 있음</small>'}</div>`).join('');
   const roster=ids.map((id,i)=>`<div class="roster-row"><span class="roster-number">${i+1}</span><div class="roster-name">${id?heroArt(id):''}<b>${id?HERO_BY_ID[id].unit.name:'빈 슬롯'}</b></div><div class="rank-picker" role="group" aria-label="${i+1}번 부대 진형">${FORMATION_NAMES.map((n,r)=>`<button class="btn small ${S.formation[i]===r?'on':''}" data-act="formation" data-i="${i}" data-rank="${r}" aria-pressed="${S.formation[i]===r}" ${id?'':'disabled'}>${n}</button>`).join('')}</div><div class="roster-move"><button class="btn small" data-act="reorder" data-i="${i}" data-to="${i-1}" aria-label="${i+1}번 부대 앞 순서로" ${i===0?'disabled':''}>↑</button><button class="btn small" data-act="reorder" data-i="${i}" data-to="${i+1}" aria-label="${i+1}번 부대 뒤 순서로" ${i===count-1?'disabled':''}>↓</button></div></div>`).join('');
-  return `<div class="sec formation-editor"><h3>진형 로스터 <small>${active.length}개 부대 · 위쪽이 적 진영</small></h3><div class="formation-preview">${rows}<div class="formation-home">내 성</div></div><p class="hint">전열이 먼저 접촉하고, 중·후열은 앞선 부대 뒤에서 사거리 안의 적을 공격합니다. 앞선 부대가 전멸하면 후열도 전진해 노출됩니다.</p>${roster}<p class="hint">↑↓로 순서 변경 · 생산은 자동 주사위에 배치한 6면의 확률을 따릅니다.<br>진형 변경은 살아 있는 부대의 이동에도 적용됩니다. 순서 변경은 선택한 진형과 진행 중인 소환 시간을 유지합니다.</p>${warnings.map(w=>`<p class="formation-warning">${w}</p>`).join('')}</div>`;
+  return `<div class="sec formation-editor"><h3>진형 로스터 <small>${active.length}개 부대 · 위쪽이 적 진영</small></h3><div class="formation-preview">${rows}<div class="formation-home">내 성</div></div><p class="hint">전열이 먼저 접촉하고, 후열은 앞선 부대 뒤에서 사거리 안의 적을 공격합니다. 앞선 부대가 전멸하면 후열도 전진해 노출됩니다.</p>${roster}<p class="hint">↑↓로 순서 변경 · 모든 부대가 주사위 눈금만큼 동시에 충전됩니다.<br>진형 변경은 살아 있는 부대의 이동에도 적용됩니다. 순서 변경은 선택한 진형과 진행 중인 소환 시간을 유지합니다.</p>${warnings.map(w=>`<p class="formation-warning">${w}</p>`).join('')}</div>`;
 }
 
 function placeRosterHero(id,slot){

@@ -3,13 +3,13 @@
 const MobileShell={
   mode:'lobby',
   init(){
-    document.getElementById('battle-home').onclick=()=>this.show('lobby');
     document.getElementById('lobby-battle').onclick=()=>this.show('battle');
     document.getElementById('lobby-challenge').onclick=()=>{challengeBoss();this.show('battle');};
     document.querySelectorAll('[data-open-panel]').forEach(b=>b.onclick=()=>UI.openSheet(b.dataset.openPanel));
     this.show('lobby');
   },
   show(mode){
+    if(preparingFirstExpedition())mode='lobby';
     S.settings.speed=2;this.mode=mode;UI.closeSheet();
     document.getElementById('game').classList.toggle('battle-mode',mode==='battle');
     document.getElementById('game').classList.toggle('lobby-mode',mode==='lobby');
@@ -18,6 +18,8 @@ const MobileShell={
   },
   refresh(){
     if(!S||!document.getElementById('lobby'))return;
+    refreshFirstCamp();
+    if(preparingFirstExpedition())return;
     ensureKingdom();
     const map=document.getElementById('kingdom-map-host');
     const mapKey=JSON.stringify(S.kingdom.lands)+':'+S.maxStage;
@@ -54,7 +56,7 @@ const MobileShell={
     const routeKey=`${ownedLands()}:${S.lord.promo}:${S.maxStage}:${promotionReady}`;
     if(route.dataset.key!==routeKey){route.dataset.key=routeKey;route.innerHTML=`<button class="kingdom-milestone ${promotionReady?'promotion-ready':''}"><span class="milestone-icon">${gameIcon('crown')}</span><span class="milestone-copy"><b>${next?CLASSES[S.lord.cls].promos[S.lord.promo+1]+(promotionReady?' 전직 가능':'를 향해'):'왕국의 완성'}</b><span class="milestone-pips">${Array.from({length:next?.reqLand||6},(_,i)=>`<i class="${i<ownedLands()?'filled':''}"></i>`).join('')}</span></span><span class="milestone-count">영토 <b>${Math.min(ownedLands(),next?.reqLand||6)}/${next?.reqLand||6}</b><small>${promotionReady?'전직 화면 열기 ›':'전직 조건 보기 ›'}</small></span></button>`;route.querySelector('button').onclick=()=>UI.openSheet('promo');}
     document.querySelectorAll('#tabs button').forEach(b=>{
-      const selected=UI.tab===b.dataset.tab||(!UI.tab&&b.dataset.tab==='lobby');
+      const selected=(UI.tab&&(typeof UX!=='undefined'?UX.group(UI.tab):UI.tab)===b.dataset.tab)||(!UI.tab&&this.mode==='lobby'&&b.dataset.tab==='lobby');
       b.classList.toggle('active',selected);b.setAttribute('aria-current',selected?'page':'false');
     });
   }

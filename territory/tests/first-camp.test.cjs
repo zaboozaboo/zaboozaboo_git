@@ -1,0 +1,20 @@
+const vm=require('node:vm'),fs=require('node:fs'),assert=require('node:assert/strict');let saved;
+const c=vm.createContext({console,Math,Date,assert,window:{},localStorage:{setItem:(k,v)=>saved=v,getItem:()=>saved}});
+for(const f of ['data','state','kingdom','dice','formation','battle','first-camp'])vm.runInContext(fs.readFileSync('territory/js/'+f+'.js','utf8'),c);
+vm.runInContext(`
+newGame({name:'test',gender:'m',cls:'knight',nation:'aurum'});assert.equal(preparingFirstExpedition(),false,'legacy path unchanged');
+prepareFirstExpedition();assert.equal(preparingFirstExpedition(),true);assert.ok(S.slots.every(x=>x===null));assert.equal(launchFirstExpedition(),false);
+S.lastSave-=3600000;assert.equal(offlineReward(),null);
+S.daily.freeSummon=0;assert.equal(recruitFirstCompanion(),false);assert.equal(S.stats.summons,0);S.daily.freeSummon=1;
+assert.equal(Object.keys(S.heroes).length,0);const gems=S.gems,free=S.daily.freeSummon;
+assert.equal(recruitFirstCompanion(),true);assert.equal(recruitFirstCompanion(),false);assert.equal(S.stats.summons,1);assert.equal(S.gems,gems);assert.equal(S.daily.freeSummon,free-1);
+saveGame();loadGame();assert.equal(firstCampStep(),'place');assert.equal(launchFirstExpedition(),false);
+assert.equal(placeRosterHero('militia',0),true);assert.equal(firstCampStep(),'depart');
+assert.equal(launchFirstExpedition(),true);assert.equal(B.stage,1);assert.equal(S.firstExpedition,true);assert.equal(launchFirstExpedition(),false);
+loadGame();assert.equal(preparingFirstExpedition(),false);assert.equal(S.slots[0],'militia');assert.equal(S.slots[1],null);
+assert.equal(firstBattlePhase,'intro');assert.equal(firstBattlePaused(),true);
+firstBattlePhase='rolling';B.units=[];rollOpeningProduction(()=>.99);assert.equal(S.dice.last.face,2);assert.equal(firstBattlePhase,'result');assert.equal(S.dice.charge.militia,2);assert.equal(armyCount(),0);
+firstBattlePhase='rolling-again';rollProduction(()=>.99);assert.equal(firstBattlePhase,'full');assert.equal(armyCount(),1);assert.equal(B.units[0].arrivalAt,Infinity);assert.equal(firstBattlePaused(),true);
+firstBattlePhase=null;S.battleTutorial='done';beginFirstBattleGuide();assert.equal(firstBattlePhase,null);assert.equal(firstBattleRollFace(),null);
+console.log('PASS: explicit departure gate, partial formation persistence, no offline income, invalid/repeated launch, legacy compatibility, opening growth.');
+`,c);

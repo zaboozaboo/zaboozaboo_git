@@ -14,22 +14,32 @@ const FACILITIES = {
 function ensureKingdom(){
  if(!S.kingdom||typeof S.kingdom!=='object') S.kingdom={lands:{}};
  if(!S.kingdom.lands||typeof S.kingdom.lands!=='object') S.kingdom.lands={};
- for(const [id,value] of Object.entries(S.kingdom.lands)) if(!LANDS.some(l=>l.id===id)||!FACILITIES[value]) delete S.kingdom.lands[id];
+ for(const land of LANDS)if(S.maxStage>land.boss&&!S.kingdom.lands[land.id])S.kingdom.lands[land.id]='outpost';
+ for(const [id,value] of Object.entries(S.kingdom.lands)) if(!LANDS.some(l=>l.id===id)||(value!=='outpost'&&!FACILITIES[value])) delete S.kingdom.lands[id];
 }
+function castleLand(stage){return LANDS.find(l=>l.boss===stage);}
+function conquerLand(stage){
+ ensureKingdom();const land=castleLand(stage);
+ if(!land||S.kingdom.lands[land.id])return null;
+ S.kingdom.lands[land.id]='outpost';return land;
+}
+function hasVanguard(){ensureKingdom();return !!S.kingdom.lands.grove;}
+function vanguardReward(owned){return `<div class="vanguard-reward">${buildingArt(2)}<div><b>${owned?'원정 선발대 · 지원 중':'함락 보상 · 원정 선발대'}</b><p>매 원정 시작에 선발병 2명 출격<br>주사위 부대와 별도로 캠프를 지원합니다.</p></div></div>`;}
 function ownedLands(){ensureKingdom();return Object.keys(S.kingdom.lands).length;}
 function facilityCount(type){ensureKingdom();return Object.values(S.kingdom.lands).filter(v=>v===type).length;}
 function kingdomTitle(){const n=ownedLands();return n>=6?'왕도':n>=3?'성채 도시':n>=1?'개척 영지':'작은 거점';}
-function availableLand(){ensureKingdom();return LANDS.find(l=>!S.kingdom.lands[l.id]&&S.maxStage>l.boss);}
+function availableLand(){ensureKingdom();return LANDS.find(l=>S.kingdom.lands[l.id]==='outpost');}
 function claimLandError(id,type){
  ensureKingdom();const land=LANDS.find(l=>l.id===id);
  if(!land)return '선택한 영지를 찾을 수 없습니다.';
  if(!Object.hasOwn(FACILITIES,type))return '시설을 선택해 주세요.';
- if(S.kingdom.lands[id])return '이미 개척한 영지입니다.';
+ if(FACILITIES[S.kingdom.lands[id]])return '이미 시설을 건설한 영지입니다.';
  if(S.maxStage<=land.boss)return `${land.boss}단계 보스를 먼저 격파해야 합니다.`;
  if(S.gold<land.cost)return `${fmt(land.cost-S.gold)} 골드가 부족합니다.`;
  return '';
 }
 function claimLand(id,type){
+ if(typeof featureAccess==='function'&&!featureAccess('land').unlocked)return false;
  if(claimLandError(id,type))return false;
  const land=LANDS.find(l=>l.id===id);
  S.gold-=land.cost;S.kingdom.lands[id]=type;saveGame();return true;
@@ -38,16 +48,16 @@ function buildingArt(tile,extra=''){if(tile===8)return `<span class="estate-buil
 function kingdomMap(){
  ensureKingdom();return `<div class="estate-map" aria-label="내 왕국 지도 · 개척 영토 ${ownedLands()}곳">
  <div class="estate-terrain" aria-hidden="true"></div><div class="estate-home" style="--growth:${1+ownedLands()*.055}">${buildingArt(0)}<b>${kingdomTitle()}</b></div>
- ${LANDS.map(l=>{const f=S.kingdom.lands[l.id],ready=S.maxStage>l.boss;return `<button class="estate-land ${f?'owned':ready?'available':'locked'} ${typeof UI!=='undefined'&&UI.tab==='kingdom'&&UI.kingdomLand===l.id?'selected':''}" style="--x:${l.x}%;--y:${l.y}%" data-land="${l.id}" aria-label="${l.name} · ${f?FACILITIES[f].name:ready?'개척 가능':l.boss+'단계 보스 격파 필요'}">${f?buildingArt(FACILITIES[f].tile)+'<span class="estate-flag"></span>':landScenery(ready,l.boss)}<b><span>${l.name.replace('첫 개척지 · ','')}</span><small>${f?FACILITIES[f].name:ready?'개척하기':l.boss+'단계 보스'}</small></b></button>`;}).join('')}</div>`;
+ ${LANDS.map(l=>{const f=S.kingdom.lands[l.id],ready=S.maxStage>l.boss;return `<button class="estate-land ${f?'owned':ready?'available':'locked'} ${typeof UI!=='undefined'&&UI.tab==='kingdom'&&UI.kingdomLand===l.id?'selected':''}" style="--x:${l.x}%;--y:${l.y}%" data-land="${l.id}" aria-label="${l.name} · ${f?(FACILITIES[f]?.name||'확보한 영토'):ready?'개척 가능':l.boss+'단계 성 함락 필요'}">${f?buildingArt((FACILITIES[f]?.tile??(l.id==='grove'?2:0)))+(l.id==='grove'?'<span class="vanguard-map-badge">선발대 주둔</span>':'')+'<span class="estate-flag"></span>':landScenery(ready,l.boss)}<b><span>${l.name.replace('첫 개척지 · ','')}</span><small>${f?(FACILITIES[f]?.name||'확보한 영토'):ready?'개척하기':l.boss+'단계 성'}</small></b></button>`;}).join('')}</div>`;
 }
 function kingdomPanel(){
- ensureKingdom();const selected=UI.kingdomLand||availableLand()?.id||LANDS[0].id;return `${LANDS.filter(l=>l.id===selected).map(l=>{const f=S.kingdom.lands[l.id],ready=S.maxStage>l.boss;return `<section class="sec land-detail" id="land-${l.id}"><h3>${l.name}<small>${f?'개척 완료':ready?'개척 대기':'미확보'}</small></h3>${f?`<div class="built-facility" role="status">${buildingArt(FACILITIES[f].tile)}<div><b>${FACILITIES[f].name}</b><p>${FACILITIES[f].desc}</p></div></div><button class="btn gold kingdom-return" data-act="kingdomhome">왕국 지도에서 보기</button>`:!ready?`<p>${l.boss}단계 보스를 격파하면 개척할 수 있습니다.</p>`:`<p>개척 비용 <b>${fmt(l.cost)} 골드</b> · 시설 하나를 선택하세요.<br>건설 후 시설은 변경할 수 없습니다.</p><div class="facility-choices">${Object.entries(FACILITIES).map(([id,f])=>`<button class="facility-choice" data-act="claimland" data-id="${l.id}" data-facility="${id}" data-cost="${l.cost}" ${S.gold<l.cost?'disabled':''}>${buildingArt(f.tile)}<b>${f.name}</b><small>${f.desc}</small><strong>${fmt(l.cost)} 골드 · 건설</strong></button>`).join('')}</div>${S.gold<l.cost?`<p class="land-shortage">${fmt(l.cost-S.gold)} 골드 부족 · 반복 사냥으로 획득하세요.</p>`:''}`}</section>`;}).join('')}<section class="sec estate-summary"><span class="eyebrow">MY KINGDOM</span><h3>${kingdomTitle()} · 영토 ${ownedLands()}/6</h3><p>보스를 격파해 땅을 확보하고, 골드로 개척하면 내 영토가 됩니다.</p>${kingdomMap()}<div class="estate-bonuses"><b>훈련장 ${facilityCount('training')}곳</b><b>금광 수입 +${facilityCount('mine')*15}%</b></div></section>`;
+ ensureKingdom();const selected=UI.kingdomLand||availableLand()?.id||LANDS[0].id;return `${LANDS.filter(l=>l.id===selected).map(l=>{const f=S.kingdom.lands[l.id],ready=S.maxStage>l.boss;return `<section class="sec land-detail" id="land-${l.id}"><h3>${l.name}<small>${FACILITIES[f]?'시설 완공':f?'영토 확보':'미확보'}</small></h3>${l.id==='grove'?vanguardReward(!!f):''}${FACILITIES[f]?`<div class="built-facility" role="status">${buildingArt((FACILITIES[f]?.tile??0))}<div><b>${(FACILITIES[f]?.name||'확보한 영토')}</b><p>${FACILITIES[f].desc}</p></div></div><button class="btn gold kingdom-return" data-act="kingdomhome">왕국 지도에서 보기</button>`:!ready?`<p>${l.boss}단계 성을 함락하면 영토를 획득합니다.</p>`:`<p>시설 건설 <b>${fmt(l.cost)} 골드</b> · 시설 하나를 선택하세요.<br>건설 후 시설은 변경할 수 없습니다.</p><div class="facility-choices">${Object.entries(FACILITIES).map(([id,f])=>`<button class="facility-choice" data-act="claimland" data-id="${l.id}" data-facility="${id}" data-cost="${l.cost}" ${S.gold<l.cost?'disabled':''}>${buildingArt(f.tile)}<b>${f.name}</b><small>${f.desc}</small><strong>${fmt(l.cost)} 골드 · 건설</strong></button>`).join('')}</div>${S.gold<l.cost?`<p class="land-shortage">${fmt(l.cost-S.gold)} 골드 부족 · 반복 사냥으로 획득하세요.</p>`:''}`}</section>`;}).join('')}<section class="sec estate-summary"><span class="eyebrow">MY KINGDOM</span><h3>${kingdomTitle()} · 영토 ${ownedLands()}/6</h3><p>성을 함락하면 내 영토가 됩니다. 확보한 땅에는 골드로 시설을 건설하세요.</p>${kingdomMap()}<div class="estate-bonuses"><b>훈련장 ${facilityCount('training')}곳</b><b>금광 수입 +${facilityCount('mine')*15}%</b></div></section>`;
 }
 function bindKingdomMap(root){root.querySelectorAll('[data-land]').forEach(b=>b.onclick=(event)=>{event.preventDefault();event.stopPropagation();UI.openSheet('kingdom',b.dataset.land);});}
 
 function offerLand(stage){
- const land=LANDS.find(l=>l.boss===stage);if(!land||S.kingdom?.lands[land.id])return;
- UI.modal(`<span class="eyebrow">NEW TERRITORY</span><h2>${land.name} 확보!</h2><div class="land-victory">${buildingArt(0)}<span class="estate-flag"></span></div><p>적의 깃발이 내려갔습니다.<br><b>${fmt(land.cost)} 골드</b>로 개척하고 시설을 세워<br>당신의 왕국에 편입하세요.</p>`,[{label:'왕국에서 개척하기',cls:'gold',fn:()=>{MobileShell.show('lobby');UI.openSheet('kingdom',land.id);}},{label:'나중에'}]);
+ const land=LANDS.find(l=>l.boss===stage);if(!land)return;
+ UI.modal(`<span class="eyebrow">NEW TERRITORY</span><h2>${land.name} 확보!</h2><div class="land-victory">${buildingArt(0)}<span class="estate-flag"></span></div>${land.id==='grove'?vanguardReward(true):''}<p>내 왕국의 깃발이 세워졌습니다.<br><b>영토 ${ownedLands()}곳 확보</b> · 성장과 전직 조건에 즉시 반영됩니다.<br>시설을 건설하면 영토의 지원을 받을 수 있습니다.</p>`,[{label:'영토에 시설 짓기',cls:'gold',fn:()=>{MobileShell.show('lobby');UI.openSheet('kingdom',land.id);}},{label:'나중에'}]);
 }
 
 function landScenery(ready,boss){return `<svg class="land-scenery" viewBox="0 0 120 94" aria-hidden="true"><path d="M6 57 59 33 114 57 114 70 60 94 6 70Z" fill="#655440"/><path d="m6 57 53-24 55 24-54 25Z" fill="${ready?'#a6c978':'#718873'}"/><path d="m23 61 27-13 36 14-25 12Z" fill="${ready?'#d9c48c':'#94a08b'}"/><path d="M22 54V32m73 28V39" stroke="#68523b" stroke-width="5"/><path d="m8 38 14-27 16 27-9-3 7 13H10l7-13Z" fill="#3e7356"/><path d="m83 39 12-24 14 24-7-3 6 15H83l6-15Z" fill="#528462"/><path d="m40 62 21-27 22 29Z" fill="${ready?'#e6b865':'#8896a0'}" stroke="#6d614b" stroke-width="2"/><path d="m61 35 4 30 18-1Z" fill="${ready?'#a47645':'#596f79'}"/><path d="m54 64 7-15 4 16" fill="#414c42"/><path d="M86 62V21" stroke="#685642" stroke-width="3"/><path d="m88 21 21 4-7 7 7 7-21-4Z" fill="${ready?'#f3d47a':'#9e6060'}"/><path d="m16 65 6-7 10 2 4 8-11 4Z" fill="#84928c"/><path d="m16 65 10-3 6-2-10-2Z" fill="#b5beb2"/></svg>`;}
@@ -81,6 +91,7 @@ function kingdomGrowthHonors(step){
  return `<div class="growth-honors"><b>왕국 Lv.${step}</b><div class="kingdom-star-count" aria-label="왕국의 별 ${stars}개">${gameIcon('star')}<strong>${stars}</strong></div><small>누적 성장</small></div><div class="growth-star-buff"><b>영주·병사 영구 가호</b><strong>공격력·체력 ×${(1+stars*.05).toFixed(2)}</strong><div><span>${remaining}회 강화 후 별 +1</span><b>×${(1+(stars+1)*.05).toFixed(2)}</b></div></div>`;
 }
 function advanceKingdomGrowth(expectedStep){
+ if(typeof featureAccess==='function'&&!featureAccess('growth').unlocked)return null;
  const next=kingdomGrowth();
  if(expectedStep!==next.step||next.complete||next.locked||S.gold<next.cost)return null;
  const castleBefore=next.id==='castle'?castleMaxHp():0;

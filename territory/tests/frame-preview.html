@@ -1,0 +1,52 @@
+<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>민병·여전사 · 4방향 프레임 시안</title>
+<style>*{box-sizing:border-box}body{margin:0;background:#203c48;color:#f8efd7;font:14px system-ui;line-height:1.5}main{max-width:1100px;margin:auto;padding:20px}h1{font-size:23px;margin:0 0 8px}p{color:#cbdcd6}nav{position:sticky;top:0;z-index:2;display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:#203c48f5;padding:12px 0}button,select{font:inherit;border:1px solid #8da7a0;border-radius:9px;padding:9px 13px;background:#36565f;color:#fff0cd;cursor:pointer}button[aria-pressed=true]{background:#f2ce80;color:#3c3425;border-color:#f2ce80}.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.card{border-radius:14px;overflow:hidden;background:#38565d}.card h3{font-size:13px;margin:9px 12px}.card canvas{display:block;width:100%;aspect-ratio:1/1.12;background:#a9c39b}.card p{font-size:11px;text-align:center;margin:6px;color:#d8e5d4}h2{margin:24px 0 10px;font-size:18px}a{color:#ffe09a}details{margin:14px 0;padding:12px;background:#35525b;border-radius:12px}details img{width:100%;max-width:720px;background:#92ab91}#status{color:#ffe09a;font-size:12px}label{display:flex;align-items:center;gap:8px}small{display:block;color:#c4d6d1}@media(max-width:600px){main{padding:14px}.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}h1{font-size:20px}nav{gap:6px}button,select{padding:7px 10px}}</style>
+<main><h1>민병·여전사 · 완성 자세 프레임 시안</h1><p>4방향 × 걷기 2장·공격 2장. 팔다리를 변형하지 않고 전체 그림만 교체합니다.<br>각 칸의 위는 확대 보기, 아래는 실제 전투에 가까운 작은 크기입니다.</p>
+<nav><button data-action="walk" aria-pressed="true">걷기</button><button data-action="attack" aria-pressed="false">공격</button><button id="pause">일시정지</button><button id="next">한 장씩</button><label>재생 속도<select id="fps"><option value="1">1장/초</option><option value="2.5" selected>2.5장/초</option><option value="4">4장/초</option></select></label><label><input type="checkbox" id="guides" checked>발 기준선</label><span id="status">이미지 준비 중…</span></nav>
+<section id="militia"><h2>민병 · 한스</h2><div class="grid"></div><details><summary>민병 원본 16프레임 시트</summary><img src="../assets/animation-study/militia-4dir.png" alt="민병 4방향 걷기와 공격 16프레임"><small>행: 우상·좌상·우하·좌하 / 열: 걷기 A·B, 공격 준비·타격</small></details></section>
+<section id="warrior"><h2>여전사 · 여성 기사</h2><p>수정 필요: 좌하 방향 검·방패의 손 일관성, 일부 방향 걷기 A/B의 발 교대.</p><div class="grid"></div><details><summary>여전사 원본 16프레임 시트</summary><img src="../assets/animation-study/warrior-4dir.png" alt="여전사 4방향 걷기와 공격 16프레임"><small>행: 우상·좌상·우하·좌하 / 열: 걷기 A·B, 공격 준비·타격</small></details></section>
+<p>제작 검증용 시안입니다. 게임의 기존 캐릭터와 전투 로직에는 아직 적용하지 않았습니다. 두 장 사이의 발 교대, 몸 크기, 무기 방향을 비교하세요.</p></main>
+<script>
+// Slice whole sprites with extra vertical padding, retaining the dominant connected
+// character only. Constant scale and a measured foot baseline prevent frame jitter.
+function sliceSheet(image){
+ const cellW=image.width/4,cellH=image.height/4;
+ const w=Math.ceil(cellW),h=Math.ceil(cellH),pad=Math.round(h*.16),frames=[];
+ for(let row=0;row<4;row++)for(let col=0;col<4;col++){
+  const layer=document.createElement('canvas');layer.width=w;layer.height=h+pad*2;
+  const c=layer.getContext('2d',{willReadFrequently:true});c.drawImage(image,-col*cellW,-row*cellH+pad);
+  const pixels=c.getImageData(0,0,layer.width,layer.height),d=pixels.data,n=layer.width*layer.height,seen=new Uint8Array(n),queue=new Int32Array(n);let largest=[];
+  for(let seed=0;seed<n;seed++){
+   if(seen[seed]||d[seed*4+3]<32)continue;
+   let head=0,tail=1;queue[0]=seed;seen[seed]=1;
+   while(head<tail){const at=queue[head++],x=at%w,y=Math.floor(at/w);for(const q of [x>0?at-1:-1,x<w-1?at+1:-1,y>0?at-w:-1,y<layer.height-1?at+w:-1])if(q>=0&&!seen[q]&&d[q*4+3]>=32){seen[q]=1;queue[tail++]=q;}}
+   if(tail>largest.length)largest=Array.from(queue.subarray(0,tail));
+  }
+  const keep=new Uint8Array(n);let foot=0;
+  for(const at of largest){const x=at%w,y=Math.floor(at/w);if(x>w*.2&&x<w*.8)foot=Math.max(foot,y);for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){const xx=x+dx,yy=y+dy;if(xx>=0&&xx<w&&yy>=0&&yy<layer.height)keep[yy*w+xx]=1;}}
+  for(let at=0;at<n;at++)if(!keep[at])d[at*4+3]=0;
+  c.putImageData(pixels,0,0);frames.push({image:layer,foot});
+ }
+ return frames;
+}
+const directions=['↗ 우상 · 뒷모습','↖ 좌상 · 뒷모습','↘ 우하 · 앞모습','↙ 좌하 · 앞모습'];
+let action='walk',paused=false,phase=0,elapsed=0,last=0,loaded=0;const views=[];
+for(const who of ['militia','warrior']){
+ const image=new Image();image.onload=()=>{try{image.frames=sliceSheet(image);loaded++;}catch(error){document.getElementById('status').textContent='프레임 준비 실패: '+error.message;console.error(error);}};
+ image.onerror=()=>document.getElementById('status').textContent='이미지를 불러오지 못했습니다.';
+ image.src='../assets/animation-study/'+who+'-4dir.png';
+ directions.forEach((label,row)=>{const card=document.createElement('article');card.className='card';card.innerHTML='<h3>'+label+'</h3><canvas width="400" height="448" aria-label="'+who+' '+label+' 프레임 애니메이션"></canvas><p>확대 / 전투 크기 32px</p>';document.querySelector('#'+who+' .grid').append(card);views.push({canvas:card.querySelector('canvas'),image,row});});
+}
+document.querySelectorAll('[data-action]').forEach(b=>b.onclick=()=>{action=b.dataset.action;phase=0;elapsed=0;document.querySelectorAll('[data-action]').forEach(x=>x.setAttribute('aria-pressed',x===b));});
+document.getElementById('pause').onclick=()=>{paused=!paused;document.getElementById('pause').textContent=paused?'재생':'일시정지';};
+document.getElementById('next').onclick=()=>{paused=true;document.getElementById('pause').textContent='재생';phase=1-phase;elapsed=0;};
+function paint(now){const dt=last?Math.min(.1,(now-last)/1000):0;last=now;if(loaded===2){if(!paused){elapsed+=dt;const interval=1/Number(document.getElementById('fps').value);if(elapsed>=interval){elapsed%=interval;phase=1-phase;}}
+ document.getElementById('status').textContent=(action==='walk'?'걷기 ':'공격 ')+(phase?'B':'A')+' · '+(paused?'정지':'재생 중');
+ for(const {canvas,image,row} of views){const c=canvas.getContext('2d');c.setTransform(2,0,0,2,0,0);c.clearRect(0,0,200,224);const col=(action==='walk'?0:2)+phase,sw=image.width/4,sh=image.height/4;
+  const frame=image.frames[row*4+col];
+  for(const [size,pivotY] of [[125,145],[44,207]]){const scale=size/sw,x=100-size*.5,y=pivotY-frame.foot*scale;
+   if(document.getElementById('guides').checked){c.strokeStyle='#46654a66';c.lineWidth=.5;c.beginPath();c.moveTo(10,pivotY);c.lineTo(190,pivotY);c.moveTo(100,pivotY-5);c.lineTo(100,pivotY+5);c.stroke();}
+   c.drawImage(frame.image,x,y,size,frame.image.height*scale);
+  }
+ }
+}requestAnimationFrame(paint);}requestAnimationFrame(paint);
+</script></html>

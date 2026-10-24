@@ -1,0 +1,7 @@
+Built-in image_gen edit, transparent_background=true.
+Edit target: exec-1798495e-e443-4e74-bebf-2486338cfdc5.png (militia clothing sheet).
+Pose reference: ../melee-base-v1/body.png.
+
+Edit FIRST image militia sprite sheet, retain exact 1536x1024 3x2 arrangement, same character clothing and all other pixels. Second image is pose reference only. Correct ONLY the two MIDDLE-column figures, top middle frame2 and bottom middle frame5. Their arms are currently reversed. For BOTH middle figures: restore the visible SCREEN-LEFT hanging blue sleeve and brown glove at left hip, exactly like their left neighbor’s screen-left arm. REMOVE the SCREEN-RIGHT brown glove and lowered arm from both middle figures. TOP MIDDLE only: the screen-right arm is raised diagonally straight up behind beard/chin/head, short blue sleeve triangle may appear beside screen-right beard edge, but fist is completely occluded BEHIND head. BOTTOM MIDDLE only: screen-right arm points straight down behind torso and is entirely occluded, NO glove visible on screen-right. Both middle figures must have ONE visible glove on SCREEN LEFT at hip level, and NO visible glove on screen right. Keep frames1,3,4,6 unchanged. Keep head/face/hood/fringe/beard/feet/body positioning unchanged. No weapons. Genuine transparent background.
+
+V3 built-in image_gen edit of original attack.png: only frames4/5, boots slightly outward (requested 8px each), same short leg length, hip/tunic/ground heights; no squat or wide stance; transparent background. Output attack-short-stance-v3.png.

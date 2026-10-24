@@ -1,0 +1,10 @@
+Built-in image_gen. Original toy-allies atlas reference, militia only.
+Use case: precise-object-edit. Reference image is game character atlas. EDIT ONLY the blue-hooded bearded AXE MILITIAMAN at row 2 column 2 into a production cutout puppet parts sheet. Match his exact chunky toy-like casual style, blue hood, brown beard, silver shoulder caps, brown tunic belt, brown boots, silver axe. Camera elevated 35 degrees, character faces three-quarter RIGHT. Output SIX disconnected reusable body parts in exact regular grid THREE columns TWO rows. Transparent canvas, no text, no whole character.
+Cell row1 col1: entire head with blue hood, brown beard, face and short neck, NO torso/arms.
+Cell row1 col2: torso from neck to pelvis, blue scarf, brown tunic belt, silver shoulder caps; NO head, NO arms, NO legs; complete painted surface behind joints.
+Cell row1 col3: his free arm from round shoulder joint to clenched fist, neutral hanging down, no torso, no weapon.
+Cell row2 col1: weapon arm from round shoulder joint to hand firmly holding his axe, axe blade near upper LEFT and handle slants down to lower right; complete whole arm and whole axe one connected piece, no torso.
+Cell row2 col2: rear leg with brown trouser thigh and boot, neutral down pose, round thigh joint on top, foot facing right, no torso.
+Cell row2 col3: front leg with brown trouser thigh and boot, neutral down pose, round thigh joint on top, foot facing right, no torso.
+Each part individually centered with at least 15% transparent margin inside equal cell. Parts painted fully including normally hidden overlap areas for rotation. Soft matte shading, simple broad shapes, crisp silhouette. No ground shadows, no background, no guides, no labels. Strictly six parts.
+Follow-up: extract real transparent background and recenter the axe arm inside its bottom-left cell with padding.

@@ -1,0 +1,12 @@
+{
+  "approvedOn": "2026-10-24",
+  "sha256": {
+    "body.png": "5600dc219793d7dee3f4add1296567aafca72a40471da62cbb14f919a2a74932",
+    "animation.json": "29cbbe059355e3b672489a549c356f523a841a7e3e6ebdaa26ee7184f5dd7daa",
+    "sword.png": "f411b4caf2d18843c1af552a5b254c5f179acb98486a09f3ecc1389669345f06",
+    "club.svg": "bb57130d97a66938042963ca711045c0139010c438e94882f47dfdef921e1bf8",
+    "axe.png": "537605c7abb136a8ab82dbca5a3517a8339885d9705508643078cd8ac719a669",
+    "approved-sword-preview.html": "42e32d6a6c6aac7cd632e2ce8b2cbf93498a598f78e5f892f3ffbff74d9a472f",
+    "slash-trail.png": "0c054322a8b15b386f6bda1e61db86cf1b35610a484b96f66b2a7438575a4a6f"
+  }
+}
