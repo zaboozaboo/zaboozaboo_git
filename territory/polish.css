@@ -1,0 +1,199 @@
+/* 모바일 게임풍 마감 레이어 (가장 마지막에 로드)
+   - 메뉴 시트: 회색 웹 패널 → 따뜻한 양피지 + 금테 카드 + 리본 제목
+   - 버튼: 두께감(아래 그림자)과 눌림 반응
+   - 가림 문제: 안내 말풍선·보스 버튼·토스트가 핵심 UI를 덮지 않도록 위치 조정
+   - 대비: 캐릭터 생성 화면과 영입 결과의 안 보이던 글씨 */
+
+:root {
+  --pl-parch-1: #f7edd3;
+  --pl-parch-2: #ecdcb4;
+  --pl-ink: #4a321a;
+  --pl-ink-soft: #7a5c3a;
+  --pl-gold: #e7b94f;
+  --pl-gold-deep: #b9832c;
+  --pl-frame: #d6b673;
+  --pl-navy: #1f3a4a;
+  --pl-navy-deep: #152a37;
+  --pl-teal: #2f6b5c;
+}
+
+/* ───────── 메뉴 시트 ───────── */
+#game #sheet {
+  background:
+    radial-gradient(120% 60% at 50% 0%, #fff8e6 0%, transparent 60%),
+    linear-gradient(180deg, var(--pl-parch-1), var(--pl-parch-2));
+  border-top: 3px solid var(--pl-gold);
+  box-shadow: 0 -6px 24px #0007, inset 0 0 0 1px #fff6, inset 0 0 40px #b8955a33;
+}
+#sheet .sheet-head {
+  background: linear-gradient(180deg, #2b4c5e, var(--pl-navy-deep));
+  border-bottom: 3px solid var(--pl-gold-deep);
+  box-shadow: inset 0 1px #ffffff26, 0 3px 0 #0003;
+}
+#sheet #sheet-title {
+  font-size: 19px;
+  font-weight: 900;
+  letter-spacing: -0.3px;
+  color: #fff3cc;
+  text-shadow: 0 2px 0 #0d1c26, 0 0 10px #f7c96655;
+}
+#sheet .sheet-head .ux-info {
+  border: 2px solid #f0d18b;
+  color: #fff3cc;
+  background: #ffffff14;
+}
+#game #sheet > #panel { background: transparent; }
+#game #sheet > #panel:has(.ux-summon-scene) { background: var(--pl-navy-deep); }
+
+/* 시트 안 카드 */
+#sheet .sec:not(.ux-summon-scene):not(.recruitment) {
+  background: linear-gradient(180deg, #fffaf0, #f8eed6);
+  border: 2px solid var(--pl-frame);
+  border-radius: 14px;
+  box-shadow: 0 3px 0 #c4a466, 0 6px 14px #6b4a2026, inset 0 1px #fff;
+  color: var(--pl-ink);
+}
+#sheet .sec h3 { color: var(--pl-ink); font-weight: 900; }
+#sheet .sec:not(.ux-summon-scene) h3 small { color: var(--pl-ink-soft); }
+
+/* 학습 안내 줄: 웹 알림 → 리본 */
+#sheet p.learning-step.learning-inline {
+  position: relative;
+  background: linear-gradient(90deg, var(--pl-teal), #255448);
+  color: #fff3cf;
+  border: 0;
+  border-left: 5px solid var(--pl-gold);
+  border-radius: 10px;
+  padding: 8px 12px 8px 34px !important;
+  margin: 0 0 10px !important;
+  font-size: 12px !important;
+  font-weight: 700;
+  box-shadow: 0 2px 0 #1a3a31;
+}
+#sheet p.learning-step.learning-inline::before {
+  content: "!";
+  position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
+  width: 18px; height: 18px; border-radius: 50%;
+  display: grid; place-items: center;
+  background: var(--pl-gold); color: #4a2f12; font-size: 12px; font-weight: 900;
+}
+
+/* 잠긴 기능 안내(예: 대전 탭): 텅 빈 흰 페이지 → 가운데 잠금 카드 */
+#sheet #ux-view-main > section.sec.learning-step:only-child {
+  margin: 24px 4px;
+  padding: 26px 18px 22px;
+  text-align: center;
+}
+#sheet #ux-view-main > section.sec.learning-step:only-child::before {
+  content: "🔒";
+  display: block;
+  font-size: 40px;
+  margin-bottom: 8px;
+  filter: drop-shadow(0 3px 0 #c4a466);
+}
+#sheet #ux-view-main > section.sec.learning-step:only-child h3 { justify-content: center; font-size: 18px; }
+#sheet #ux-view-main > section.sec.learning-step:only-child p { color: var(--pl-ink-soft); margin: 6px 0; }
+
+/* 시트 하단 보조 탭: 게임식 탭 버튼 */
+#sheet #sheet-views {
+  background: linear-gradient(180deg, #2a4657, var(--pl-navy-deep));
+  border-top: 2px solid var(--pl-gold-deep);
+  gap: 6px;
+  padding: 8px 10px;
+}
+#sheet #sheet-views button {
+  border-radius: 11px;
+  border: 2px solid #0f1f2a;
+  background: linear-gradient(180deg, #3d5b6d, #2c4757);
+  color: #d9e5ea;
+  font-weight: 800;
+  box-shadow: inset 0 1px #ffffff22, 0 3px 0 #0f1f2a;
+}
+#sheet #sheet-views button.active {
+  background: linear-gradient(180deg, #ffe08a, var(--pl-gold) 55%, var(--pl-gold-deep));
+  color: #4a2f12;
+  border-color: #6b4316;
+  box-shadow: inset 0 2px #fff6d0, 0 3px 0 #6b4316;
+  text-shadow: 0 1px #fff3;
+}
+
+/* ───────── 버튼 두께감과 눌림 ───────── */
+.btn.gold, .btn.primary, #lobby-battle, #objective-action {
+  transition: transform .06s ease, box-shadow .06s ease, filter .1s;
+}
+.btn.gold:not(:disabled):active, .btn.primary:not(:disabled):active,
+#lobby-battle:active, #objective-action:active {
+  transform: translateY(3px);
+  filter: brightness(1.08);
+}
+#lobby-battle {
+  border: 2px solid #8a5a1e;
+  box-shadow: inset 0 3px #fff3c4, inset 0 -4px #d99a35, 0 5px 0 #7a4c17, 0 10px 18px #0005;
+  text-shadow: 0 1px #fff7;
+}
+#lobby-battle b { font-weight: 900; letter-spacing: -0.3px; }
+
+/* 로비 '영토 목록' 흰 웹 버튼 → 게임 알약 버튼 */
+#lobby .lobby-heading .ux-land-open {
+  background: linear-gradient(180deg, #34586a, #23404f);
+  color: #ffe6a6;
+  border: 2px solid #c9a65d;
+  border-radius: 999px;
+  box-shadow: inset 0 1px #ffffff2a, 0 2px 0 #10222c;
+  font-weight: 800;
+}
+
+/* ───────── 가림 문제 ───────── */
+/* 하단 탭을 가리키는 안내는 글 상자 없이 튀는 화살표만: 메인 버튼(전투로 돌아가기)을 덮지 않게.
+   어떤 탭인지는 탭의 금색 테두리와 빨간 점으로 보이고, 자세한 설명은 탭 안 리본에 있다. */
+#journey-hint.on-tab {
+  z-index: 40;
+  width: 24px !important;
+  min-width: 24px;
+  padding: 0;
+  background: none;
+  border: 0;
+  box-shadow: none;
+}
+#journey-hint.on-tab > span, #journey-hint.on-tab > button { display: none; }
+#journey-hint.on-tab i {
+  top: auto !important;
+  bottom: -26px;
+  width: 0; height: 0;
+  font-size: 0;
+  border-left: 12px solid transparent;
+  border-right: 12px solid transparent;
+  border-top: 16px solid #ffd76a;
+  filter: drop-shadow(0 2px 0 #3a2508) drop-shadow(0 0 6px #ffcf5a);
+  transform: translateX(-50%);
+  animation: pl-nudge 0.9s ease-in-out infinite;
+}
+@keyframes pl-nudge { 50% { transform: translate(-50%, 5px); } }
+
+/* 보스 도전 버튼이 상단 재화 표시 밑에 깔리던 문제 */
+#field > #btn-boss { top: calc(env(safe-area-inset-top, 0px) + 98px); }
+
+/* 토스트는 상단 바 아래로 */
+#toast { top: calc(max(18px, env(safe-area-inset-top)) + 58px); }
+
+/* ───────── 대비 ───────── */
+/* 영입 결과: 카드 아래 이름이 배경과 같은 색이라 안 보이던 문제 */
+#modal .result-grid .rcard > div:last-child,
+#modal .result-grid .rcard small,
+#modal .result-grid .rcard .name {
+  color: #fff3cf !important;
+  font-weight: 800;
+  text-shadow: 0 1px 2px #000a;
+}
+
+/* 캐릭터 생성: 거의 안 보이던 소제목·설명 */
+#setup .setup-step h3, #setup .setup-step h3 label { color: #2f4a52 !important; }
+#setup .setup-step h3 small { color: #5e7680 !important; }
+#setup #creation-class-desc { color: #33505a !important; }
+#setup .showcase-copy strong { color: #ffe7a8 !important; text-shadow: 0 2px 0 #0b1720; }
+#setup #ch-nation .choice:not(.sel) small { color: #b8c7cf !important; }
+
+@media (prefers-reduced-motion: reduce) {
+  #journey-hint.on-tab i { animation: none; }
+  .btn.gold, .btn.primary, #lobby-battle, #objective-action { transition: none; }
+}

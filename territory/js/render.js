@@ -340,8 +340,9 @@ function drawFx(f) {
 function drawHud() {
   const boss=B.units.find(u=>u.team===1&&u.boss&&u.hp>0);
   if(boss) {
-    ctx.save();ctx.fillStyle='#101a2be6';roundRect(214,8,98,31,4);ctx.fill();ctx.strokeStyle='#be907066';ctx.lineWidth=.7;ctx.stroke();
-    text(boss.name,263,20,8,'#f0c8aa');bar(220,27,86,5,boss.hp/boss.maxHp,'#d56f68');ctx.restore();
+    // 상단 재화 표시와 보스 도전 버튼을 피해 제목 아래 왼쪽에 둔다
+    ctx.save();ctx.fillStyle='#101a2be6';roundRect(8,80,98,31,4);ctx.fill();ctx.strokeStyle='#be907066';ctx.lineWidth=.7;ctx.stroke();
+    text(boss.name,57,92,8,'#f0c8aa');bar(14,99,86,5,boss.hp/boss.maxHp,'#d56f68');ctx.restore();
   }
 
   if(B.buffs.rally>0) text(`돌격 ${Math.ceil(B.buffs.rally)}s`,308,VIEW.height-73,8,'#f5d28d','right');
