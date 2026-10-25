@@ -200,3 +200,24 @@
 [data-ui-skin="sculpted"] #lobby .estate-building {filter:drop-shadow(0 4px 2px #23453455);}
 [data-ui-skin="sculpted"] #lobby .milestone-pips i {background:#324e41;border-color:#849574;box-shadow:inset 0 1px 2px #163227;}
 [data-ui-skin="sculpted"] #lobby .milestone-pips i.filled {background:linear-gradient(#fff0b3,#d8ad54);border-color:#d9bd79;box-shadow:inset 0 1px #fff9d9;}
+
+/* ── 안내 화살표: 하단 탭을 가리킬 때는 글 상자 없이 튀는 화살표만.
+   글 상자가 탭 바로 위의 주요 버튼(전투로 돌아가기 등)을 덮지 않게 한다. 설명은 탭 안 안내 줄에 있다. */
+[data-ui-skin="sculpted"] #journey-hint.on-tab {z-index:40;width:24px!important;min-width:24px;padding:0;background:none;border:0;box-shadow:none;}
+[data-ui-skin="sculpted"] #journey-hint.on-tab>span,[data-ui-skin="sculpted"] #journey-hint.on-tab>button {display:none;}
+[data-ui-skin="sculpted"] #journey-hint.on-tab i {top:auto!important;bottom:-26px;width:0;height:0;font-size:0;border-left:12px solid transparent;border-right:12px solid transparent;border-top:16px solid #f0c75e;filter:drop-shadow(0 2px 0 #3c2c12) drop-shadow(0 0 5px #f6d27a);transform:translateX(-50%);animation:cw-hint-nudge .9s ease-in-out infinite;}
+@keyframes cw-hint-nudge {50%{transform:translate(-50%,5px);}}
+
+/* ── 잠긴 기능 화면(예: 대전): 빈 페이지 대신 가운데 잠금 카드 */
+[data-ui-skin="sculpted"] #sheet #ux-view-main>section.sec.learning-step:only-child {margin:20px 4px;padding:24px 18px 20px;text-align:center;background:var(--cw-paper,#f8efd8);border:2px solid #c9b07a;border-radius:16px;box-shadow:inset 0 2px #fffbea,0 3px 0 #b39b66;}
+[data-ui-skin="sculpted"] #sheet #ux-view-main>section.sec.learning-step:only-child:before {content:"";display:block;width:52px;height:52px;margin:0 auto 10px;background:var(--cw-icon-atlas,url('assets/casual-icons.png')) 40% 75%/600% 500% no-repeat;filter:drop-shadow(0 3px 0 #b39b66);clip-path:inset(12% 10% 6% 10%);}
+[data-ui-skin="sculpted"] #sheet #ux-view-main>section.sec.learning-step:only-child h3 {justify-content:center;font-size:17px;}
+[data-ui-skin="sculpted"] #sheet #ux-view-main>section.sec.learning-step:only-child p {margin:6px 0;color:#6e6146;}
+
+/* ── 대비: 캐릭터 생성의 소제목·직업 설명, 영웅 이름 / 영입 결과 카드 이름 */
+[data-ui-skin="sculpted"] #setup .setup-step h3,[data-ui-skin="sculpted"] #setup .setup-step h3 label {color:#2f4a52;}
+[data-ui-skin="sculpted"] #setup .setup-step h3 small {color:#5e7680;}
+[data-ui-skin="sculpted"] #setup #creation-class-desc {color:#33505a;}
+[data-ui-skin="sculpted"] #setup .showcase-copy strong {color:#ffe7a8;text-shadow:0 2px 0 #0b1720;}
+[data-ui-skin="sculpted"] #modal .result-grid .rcard>div:last-child {color:#fff3cf;font-weight:800;text-shadow:0 1px 2px #000a;}
+@media(prefers-reduced-motion:reduce){[data-ui-skin="sculpted"] #journey-hint.on-tab i{animation:none;}}

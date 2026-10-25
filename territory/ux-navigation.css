@@ -585,3 +585,21 @@
 /* The field starts behind the floating HUD. Keep retry below status + stage. */
 #game.battle-mode #field>#btn-boss{top:112px;}
 @media(max-height:700px){#game.battle-mode #field>#btn-boss{top:104px;}}
+/* 높이 780px 이하(360×740 등 흔한 안드로이드): 출전 배치판을 줄여 보유 영웅 카드 한 줄이 온전히 보이게 한다.
+   빈/배치/잠금 슬롯은 같은 크기로 함께 줄인다. 튜토리얼의 '한스 카드 선택'이 하단 보조 탭에 가리던 문제. */
+@media(max-height:780px){
+ #game #panel .ux-restored-formation .deployment-member{height:80px;min-height:80px;max-height:80px;padding-top:17px;}
+ #game #panel .ux-restored-formation .deployment-member.fixed-slot{padding-top:6px;padding-bottom:6px;gap:3px;}
+ #game #panel .ux-restored-formation .deployment-unit{height:43px;min-height:43px;}
+ #game #panel .ux-restored-formation .deployment-unit .hero-art{height:24px;width:26px;flex-basis:24px;}
+ #game #panel .ux-restored-formation .deployment-unit small{display:none;}
+ #game #panel .reserve-grid:not(.ux-reserve-list){grid-auto-rows:112px;}
+ #game #panel .reserve-grid:not(.ux-reserve-list) .reserve-unit{height:108px;min-height:108px;}
+ #game #panel .reserve-grid:not(.ux-reserve-list) .reserve-select .hero-art{height:32px;width:34px;}
+ #game #panel .first-placement-guide{padding-top:5px;padding-bottom:5px;}
+ #game #sheet>#sheet-views{padding-top:6px;padding-bottom:7px;}
+ #game #panel .kingdom-growth>.growth-current{gap:8px;padding:10px 6px;}
+ #game #panel .kingdom-growth .growth-current h4{font-size:22px;margin:0 0 6px;}
+ #game #panel .kingdom-growth .growth-current p{font-size:18px;line-height:1.35;}
+ #game #panel .kingdom-growth .growth-current p>b{font-size:22px;}
+}

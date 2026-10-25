@@ -337,6 +337,16 @@ function drawFx(f) {
   }
   ctx.restore();
 }
+// 버프 남은 시간은 스킬·AUTO 버튼 묶음 바로 위에 그린다(버튼에 가리지 않게). 레이아웃 측정은 0.5초마다만.
+function buffAnchorY(){
+  const now=performance.now();
+  if(!VIEW.buffAt||now-VIEW.buffAt>500){
+    VIEW.buffAt=now;
+    const a=document.getElementById('combat-actions'),r=a&&a.getBoundingClientRect(),c=cv.getBoundingClientRect();
+    VIEW.buffY=r&&r.height?(r.top-c.top)/VIEW.sy-6:null;
+  }
+  return VIEW.buffY??VIEW.height-73;
+}
 function drawHud() {
   const boss=B.units.find(u=>u.team===1&&u.boss&&u.hp>0);
   if(boss) {
@@ -345,8 +355,9 @@ function drawHud() {
     text(boss.name,57,92,8,'#f0c8aa');bar(14,99,86,5,boss.hp/boss.maxHp,'#d56f68');ctx.restore();
   }
 
-  if(B.buffs.rally>0) text(`돌격 ${Math.ceil(B.buffs.rally)}s`,308,VIEW.height-73,8,'#f5d28d','right');
-  if(B.buffs.sanctuary>0) text(`성역 ${Math.ceil(B.buffs.sanctuary)}s`,308,VIEW.height-73,8,'#c7ebd3','right');
+  const buffY=buffAnchorY();
+  if(B.buffs.rally>0) text(`돌격 ${Math.ceil(B.buffs.rally)}s`,308,buffY,8,'#f5d28d','right');
+  if(B.buffs.sanctuary>0) text(`성역 ${Math.ceil(B.buffs.sanctuary)}s`,308,buffY,8,'#c7ebd3','right');
   if(B.stageBanner>0 && !B.ended) {
     const alpha=Math.min(1,B.stageBanner,Math.max(0,(2.2-B.stageBanner)*3));
     const title=B.mode==='stage'?`${region(B.stage).name} · ${B.stage}`:B.mode==='war'?'국가전':'서열전';

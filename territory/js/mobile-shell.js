@@ -26,7 +26,9 @@ const MobileShell={
     if(map.dataset.key!==mapKey){
       map.dataset.key=mapKey;
       const lands=LANDS.filter(l=>S.kingdom.lands[l.id]);
-      map.innerHTML=lands.length?lands.map(l=>{const facility=FACILITIES[S.kingdom.lands[l.id]];return `<button class="realm-land" data-land="${l.id}">${buildingArt(facility?.tile??(l.id==='grove'?2:0))}<b>${l.name.replace('첫 개척지 · ','')}</b><small>${facility?.name||'시설 건설 가능'} <span>›</span></small>${l.id==='grove'?'<em>선발대 주둔</em>':''}</button>`;}).join(''):`<div class="realm-empty">${buildingArt(0)}<b>첫 깃발을 세울 준비</b><span>5단계 성을 함락하면 햇살 숲이 내 영토가 됩니다.</span></div>`;
+      const nextLand=LANDS.find(l=>!S.kingdom.lands[l.id]);
+      const lockedLands=lands.length?LANDS.filter(l=>!S.kingdom.lands[l.id]).map(l=>`<div class="realm-land locked${l===nextLand?' next':''}" aria-label="${l.name} · ${l.boss}단계 성 함락 시 확보">${buildingArt(0)}<b>${l.name}</b><small>${l.boss}단계 성 함락</small>${l===nextLand?'<em>다음 목표</em>':'<i class="realm-lock" aria-hidden="true"></i>'}</div>`).join(''):'';
+      map.innerHTML=lands.length?lands.map(l=>{const facility=FACILITIES[S.kingdom.lands[l.id]];return `<button class="realm-land" data-land="${l.id}">${buildingArt(facility?.tile??(l.id==='grove'?2:0))}<b>${l.name.replace('첫 개척지 · ','')}</b><small>${facility?.name||'시설 건설 가능'} <span>›</span></small>${l.id==='grove'?'<em>선발대 주둔</em>':''}</button>`;}).join('')+lockedLands:`<div class="realm-empty">${buildingArt(0)}<b>첫 깃발을 세울 준비</b><span>5단계 성을 함락하면 햇살 숲이 내 영토가 됩니다.</span></div>`;
       bindKingdomMap(map);
     }
     document.getElementById('lobby-region').textContent=kingdomTitle();

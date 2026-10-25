@@ -71,7 +71,7 @@ const JourneyGuide={
   box.style.width=Math.min(280,game.width-24)+'px';
   const h=box.getBoundingClientRect().height,left=Math.max(12,Math.min(game.width-box.offsetWidth-12,r.left-game.left+r.width/2-box.offsetWidth/2));
   let top=speech?r.bottom-game.top+8:r.top-game.top-h-22;
-  if(!UI.tab&&MobileShell.mode==='battle'&&!speech)top=Math.min(top,document.getElementById('field').getBoundingClientRect().bottom-game.top-h-60);
+  if(!UI.tab&&MobileShell.mode==='battle'&&!speech&&!target.closest('#tabs'))top=Math.min(top,document.getElementById('field').getBoundingClientRect().bottom-game.top-h-60);
   const placedTop=Math.max(66,top);
   box.style.left=left+'px';box.style.top=placedTop+'px';
   box.querySelector('i').style.top=(r.top-game.top-placedTop-25)+'px';
