@@ -66,7 +66,7 @@ const JourneyGuide={
  show(text,target,speech){
   let box=document.getElementById('journey-hint');
   if(!box){box=document.createElement('aside');box.id='journey-hint';box.setAttribute('role','status');box.innerHTML='<span></span><button aria-label="안내 닫기">×</button><i aria-hidden="true">↓</i>';document.getElementById('game').append(box);box.querySelector('button').onclick=()=>{this.speech=null;this.finish();};}
-  if(box.querySelector('span').textContent!==text)box.querySelector('span').textContent=text;box.classList.toggle('speech',speech);
+  if(box.querySelector('span').textContent!==text)box.querySelector('span').textContent=text;box.classList.toggle('speech',speech);box.classList.toggle('on-tab',!!target.closest('#tabs'));
   const game=document.getElementById('game').getBoundingClientRect(),r=target.getBoundingClientRect();
   box.style.width=Math.min(280,game.width-24)+'px';
   const h=box.getBoundingClientRect().height,left=Math.max(12,Math.min(game.width-box.offsetWidth-12,r.left-game.left+r.width/2-box.offsetWidth/2));
