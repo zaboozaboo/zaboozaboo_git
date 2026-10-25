@@ -52,6 +52,10 @@ function refreshDiceHUD(){
  host.classList.add('charge-dice');host.classList.toggle('rolling',rolling);host.classList.remove('opening-roll','shifting');host.dataset.tier='normal';
  const spin=host.querySelector('.rolling-die .die-face');if(spin)spin.dataset.face=Math.floor(Date.now()/90)%6+1;
  host.style.setProperty('--dice-progress',S.dice.progress*100+'%');
+ let readout=host.querySelector('.dice-live-readout');
+ if(!readout){readout=document.createElement('div');readout.className='dice-live-readout';host.append(readout);}
+ const nextSeconds=Math.max(0,(B.openingDice>0?B.openingDice:(1-S.dice.progress)*diceCooldown())/S.settings.speed);
+ readout.textContent=rolling?'굴리는 중':last?'전체 +'+last.face+' · '+nextSeconds.toFixed(1)+'초':'첫 굴림 · '+nextSeconds.toFixed(1)+'초';
  host.setAttribute('aria-label',rolling?'자동 주사위 굴리는 중':last?'주사위 '+last.face+' · 모든 부대 '+last.face+' 충전':'첫 주사위 대기');
 
 }

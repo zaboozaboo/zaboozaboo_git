@@ -1,4 +1,4 @@
-// 영토, 나의 영토 — 게임 데이터 정의
+// Crownward — 게임 데이터 정의
 'use strict';
 
 // 건물(영웅 카드) 등급은 일반 / 고급 / 영웅 3단계
@@ -37,7 +37,7 @@ const CLASSES = {
 // 전직 단계: 요구 영주 레벨 / 스테이지 / 골드, 효과
 const PROMOTIONS = [
   { tier: 0, slots: 2, mult: 1.0 },
-  { tier: 1, slots: 3, mult: 1.6, reqLand: 1, reqLevel: 10, reqStage: 10, cost: 5000 },
+  { tier: 1, slots: 3, mult: 1.6, reqLand: 1, reqLevel: 10, reqStage: 10, cost: 500 },
   { tier: 2, slots: 4, mult: 2.6, reqLand: 3, reqLevel: 30, reqStage: 30, cost: 250000 },
   { tier: 3, slots: 5, mult: 4.2, reqLand: 6, reqLevel: 60, reqStage: 60, cost: 2.5e7 },
 ];

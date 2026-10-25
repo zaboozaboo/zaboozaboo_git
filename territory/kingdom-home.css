@@ -1,0 +1,32 @@
+/* Kingdom owns land management; recruiting, formation and growth stay in their tabs. */
+#game #lobby.kingdom-home{gap:12px;padding:70px 16px 12px;background:radial-gradient(ellipse at 50% 20%,#75947b,#355e58);color:#f6efd9;overflow:hidden}
+.realm-heading{display:flex;align-items:center;justify-content:space-between;flex:none}
+.realm-heading small{font-size:10px;letter-spacing:2px;color:#e4cb8c}.realm-heading h2{margin:2px 0;font-size:25px}.realm-heading>b{font-size:13px;border:1px solid #c9b87b66;border-radius:18px;padding:7px 12px;background:#203e3c80}
+.kingdom-home h3{margin:0 0 8px;font-size:15px;display:flex;justify-content:space-between;align-items:center}.kingdom-home h3 small{font-size:10px;font-weight:400;opacity:.75}
+.realm-holdings{flex:1;min-height:125px;display:flex;flex-direction:column}
+#lobby.kingdom-home #kingdom-map-host{position:relative;inset:auto;flex:1;min-height:0;overflow:auto;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;align-content:start;padding:2px 2px 6px}
+.realm-land{position:relative;min-width:0;height:157px;display:flex;flex-direction:column;align-items:center;justify-content:end;padding:8px 8px 10px;border:2px solid #c5b181;border-radius:17px;background:linear-gradient(#e9edce,#c9d8ae 67%,#f4ebd2 68%);box-shadow:inset 0 2px #fff9,0 3px 0 #294940;color:#3d493b;text-align:center}
+#lobby .realm-land .estate-building,#lobby .realm-empty .estate-building{position:relative;left:auto;top:auto;bottom:auto;transform:none;width:100px;height:89px;flex:none;margin:0}
+.realm-land b{font-size:14px}.realm-land small{font-size:11px;margin-top:3px;color:#6c6145}.realm-land small span{margin-left:5px}.realm-land em{position:absolute;top:7px;left:7px;font-style:normal;font-size:9px;background:#355e58;color:#fff2c7;padding:3px 6px;border-radius:8px}
+.realm-empty{grid-column:1/-1;min-height:180px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;text-align:center;border:1px solid #e1d39b55;border-radius:20px;background:#b2c79f22}.realm-empty span:last-child{font-size:12px;max-width:230px;line-height:1.6}
+.realm-support{flex:none;padding:12px 14px;border-radius:17px;background:linear-gradient(#f9f2df,#e9ddbd);color:#444f41;border:2px solid #bca573;box-shadow:inset 0 2px #fff,0 3px #294940}
+#realm-help{width:24px;height:24px;border:1px solid #b7a783;border-radius:50%;background:#fff7df;color:#62664e;font-family:serif;font-weight:bold}#realm-effects{display:grid;grid-template-columns:repeat(3,1fr)}#realm-effects>div{display:flex;flex-direction:column;align-items:center;border-right:1px solid #cbbd9c}#realm-effects>div:last-child{border:0}#realm-effects strong{font-size:23px;color:#355e58}#realm-effects strong small{font-size:12px;margin-left:2px}#realm-effects span{font-size:11px;margin-top:4px}
+.realm-goal{flex:none;background:linear-gradient(#f9f2df,#e9ddbd);border:2px solid #bca573;border-radius:18px;padding:12px 14px;color:#454c3c;box-shadow:inset 0 2px #fff,0 3px #294940}.realm-goal>small{font-size:10px;color:#84704b;font-weight:bold}#realm-target>b{display:block;font-size:19px;margin:4px 0}#realm-target>span{display:flex;justify-content:space-between;font-size:12px;gap:6px}#realm-target small{font-size:10px;opacity:.75}#realm-target progress{width:100%;height:6px;display:block;margin:10px 0 12px;accent-color:#52765a}#lobby.kingdom-home #lobby-battle{width:100%;min-height:42px;border:1px solid #937437;border-radius:12px;background:linear-gradient(#efce78,#d1a64f);color:#433e2a;box-shadow:inset 0 2px #fff6,0 2px #9d803f;display:flex;align-items:center;justify-content:center;gap:15px;font-size:13px}
+@media(max-height:650px){#game #lobby.kingdom-home{padding:62px 12px 8px;gap:8px}.realm-heading h2{font-size:20px}.realm-land{height:125px}#lobby .realm-land .estate-building{width:78px;height:65px}.realm-support,.realm-goal{padding:8px 12px}.kingdom-home h3{margin-bottom:5px}#realm-effects strong{font-size:19px}#realm-target>b{font-size:16px}.realm-empty{min-height:125px}}
+#lobby #realm-help{min-height:24px;height:24px;min-width:24px;padding:0;flex:0 0 24px;line-height:22px}
+/* The kingdom tab owns the home; territory details are a nested, compact layer. */
+#game.lobby-mode>#tabs{border-top:0;overflow:visible;padding-top:5px}
+#game.lobby-mode>#tabs:before{display:none}
+#game.lobby-mode #lobby.kingdom-home{border-bottom:2px solid #bca573;padding-bottom:12px}
+#game.lobby-mode>#tabs button[data-tab=lobby].ux-covered{background:#355e58!important;border:2px solid #bca573;border-top:0;border-radius:0 0 11px 11px!important;box-shadow:none!important}
+#game.lobby-mode>#tabs button[data-tab=lobby].ux-covered:before{content:'';position:absolute;display:block;top:-7px;left:-2px;right:-2px;width:auto;height:7px;transform:none;background:#355e58;border-left:2px solid #bca573;border-right:2px solid #bca573}
+#game.lobby-mode>#tabs button[data-tab=lobby]>.tab-close-mark{background:#355e58}
+#game.realm-detail-open #sheet{top:auto;bottom:calc(var(--nav-height,66px) + 20px);left:12px;right:12px;height:auto;max-height:calc(100% - 160px);border:2px solid #bca573;border-radius:18px;overflow:hidden;box-shadow:0 12px 30px #102c3966}
+#game.realm-detail-open #sheet .sheet-head{min-height:44px;padding:8px 12px}
+#game.realm-detail-open #panel{flex:initial;min-height:0;overflow:auto;padding:12px}
+#game.realm-detail-open #sheet-views{display:none!important}
+#game.realm-detail-open .ux-view,#game.realm-detail-open .land-detail{flex:initial;min-height:0;height:auto;gap:12px}
+#game.realm-detail-open .ux-facility-list{flex:initial;justify-content:start;gap:10px;margin:12px 0 0}
+#game.realm-detail-open .ux-facility-item{min-height:86px;padding:10px 8px}
+#game.realm-detail-open .ux-support-note{margin:10px 0 0}
+#game.realm-detail-open #sheet-backdrop{bottom:calc(var(--nav-height,66px) + 8px);background:#132e2733}

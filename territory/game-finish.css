@@ -1,0 +1,202 @@
+/* Crownward / sculpted storybook skin.
+   Paint only: layout, hit areas, order, visibility and tab behavior stay in UX CSS.
+   Other art styles replace this skin + illustration assets, not the UX contract. */
+:root[data-ui-skin="sculpted"] {
+  --cw-icon-atlas:url("assets/casual-icons.png");
+  --cw-sprite-rendering:auto;
+  --cw-paper:#f6efd9;
+  --cw-paper-light:#fffbed;
+  --cw-paper-shade:#e9ddbb;
+  --cw-ink:#354940;
+  --cw-muted:#6c7864;
+  --cw-rim:#68573a;
+  --cw-rim-soft:#baa77b;
+  --cw-gold:#e7bd64;
+  --cw-gold-light:#fff1bb;
+  --cw-gold-dark:#a17b37;
+  --cw-wood:#485d52;
+  --cw-wood-dark:#253e38;
+  --cw-button-face:linear-gradient(180deg,#ffe6a0 0%,#f4cd75 48%,#e9b94f 100%);
+  --cw-button-rim:#87612f;
+  --cw-button-light:#fff2c9;
+  --cw-button-shadow:#b48638;
+  --cw-button-ink:#533a21;
+  --cw-disabled-face:#d8d9cc;
+  --cw-disabled-ink:#737a69;
+  --cw-close-face:linear-gradient(#ec8c66,#cf604c 65%,#b9453d);
+  --cw-close-rim:#743c32;
+  --cw-radius:12px;
+  --cw-card-radius:11px;
+  --cw-edge-light:inset 0 2px 0 #fff9e9b0;
+  --cw-lift:0 3px 0 #806d46,0 5px 7px #302d2218;
+  --cw-pressed:inset 0 2px 3px #674b3628;
+  --cw-focus:#167e9a;
+}
+[data-ui-skin="sculpted"] .game-icon {background-image:var(--cw-icon-atlas);image-rendering:var(--cw-sprite-rendering);}
+/* Continuous parchment: the popup bottom and its open tab use the SAME paint. */
+[data-ui-skin="sculpted"] #game.panel-open,
+[data-ui-skin="sculpted"] #game #sheet,
+[data-ui-skin="sculpted"] #game.panel-open #sheet>#sheet-views,
+[data-ui-skin="sculpted"] #game.panel-open>#tabs button.ux-covered:before,
+[data-ui-skin="sculpted"] #game>#tabs button>.tab-close-mark {background:var(--cw-paper);}
+[data-ui-skin="sculpted"] #game.panel-open>#tabs button.ux-covered.active {background:var(--cw-paper)!important;}
+[data-ui-skin="sculpted"] #sheet>#panel {
+ background:radial-gradient(ellipse at 50% 0%,#fffbedb0,transparent 75%),var(--cw-paper);
+ color:var(--cw-ink);
+}
+[data-ui-skin="sculpted"] #game #sheet {box-shadow:inset 2px 0 #fffbea90,inset -2px 0 #b8a47a30;}
+[data-ui-skin="sculpted"] #sheet:has(.ux-summon-scene)>#panel {background:#152b3b;}
+/* Carved top rail with a raised illustrated crest; no new header content. */
+[data-ui-skin="sculpted"] #sheet .sheet-head {
+ background:linear-gradient(115deg,#4d7167,#38584f 65%,#304d48);
+ border-bottom:1px solid var(--cw-rim);
+ box-shadow:inset 0 2px #adc4a15c,inset 0 -3px #1b352e40,0 2px 0 #d7bd7b;
+}
+[data-ui-skin="sculpted"] #sheet .sheet-head #sheet-title {
+ color:#fff1c4!important;text-shadow:0 2px #253e38;letter-spacing:.2px;
+}
+[data-ui-skin="sculpted"] #sheet .sheet-head .sheet-tab-icon {filter:drop-shadow(0 2px 0 #233b34) drop-shadow(0 0 3px #edcf8d60);}
+[data-ui-skin="sculpted"] #sheet .sheet-head .ux-info,
+[data-ui-skin="sculpted"] #sheet .sheet-head #sheet-close {color:#f4e4b5;}
+[data-ui-skin="sculpted"] #sheet .sheet-head #sheet-close:hover {background:#ffffff12;}
+[data-ui-skin="sculpted"] #game.panel-open #sheet>#sheet-views {border-top:1px solid #b3a27766;box-shadow:inset 0 1px #fffbed;}
+[data-ui-skin="sculpted"] #game.panel-open #sheet-views button {color:#7e7155;text-shadow:0 1px #fffbed;}
+[data-ui-skin="sculpted"] #game.panel-open #sheet-views button.active {
+ background:linear-gradient(transparent,#dfc78c35);color:var(--tab-accent);
+ box-shadow:inset 0 -3px var(--tab-accent),inset 0 -4px #fff8d7;
+}
+/* Thumb controls read as molded objects: bevel, lower lip, then press. */
+[data-ui-skin="sculpted"] #game .btn,
+[data-ui-skin="sculpted"] .modal-box .btn {
+ border-color:var(--cw-rim-soft);border-radius:var(--cw-radius);
+ background:linear-gradient(#fffbee,#e5dfc8);color:var(--cw-ink);
+ box-shadow:inset 0 2px #ffffffbc,inset 0 -2px #b7aa8240;
+}
+[data-ui-skin="sculpted"] #game .btn.primary,
+[data-ui-skin="sculpted"] #game .btn.gold,
+[data-ui-skin="sculpted"] #lobby-battle,
+[data-ui-skin="sculpted"] .modal-box .btn.primary {
+ background:var(--cw-button-face);border-color:var(--cw-button-rim);
+ color:var(--cw-button-ink);text-shadow:0 1px #fff0bd;
+ box-shadow:inset 0 2px var(--cw-button-light),inset 0 -3px #c9943f55,0 2px 0 #775a3060;
+}
+[data-ui-skin="sculpted"] #game .btn:active:not(:disabled),
+[data-ui-skin="sculpted"] #lobby-battle:active {box-shadow:var(--cw-pressed);}
+[data-ui-skin="sculpted"] #game .btn:disabled {
+ background:var(--cw-disabled-face);color:var(--cw-disabled-ink);border-color:#9a9f8c;
+ text-shadow:none;box-shadow:inset 0 1px #f6f8e2;filter:none;
+}
+[data-ui-skin="sculpted"] #game button:focus-visible,
+[data-ui-skin="sculpted"] #game select:focus-visible {outline-color:var(--cw-focus);}
+/* The close glyph is a full-tab cover, not a badge or image crop. */
+[data-ui-skin="sculpted"] #game>#tabs .tab-close-mark svg {
+ background:var(--cw-close-face);border:2px solid var(--cw-close-rim);border-radius:14px;
+ stroke:#fff5dd;stroke-width:4.5;
+ box-shadow:inset 0 2px #ffc9a8,inset 0 -3px #912f2e66,0 3px 0 #674330;
+ filter:drop-shadow(0 2px 2px #68533625);
+}
+[data-ui-skin="sculpted"] #game>#tabs button.ux-covered:active .tab-close-mark svg {box-shadow:inset 0 2px #a44236;}
+/* Navigation remains a separate material rail. The selected cutout stays seamless. */
+[data-ui-skin="sculpted"] #game>#tabs {
+ background:linear-gradient(#e6d3a6,#d5bd86);border-top-color:#917546;
+ box-shadow:inset 0 2px #fff0c4;
+}
+[data-ui-skin="sculpted"] #game.panel-open>#tabs {box-shadow:none;}
+[data-ui-skin="sculpted"] #game>#tabs button {color:#5e5037;text-shadow:0 1px #f8e8bb;}
+[data-ui-skin="sculpted"] #game>#tabs button>.game-icon {filter:drop-shadow(0 2px 0 #7c6338) drop-shadow(0 3px 2px #6d552f30);}
+[data-ui-skin="sculpted"] #game>#tabs button.active:not(.ux-covered) {background:linear-gradient(#fff4cf,#eed79c)!important;box-shadow:inset 0 2px #fff9e8,inset 0 -3px #a38447!important;}
+/* The die is the leading object on the field; pips and charge remain readable. */
+[data-ui-skin="sculpted"] #deployment-panel #dice-hud.charge-dice .dice-charge-ring {
+ box-shadow:inset 0 2px #fff2bb,0 3px 0 #5b5134,0 6px 9px #203f3650;
+}
+[data-ui-skin="sculpted"] #deployment-panel #dice-hud .die-face {
+ background:radial-gradient(ellipse at 25% 15%,#fffef0,#fff0be 65%,#e5be72);
+ border-color:#b29353;box-shadow:inset 0 2px #fffef7,inset 0 -3px #d5b578;
+}
+[data-ui-skin="sculpted"] #deployment-panel #dice-hud .pip {background:#35544d;box-shadow:inset 0 1px #18382e,0 1px #ffffff8c;}
+[data-ui-skin="sculpted"] #game #deployment .deploy-orb {box-shadow:inset 0 1px #fff1bf,0 2px 0 #4e4933,0 4px 5px #18382f55;}
+[data-ui-skin="sculpted"] #game #deployment .orb-inner {background:radial-gradient(ellipse at 45% 20%,#769588,#36574c 80%);box-shadow:inset 0 1px 4px #16362f80;}
+[data-ui-skin="sculpted"] #game #deployment .locked .orb-inner {background:#aeb79e;box-shadow:inset 0 2px 3px #53634844;}
+[data-ui-skin="sculpted"] #game #deployment .locked .deploy-orb {box-shadow:inset 0 1px #e5e9cd,0 2px #586750;}
+[data-ui-skin="sculpted"] #field .combat-skill #btn-auto.on {background:linear-gradient(#a9c67b,#6f9956);border-color:#e2d298;box-shadow:inset 0 2px #d4e6a1,0 2px #425e38;}
+[data-ui-skin="sculpted"] #combat-actions #btn-skill {background:linear-gradient(#789eb5,#416e8e);border-color:#e3c77d;box-shadow:inset 0 2px #bdd5cc,0 3px #324d56;}
+/* The command board has depth, but every occupied, empty and locked slot keeps its size. */
+[data-ui-skin="sculpted"] #panel .ux-command-board .deployment-board {
+ background:radial-gradient(ellipse at 50% 0%,#71907a50,transparent 80%),linear-gradient(#365d4f,#2d5146);
+ border-color:#6e815d;border-radius:14px;
+ box-shadow:inset 0 2px #a9bd8c80,inset 0 0 0 3px #1c403c55,0 3px 0 #5c694d;
+}
+[data-ui-skin="sculpted"] #panel .ux-restored-formation .fixed-slot {
+ border-style:solid!important;border-color:#768a6c!important;
+ background:linear-gradient(#294a40,#3b5c4d)!important;box-shadow:inset 0 3px 4px #152f3245,0 1px #aabd8950!important;
+}
+[data-ui-skin="sculpted"] #panel .ux-restored-formation .empty-slot {background:radial-gradient(ellipse,#587b58,#355844)!important;border-color:#b3c68b!important;color:#ecedbd!important;}
+/* Rarity: material, badge and emblem all agree; selection is a separate warm outline. */
+[data-ui-skin="sculpted"] #panel [data-rarity=C] {--rarity-ink:#536f63;--rarity-paper:#dbe5ce;--rarity-top:#f2f4e3;--rarity-shade:#acbfa4;--rarity-shine:#faffeb;}
+[data-ui-skin="sculpted"] #panel [data-rarity=R] {--rarity-ink:#337294;--rarity-paper:#dcecf1;--rarity-top:#f2fcff;--rarity-shade:#9bbdca;--rarity-shine:#f4ffff;}
+[data-ui-skin="sculpted"] #panel [data-rarity=H] {--rarity-ink:#a57c32;--rarity-paper:#f8e8b4;--rarity-top:#fff7d8;--rarity-shade:#d9b76a;--rarity-shine:#fffce5;}
+[data-ui-skin="sculpted"] #panel .reserve-unit.unit-tier,
+[data-ui-skin="sculpted"] #panel .reserve-unit.unit-tier.placed,
+[data-ui-skin="sculpted"] #panel .deployment-member.unit-tier {
+ background:radial-gradient(ellipse at 50% 25%,var(--rarity-top),transparent 70%),linear-gradient(var(--rarity-paper),var(--rarity-shade));
+ border-color:var(--rarity-ink);border-radius:var(--cw-card-radius);
+ box-shadow:inset 0 2px var(--rarity-shine),inset 0 0 0 2px #ffffff55,0 2px 0 var(--rarity-ink);
+}
+[data-ui-skin="sculpted"] #panel .unit-tier .unit-rarity,
+[data-ui-skin="sculpted"] #panel .ux-rarity-badge {
+ background:linear-gradient(#ffffff16,transparent),var(--rarity-ink);
+ box-shadow:inset 0 1px #ffffff55,0 1px 1px #253f3633;color:#fff9df;text-shadow:0 1px #18382d50;
+}
+[data-ui-skin="sculpted"] #panel .reserve-unit .tier-seal {filter:drop-shadow(0 1px #fff9e0);}
+[data-ui-skin="sculpted"] #panel .reserve-unit.selected {outline-color:#dd9a28;box-shadow:inset 0 0 0 2px #fff8cb,0 2px 0 var(--rarity-ink);}
+[data-ui-skin="sculpted"] #panel .reserve-unit .reserve-info {background:#ffffff38;box-shadow:inset 0 1px #ffffff80;}
+/* Growth keeps the same large central decision. The light sits behind the illustration. */
+[data-ui-skin="sculpted"] #panel .kingdom-growth>.growth-current {
+ background:radial-gradient(ellipse at center,#edca6b28,transparent 62%);
+}
+[data-ui-skin="sculpted"] #panel .growth-node-icon {position:relative;isolation:isolate;}
+[data-ui-skin="sculpted"] #panel .growth-node-icon:before {
+ content:'';position:absolute;inset:-15px;border:1px solid #c5ad6655;border-radius:50%;
+ box-shadow:0 0 0 5px #e5cf8c22,inset 0 0 18px #f1d67e44;z-index:-1;pointer-events:none;
+}
+[data-ui-skin="sculpted"] #panel .growth-node-icon .game-icon {filter:drop-shadow(0 4px 0 #85744855) drop-shadow(0 6px 8px #a1843633);clip-path:inset(2px);}
+[data-ui-skin="sculpted"] #panel .growth-current h4 {color:#3b5846;text-shadow:0 2px #fffbea;}
+[data-ui-skin="sculpted"] #panel .growth-current p>b {color:#42764d;text-shadow:0 1px #fff9dc;}
+[data-ui-skin="sculpted"] #panel .growth-track i {background:#d8d4ba;border-color:#a3a582;box-shadow:inset 0 1px 2px #65674440;border-radius:3px;}
+[data-ui-skin="sculpted"] #panel .growth-track i.done {background:linear-gradient(#b8ce88,#729657);box-shadow:inset 0 1px #e2edb8;}
+[data-ui-skin="sculpted"] #panel .growth-track i.current {background:linear-gradient(#fff0aa,#d9af4f);border-color:#ab883d;box-shadow:inset 0 1px #fff9d7;}
+[data-ui-skin="sculpted"] #panel .growth-portrait {background:radial-gradient(ellipse at 50% 70%,#dac27a35,transparent 70%);}
+[data-ui-skin="sculpted"] #panel .growth-portrait .lord-art {filter:drop-shadow(0 5px 3px #746d4345);}
+/* Secondary destinations keep illustration-led rows, not more ornamental panels. */
+[data-ui-skin="sculpted"] #panel .ux-land-item,
+[data-ui-skin="sculpted"] #panel .ux-facility-item,
+[data-ui-skin="sculpted"] #panel .ux-battle-options .row,
+[data-ui-skin="sculpted"] #panel .ux-condition-row {
+ background:linear-gradient(105deg,#e5e5ccaa,#f9f3df88);border-color:#b3b294;
+ box-shadow:inset 0 1px #fff9e6,0 1px #b7b69744;
+}
+[data-ui-skin="sculpted"] #panel .ux-battle-options .row.me {background:linear-gradient(#e3ebc9,#d0dfb4);}
+[data-ui-skin="sculpted"] #panel .ux-filter-tabs [aria-pressed=true],
+[data-ui-skin="sculpted"] #panel .ux-ranking-switch [aria-pressed=true] {
+ background:linear-gradient(#f8ebbe,#e3d29b);box-shadow:inset 0 1px #fff8dd,inset 0 -2px #b29a62;color:#5f5033;
+}
+[data-ui-skin="sculpted"] #panel .ux-list-tools select {background:linear-gradient(#fff9e6,#e9dfc1);border-color:#a2a384;box-shadow:inset 0 1px #fffef5;color:var(--cw-ink);}
+[data-ui-skin="sculpted"] #panel .ux-summon-scene .summon-stage {box-shadow:inset 0 0 28px #111e2c80;border-color:#baab78;}
+[data-ui-skin="sculpted"] #panel .ux-summon-cost {background:linear-gradient(#385c68,#223e4b);border-color:#d4bd80;box-shadow:inset 0 1px #9ea77b66;color:#fff0be;}
+/* Shared feedback: the same materials for HUD currency, help and result dialogs. */
+[data-ui-skin="sculpted"] #topbar .tb-cur>div {background:linear-gradient(#385851,#213f38);border-color:#b2b589;box-shadow:inset 0 2px #b7c99c4a,0 2px #1e3c3450;}
+[data-ui-skin="sculpted"] #topbar .tb-cur b {color:#fff3d2;text-shadow:0 1px #1c332a;}
+[data-ui-skin="sculpted"] #panel .ux-info {background:none;box-shadow:none;color:#566b53;}
+[data-ui-skin="sculpted"] #panel .ux-info:before {background:#fffbed50;box-shadow:inset 0 1px #fffef3;border-color:#8e9c7a;}
+[data-ui-skin="sculpted"] #game #sheet .sheet-head button.ux-info {color:#f4e4b5;background:none;box-shadow:none;}
+[data-ui-skin="sculpted"] #panel .ux-summon-scene .ux-info {color:#f4e4b5;}
+[data-ui-skin="sculpted"] #panel .ux-summon-scene .ux-info:before {background:#233e4b;border-color:#c7b77e;}
+[data-ui-skin="sculpted"] .modal-box {background:var(--cw-paper);border-color:var(--cw-rim-soft);border-radius:18px;box-shadow:inset 0 2px var(--cw-paper-light),0 5px 0 #695938,0 12px 35px #102c3455;color:var(--cw-ink);}
+[data-ui-skin="sculpted"] #toast {background:linear-gradient(#426153,#2f493f);color:#fff0cb;border-color:#b8a16a;box-shadow:inset 0 1px #d2c48a50,0 3px 10px #122b3050;}
+[data-ui-skin="sculpted"] #journey-hint {background:linear-gradient(#4d6c55f5,#304e40f5);border-color:#c9b977;color:#fff3cf;box-shadow:inset 0 1px #e2d79e55,0 3px 10px #122b3050;}
+
+/* The kingdom scene keeps its map and existing shortcuts; only its material changes. */
+[data-ui-skin="sculpted"] #lobby .estate-land>b {background:linear-gradient(#4b6954,#2e4b3e);border-color:#adb886;box-shadow:inset 0 1px #d6dfad55,0 2px 2px #18392c40;color:#fff2cc;text-shadow:0 1px #243b2d;}
+[data-ui-skin="sculpted"] #lobby .estate-building {filter:drop-shadow(0 4px 2px #23453455);}
+[data-ui-skin="sculpted"] #lobby .milestone-pips i {background:#324e41;border-color:#849574;box-shadow:inset 0 1px 2px #163227;}
+[data-ui-skin="sculpted"] #lobby .milestone-pips i.filled {background:linear-gradient(#fff0b3,#d8ad54);border-color:#d9bd79;box-shadow:inset 0 1px #fff9d9;}

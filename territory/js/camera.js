@@ -1,6 +1,7 @@
 'use strict';
 const BattleCamera={offset:0,manualUntil:0,drag:null,last:0,focus:null};
-function cameraLimit(){return Math.max(0,W-(VIEW.height||W));}
+function cameraViewHeight(){return (VIEW.height||W)-(VIEW.hudInset||0);}
+function cameraLimit(){return Math.max(0,W-cameraViewHeight());}
 function cameraFocus(){
  const allies=B.units.filter(u=>u.team===0&&u.hp>0);
  if(!allies.length)return P_CASTLE_X;
@@ -20,13 +21,13 @@ function updateBattleCamera(now){
  if(typeof S!=='undefined'&&S?.territoryTutorial==='boss'){BattleCamera.offset=cameraLimit();BattleCamera.last=now;return;}
  if(typeof firstBattlePhase!=='undefined'&&(firstBattlePhase==='deployed'||S?.territoryTutorial==='support')){
   const unit=B.units.find(u=>S?.territoryTutorial==='support'?u.isVanguard:u.team===0&&u.heroId==='militia');
-  if(unit){BattleCamera.offset=Math.max(0,Math.min(cameraLimit(),unit.x-VIEW.height*.55));BattleCamera.last=now;return;}
+  if(unit){BattleCamera.offset=Math.max(0,Math.min(cameraLimit(),unit.x-cameraViewHeight()*.55));BattleCamera.last=now;return;}
  }
  const dt=BattleCamera.last?Math.min(.05,(now-BattleCamera.last)/1000):.016;BattleCamera.last=now;
  const manual=!!BattleCamera.drag||now<BattleCamera.manualUntil;
  if(!manual){
   BattleCamera.focus=B.ended&&B.result==='win'?W:cameraFocus();
-  const target=Math.max(0,Math.min(cameraLimit(),BattleCamera.focus-VIEW.height*.45));
+  const target=Math.max(0,Math.min(cameraLimit(),BattleCamera.focus-cameraViewHeight()*.45));
   BattleCamera.offset+=(target-BattleCamera.offset)*(1-Math.exp(-dt*3));
  }
  BattleCamera.offset=Math.max(0,Math.min(cameraLimit(),BattleCamera.offset));

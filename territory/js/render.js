@@ -4,7 +4,7 @@ let cv, ctx;
 const VIEW = { sx: 1, sy: 1, dpr: 1, height: 420 };
 // Mild elevated perspective; battle coordinates and hit distances remain unchanged.
 function perspectiveScale(x){
- const screenY=VIEW.height-x+BattleCamera.offset;
+ const screenY=VIEW.height-(VIEW.hudInset||0)-x+BattleCamera.offset;
  return .68+.40*Math.max(0,Math.min(1,screenY/VIEW.height));
 }
 const SX = (y,x) => x===undefined?y:LANE_W/2+(y-LANE_W/2)*perspectiveScale(x);
@@ -82,6 +82,8 @@ function fitCanvas() {
   // World geometry stays fixed across phone rotation and panel resizing.
   VIEW.height=height/(width/LANE_W);
   VIEW.sx=width/LANE_W;VIEW.sy=VIEW.sx;
+  // Keep the camp above the overlaid roster while terrain continues behind it.
+  VIEW.hudInset=Math.min(86,height*.2)/VIEW.sy;
   CombatArt.groundKey='';
 }
 function spriteFor(u) {
@@ -120,7 +122,7 @@ function render() {
   ctx.setTransform(VIEW.dpr*VIEW.sx,0,0,VIEW.dpr*VIEW.sy,0,0);
   ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';ctx.clearRect(0,0,LANE_W,VIEW.height);
   ctx.save();ctx.beginPath();ctx.rect(0,0,LANE_W,VIEW.height);ctx.clip();
-  ctx.translate(0,VIEW.height-W+BattleCamera.offset);
+  ctx.translate(0,VIEW.height-W+BattleCamera.offset-(VIEW.hudInset||0));
   if(!CombatArt.reducedMotion && B.shake>0) ctx.translate(Math.sin(B.time*83)*B.shake*5,Math.cos(B.time*71)*B.shake*4);
   drawBackground();
   if(B.mode==='stage'&&!B.fortress) drawCamp(1);
@@ -175,11 +177,11 @@ function drawBackground() {
     CombatArt.ground=layer;CombatArt.groundKey=key;
   }
   // Project horizontal terrain strips so the road narrows toward the distant ridge.
-  ctx.fillStyle=['#82b989','#a9b4cd','#d9ad78','#a9d9e8','#bc8b8b','#9fc9a4'][ri];ctx.fillRect(0,0,LANE_W,W);
-  const top=Math.max(0,W-VIEW.height-BattleCamera.offset),bottom=Math.min(W,W-BattleCamera.offset);
+  ctx.fillStyle=['#82b989','#a9b4cd','#d9ad78','#a9d9e8','#bc8b8b','#9fc9a4'][ri];ctx.fillRect(0,0,LANE_W,W+(VIEW.hudInset||0));
+  const top=Math.max(0,W-VIEW.height-BattleCamera.offset+(VIEW.hudInset||0)),bottom=Math.min(W+(VIEW.hudInset||0),W-BattleCamera.offset+(VIEW.hudInset||0));
   for(let y=Math.floor(top/3)*3;y<bottom;y+=3){
-   const h=Math.min(3,W-y),scale=perspectiveScale(W-y),width=LANE_W*scale;
-   ctx.drawImage(CombatArt.ground,0,y*2,640,h*2,(LANE_W-width)/2,y,width,h+.5);
+   const h=Math.min(3,bottom-y),scale=perspectiveScale(W-y),width=LANE_W*scale;
+   ctx.drawImage(CombatArt.ground,0,Math.min(y,W-3)*2,640,h*2,(LANE_W-width)/2,y,width,h+.5);
   }
   const haze=ctx.createLinearGradient(0,top,0,bottom);haze.addColorStop(0,'#e5edc226');haze.addColorStop(.55,'#e5edc200');haze.addColorStop(1,'#183b2510');ctx.fillStyle=haze;ctx.fillRect(0,top,LANE_W,bottom-top);
 }

@@ -1,6 +1,6 @@
-# 영토, 나의 영토
+# Crownward
 
-> 최신 작업 상태·확정된 UI 방향·미구현 항목은 [작업 인계 문서](../HANDOFF.md)를 먼저 확인하세요. 아래 본문에는 초기 프로토타입 사양이 남아 있습니다.
+> 아래에는 초기 프로토타입 사양이 일부 남아 있습니다. 실제 규칙은 `js/` 구현과 `tests/` 검증을 기준으로 확인하세요.
 
 부하들을 이끌고 영토를 넓혀 가는 방치형 키우기 게임 프로토타입입니다. 영토에 배치한 **영웅 카드**가 건물이 되어 유닛을 계속 뽑아내고, 뽑힌 유닛들이 스타크래프트처럼 전장에서 자동으로 싸웁니다.
 
@@ -156,3 +156,14 @@ territory/
 - `tests/ux-navigation.html`: 실제 저장을 건드리지 않는 모바일 UI 확인 화면입니다.
 - 자동 검증: 저장소 루트에서 `for f in territory/tests/*.test.cjs; do node "$f" || exit 1; done`.
 - 아트 제작 원본과 미리보기는 재사용·비교를 위해 유지합니다. 로컬 `research/` 캡처와 `HANDOFF.md` 작업 메모는 배포 소스에서 제외합니다.
+
+## 진행 속도 검증과 배포
+
+[진행 속도 검토](../docs/progression-review.md)에 시뮬레이션 조건과 측정 결과를 기록했습니다. 첫 전직 비용은 500골드입니다.
+
+```bash
+node territory/tools/simulate-progression.cjs 1
+node territory/tools/package-game.cjs /tmp/crownward-release
+```
+
+위 명령은 저장소 루트에서 실행합니다. 배포 출력 폴더는 아직 존재하지 않는 경로여야 합니다. 생성한 폴더만 배포하면 `versions/`, `reclaim/`, 테스트 파일은 포함되지 않습니다. 아트 폴더 전체는 포함됩니다.

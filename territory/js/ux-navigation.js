@@ -47,24 +47,29 @@ const UX = {
     sheet.classList.remove('ux-compact-growth');
     const titles={territory:UI.panelView==='heroes'?'영웅 강화':'부대 편성',lord:UI.panelView==='lord'?'영주 성장':'왕국 강화',promo:'영주 전직',kingdom:UI.panelView==='detail'?'시설 관리':'개척영지',summon:UI.panelView==='catalog'?'영웅 도감':'영웅 영입',nation:({main:'서열전',war:'국가전',ranking:'순위'})[UI.panelView]};
     document.getElementById('sheet-title').textContent=titles[UI.tab]||'왕국';
-    // The close glyph lives inside the selected tab's artwork, never in a separate dock.
+    // Keep the selected tab's identity visible and repeat its icon in the sheet.
+    const group=this.group(UI.tab);
+    sheet.dataset.nav=group;
     const tabs=[...document.querySelectorAll('#tabs button')];
     tabs.forEach(b=>{
-      const open=b.dataset.tab===this.group(UI.tab);
+      const open=b.dataset.tab===group;
       b.classList.toggle('ux-covered',open);
+      b.classList.toggle('active',open);
       b.setAttribute('aria-label',b.querySelector(':scope > span:not(.game-icon):not(.ux-icon-close)').textContent+(open?' 닫기':''));
-      b.querySelector('.ux-icon-close')?.remove();
       b.setAttribute('aria-expanded',String(open));
-      if(open){
-        const overlay=document.createElement('span');overlay.className='ux-icon-close';overlay.setAttribute('aria-hidden','true');
-        overlay.innerHTML='<svg viewBox="0 0 32 32"><path class="ux-x-outline" d="m10 10 12 12M22 10 10 22"/><path d="m10 10 12 12M22 10 10 22"/></svg>';
-        b.append(overlay);
-      }
+      b.setAttribute('aria-controls',group==='lobby'?'lobby':'sheet');
+      b.querySelector('.ux-icon-close')?.remove();
+      b.querySelector('.tab-close-mark')?.remove();
+      if(open){const close=document.createElement('span');close.className='tab-close-mark';close.setAttribute('aria-hidden','true');close.innerHTML='<svg viewBox="0 0 32 32" focusable="false"><path d="M8 8 24 24M24 8 8 24"/></svg>';b.append(close);}
+      b.title=open?'다시 눌러 닫기':'';
     });
-    document.getElementById('sheet-close').hidden=true;
+    head.querySelector('.sheet-tab-icon')?.remove();
+    const source=tabs.find(b=>b.dataset.tab===group)?.querySelector('.game-icon');
+    if(source){const icon=source.cloneNode(true);icon.classList.add('sheet-tab-icon');head.prepend(icon);}
+    document.getElementById('sheet-close').hidden=false;
     if(UI.tab==='lord'){
       const card=p.querySelector('.kingdom-growth'),row=card?.querySelector('.growth-current'),action=card?.querySelector('.growth-build');
-      if(row&&action){const next=kingdomGrowth();action.innerHTML='<b>강화</b><span>'+gameIcon('coin')+fmt(next.cost)+'</span>';action.setAttribute('aria-label',next.name+' 강화 · '+fmt(next.cost)+' 골드');row.append(action);}
+      if(row&&action){const next=kingdomGrowth();action.innerHTML='<b>강화</b><span>'+gameIcon('coin')+fmt(next.cost)+'</span>';action.setAttribute('aria-label',next.name+' 강화 · '+fmt(next.cost)+' 골드');card.append(action);}
       card?.querySelector('.growth-current>div:nth-child(2)>small')?.remove();
       if(row){const next=kingdomGrowth(),effect=row.querySelector('p');if(effect)effect.innerHTML='<small>'+esc(next.upgrade.name)+'</small><span>'+esc(next.before)+'</span><span class="ux-stat-arrow" aria-hidden="true"> → </span><b>'+esc(next.after)+'</b>';}
       const track=card?.querySelector('.growth-track');if(track){const next=kingdomGrowth();track.setAttribute('title','별 +1까지 '+(10-next.index)+'회 강화');card.querySelector('h3 small').textContent=next.index+'/10 · 별 +1';}
@@ -78,6 +83,15 @@ const UX = {
       b.innerHTML='<b>강화</b><span class="ux-cost">'+gameIcon('coin')+fmt(Number(b.dataset.cost))+'</span>';
       b.setAttribute('aria-label',HERO_BY_ID[b.dataset.id].name+' 강화 · '+fmt(Number(b.dataset.cost))+' 골드');
     });
+    // Keep identity and transaction facts on screen; usage instructions live in help.
+    p.querySelector('.reserve-section>h3 small')?.replaceChildren(document.createTextNode(Object.keys(S.heroes).length+'종'));
+    p.querySelectorAll('.ux-hero-detail').forEach(button=>{
+      const id=button.dataset.id,h=HERO_BY_ID[id];if(!h)return;
+      button.closest('.ux-hero-row').dataset.rarity=h.rarity;
+      if(!button.querySelector('.ux-rarity-badge')){const badge=document.createElement('span');badge.className='ux-rarity-badge';badge.textContent=RARITY[h.rarity].name;button.querySelector('b')?.before(badge);}
+    });
+    p.querySelectorAll('.ux-battle-options>p.hint>span').forEach(el=>el.remove());
+    p.querySelector('.ux-summon-caption small')?.remove();
     p.querySelector('.ux-land-section>p.hint')?.remove();
     p.querySelector('.recruit-hint')?.remove();
     p.querySelector('.recruitment>p.hint')?.remove();
@@ -248,7 +262,6 @@ const UX = {
       const ranks=content.filter(el=>el.matches('details'));
       ranks.forEach(el=>el.open=true);add('ranking','순위',ranks);
     }else if(UI.tab==='kingdom'){
-      add('main','영지 목록',[...lesson,markup(this.landList())]);
       add('detail','시설 관리',[p.querySelector('.land-detail')]);
       p.querySelector('.estate-summary')?.remove();
     }else{

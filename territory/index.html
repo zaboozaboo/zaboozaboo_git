@@ -1,22 +1,24 @@
 <!doctype html>
-<html lang="ko">
+<html lang="ko" data-ui-skin="sculpted">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>영토, 나의 영토!</title>
+  <title>Crownward</title>
   <meta name="theme-color" content="#142a34">
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="mobile.css">
   <link rel="stylesheet" href="game-shell.css?casual-61">
   <link rel="stylesheet" href="kingdom-ui.css?v=shared-tabs-51">
-  <link rel="stylesheet" href="casual-theme.css?v=61">
-  <link rel="stylesheet" href="ux-navigation.css?v=21">
+  <link rel="stylesheet" href="ux-navigation.css?v=feedback-22">
+  <link rel="stylesheet" href="casual-theme.css?v=tab-close-74">
+  <link rel="stylesheet" href="game-finish.css?v=1">
+  <link rel="stylesheet" href="kingdom-home.css?v=3">
 </head>
 <body>
 <div id="app">
   <section id="boot" class="screen" aria-label="게임 시작">
     <div class="boot-art"></div><div class="boot-shade"></div><div class="boot-motes" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
-    <div class="boot-brand"><div class="brand-crest"><span class="game-icon" aria-hidden="true" style="background-position:20% 0%"></span></div><p>TERRITORY · MY KINGDOM</p><h1>영토,<br><strong>나의 영토!</strong></h1><div class="brand-rule"></div><span>작은 깃발 하나에서 시작되는 위대한 왕국</span></div>
+    <div class="boot-brand"><div class="brand-crest"><span class="game-icon" aria-hidden="true" style="background-position:20% 0%"></span></div><p>BUILD YOUR KINGDOM</p><h1 aria-label="Crownward"><strong>CROWNWARD</strong></h1><div class="brand-rule"></div><span>작은 깃발 하나에서 시작되는 위대한 왕국</span></div>
     <div class="boot-bottom"><p id="boot-status" role="status">왕국을 불러오는 중…</p><div id="boot-meter" role="progressbar" aria-label="게임 준비" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i id="boot-progress"></i></div><button id="boot-start" class="btn primary wide" disabled>왕국 준비 중…</button><small>영웅을 모으고 · 영토를 넓히고 · 왕국을 세우세요</small></div>
   </section>
   <!-- 캐릭터 생성 -->
@@ -45,20 +47,11 @@
         <div><span class="game-icon" aria-hidden="true" style="background-position:80% 0%"></span> <b id="tb-gems">0</b></div>
       </div>
     </header>
-    <main id="lobby" aria-label="왕국 로비">
-      <div class="lobby-heading"><span id="lobby-status"></span><b id="lobby-best"></b><button class="btn small ux-land-open" data-open-panel="kingdom">영토 목록 ›</button></div>
-      <section class="kingdom-scene growing-kingdom" aria-label="내 왕국">
-        <div class="kingdom-sky"></div><div class="kingdom-hill hill-one"></div><div class="kingdom-hill hill-two"></div>
-        <div class="lobby-chapter"><small>나의 왕국</small><h2 id="lobby-region"></h2><b id="lobby-stage"></b></div>
-        <div id="kingdom-map-host"></div>
-        <button class="scene-shortcut promotion-shortcut" data-open-panel="promo"><span class="game-icon" style="background-position:20% 25%" aria-hidden="true"></span><b>전직</b></button>
-        <button class="scene-shortcut recruit-shortcut" id="lobby-recruit" data-open-panel="summon"><span class="game-icon" style="background-position:0% 25%" aria-hidden="true"></span><b id="lobby-recruit-badge"></b></button>
-        <div class="power-plaque">부대 전투력 <strong id="lobby-power"></strong></div>
-      </section>
-      <div id="lobby-route" aria-label="영토와 전직 성장"></div>
-      <section class="lobby-squad"><div><b>출전 부대</b><button data-open-panel="territory">진형 편성 ›</button></div><div id="lobby-deck"></div></section>
-    <div id="battle-objective"><div><b id="objective-title"></b><small id="objective-detail"></small></div><button id="objective-action" class="btn primary"></button></div>
-      <div class="lobby-play"><button id="lobby-battle"><span class="game-icon" aria-hidden="true" style="background-position:60% 0%"></span><b id="lobby-battle-label">전투로 돌아가기</b><span>▶</span></button><button id="lobby-challenge" class="hidden"></button><button id="lobby-promo" data-open-panel="promo"></button></div>
+    <main id="lobby" class="kingdom-home" aria-label="내 왕국">
+      <header class="realm-heading"><div><small>MY KINGDOM</small><h2 id="lobby-region"></h2></div><b id="lobby-best"></b></header>
+      <section class="realm-holdings" aria-label="내 영토"><h3>내 영토 <small>영토를 눌러 시설 관리</small></h3><div id="kingdom-map-host"></div></section>
+      <section class="realm-support" aria-label="영토 지원 효과"><h3>지원 효과 <button id="realm-help" aria-label="지원 효과 설명">i</button></h3><div id="realm-effects"></div></section>
+      <section class="realm-goal" aria-label="다음 확보 목표"><small>다음 확보 목표</small><div id="realm-target"></div><button id="lobby-battle"><b id="lobby-battle-label">전투로 돌아가기</b><span aria-hidden="true">▶</span></button></section>
     </main>
     <header id="battle-top">      <div class="stage-info">
         <div class="ct-row"><span id="ct-stage"></span><span id="ct-timer"></span></div>
@@ -92,24 +85,24 @@
 </div>
 
 <script src="js/presentation.js?v=unit-metalwork-29"></script>
-<script src="js/data.js?charge-37"></script>
+<script src="js/data.js?progression-38"></script>
 <script src="js/state.js?v=learning-path-56"></script>
 <script src="js/kingdom.js?v=learning-path-56"></script>
-<script src="js/dice.js?feedback-57"></script>
+<script src="js/dice.js?scene-68&feedback-57"></script>
 <script src="js/formation.js?charge-37"></script>
 <script src="js/battle.js?front-18"></script>
-<script src="js/camera.js?feedback-57"></script>
+<script src="js/camera.js?hud-safe-69"></script>
 <script src="js/militia-combat.js?v=militia-toy-66"></script>
-<script src="js/render.js?militia-64"></script>
+<script src="js/render.js?hud-safe-69"></script>
 <script src="js/audio.js"></script>
 <script src="js/progression.js?recruit-18"></script>
 <script src="js/combat-feedback.js?v=feedback-57"></script>
-<script src="js/ui.js?ux-18"></script>
-<script src="js/guidance.js?shared-tabs-49"></script>
-<script src="js/mobile-shell.js?ux-1"></script>
-<script src="js/first-camp.js?perspective-58"></script>
+<script src="js/ui.js?v=realm-flow-3"></script>
+<script src="js/guidance.js?v=kingdom-home-2"></script>
+<script src="js/mobile-shell.js?v=realm-flow-3"></script>
+<script src="js/first-camp.js?feedback-2&perspective-58"></script>
 <script src="js/journey-guide.js?feedback-57"></script>
-<script src="js/ux-navigation.js?v=18"></script>
+<script src="js/ux-navigation.js?v=realm-flow-3"></script>
 <script src="js/main.js?onboarding-46"></script>
 </body>
 </html>

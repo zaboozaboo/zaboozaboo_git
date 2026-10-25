@@ -30,8 +30,6 @@ function refreshFirstCamp(){
  setLordArt(host.querySelector('.lord-art'),S.lord.cls,S.lord.gender);
  const go=host.querySelector('#first-expedition-go');if(go)go.onclick=()=>{if(launchFirstExpedition()){UI.closeSheet();MobileShell.show('battle');UI.refresh();}};
  }
- const target=UI.tab==='territory'&&step==='place'?(UI.pendingHero==='militia'?'[data-act="slot"][data-i="0"]':'[data-act="place"][data-id="militia"]'):!UI.tab?`#tabs [data-tab="${step==='recruit'?'summon':step==='place'?'territory':'lobby'}"]`:null;
- if(target)document.querySelector(target)?.classList.add('tutorial-target');
  refreshTutorialSpotlight();
 }
 
@@ -53,11 +51,13 @@ function tutorialInstruction(){
  ['#first-expedition-go','원정 준비 완료!','이 버튼을 눌러야 전투가 시작됩니다.'];
 }
 function refreshTutorialSpotlight(){
+ document.querySelectorAll('.tutorial-target').forEach(el=>el.classList.remove('tutorial-target'));
  let layer=document.getElementById('tutorial-spotlight');const instruction=tutorialInstruction();
  if(!instruction){layer?.remove();return;}
- const target=document.querySelector(instruction[0]);if(!target)return;
+ const target=document.querySelector(instruction[0]);if(!target){layer?.remove();return;}
  const r=target.getBoundingClientRect(),w=innerWidth,h=innerHeight,pad=5;
  if(!r.width||!r.height){layer?.remove();return;}
+ target.classList.add('tutorial-target');
  if(!layer){layer=document.createElement('div');layer.id='tutorial-spotlight';layer.innerHTML='<div class="tutorial-shade top"></div><div class="tutorial-shade left"></div><div class="tutorial-shade right"></div><div class="tutorial-shade bottom"></div><div class="tutorial-aperture"></div><div class="tutorial-coach" role="status"><span class="coach-arrow">↓</span><b></b><p></p><button class="btn gold tutorial-next"></button></div>';document.body.append(layer);}
  const x=Math.max(0,r.left-pad),y=Math.max(0,r.top-pad),right=Math.min(w,r.right+pad),bottom=Math.min(h,r.bottom+pad);
  const rect=(sel,l,t,ww,hh)=>{layer.querySelector(sel).style.cssText=`left:${l}px;top:${t}px;width:${Math.max(0,ww)}px;height:${Math.max(0,hh)}px`;};
@@ -178,7 +178,7 @@ function territoryGuideInstruction(){
  return {
  boss:['#field','첫 번째 성에 도착했어요','보스와 수비대를 쓰러뜨리고 성을 함락하면 햇살 숲이 내 영토가 됩니다.','성 공략 시작'],
  won:['#tabs [data-tab="lobby"]','햇살 숲이 내 영토가 됐어요','왕국에 돌아가 새로 세워진 거점을 확인하세요.','내 왕국 보기'],
- map:['#kingdom-map-host','작은 거점 → 개척 영지','햇살 숲에 깃발과 막사가 생겼어요. 이제 매 원정에 선발병 2명이 먼저 합류합니다.','지원군 만나기'],
+ map:['#kingdom-map-host','작은 거점 → 개척 영지','햇살 숲이 내 영토에 추가됐어요. 이제 매 원정에 선발병 2명이 먼저 합류합니다.','지원군 만나기'],
  support:['#tutorial-unit-marker','햇살 숲 선발병 2명 합류','주사위를 기다리지 않고 먼저 출격합니다. 얻은 영토가 다음 원정을 돕는 거예요.','다음 원정 계속']
  }[S?.territoryTutorial]||null;
 }

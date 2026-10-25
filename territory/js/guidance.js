@@ -44,17 +44,4 @@ function refreshBattleGuide() {
 
   });
   animateProductionCue();
-  const action=nextBattleAction();
-  document.getElementById('objective-title').textContent=action.title;
-  document.getElementById('objective-detail').textContent=action.detail;
-  document.getElementById('battle-objective').title=action.detail;
-  const button=document.getElementById('objective-action');button.textContent=action.label;
-  button.onclick=()=>{
-    if(action.boss) return document.getElementById('btn-boss').click();
-    UI.openSheet(action.tab);
-    if(action.tab==='lord') {
-      const upgrade=document.querySelector('[data-act="kingdomgrow"]');
-      if(upgrade){upgrade.closest('.kingdom-growth').classList.add('guided-upgrade');upgrade.focus({preventScroll:true});}
-    }
-  };
 }

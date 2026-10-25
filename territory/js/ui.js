@@ -71,7 +71,7 @@ const UI = {
     $('#game').classList.remove('hidden');
     // 탭을 누르면 전장 위로 시트가 올라오고, 같은 탭을 다시 누르면 닫힌다
     document.querySelectorAll('#tabs button').forEach(b => b.onclick = () => {
-      if(b.classList.contains('ux-covered')) return UI.closeSheet();
+      if(b.classList.contains('ux-covered')) return b.dataset.tab==='lobby'?MobileShell.show('battle'):UI.closeSheet();
       if(b.dataset.tab==='lobby') return MobileShell.show('lobby');
       if (UI.tab !== b.dataset.tab) UI.openSheet(b.dataset.tab);
     });
@@ -93,12 +93,15 @@ const UI = {
   openSheet(tab, landId = null) {
     if(preparingFirstExpedition()&&!['summon','territory'].includes(tab))return;
     if(preparingFirstExpedition()&&tab==='territory'&&!S.firstRecruit)return;
+    if(tab==='kingdom'&&MobileShell.mode!=='lobby')MobileShell.show('lobby');
+    if(tab!=='kingdom'&&MobileShell.mode==='lobby'&&!preparingFirstExpedition())MobileShell.show('battle');
+    document.getElementById('game').classList.toggle('realm-detail-open',tab==='kingdom');
     if(tab==='kingdom') UI.kingdomLand=landId||UI.kingdomLand||availableLand()?.id||LANDS[0].id;
 
     if(typeof UX!=='undefined')UX.remember();
     if(!UI.tab) UI.sheetFocus=document.activeElement;
     UI.panelView=typeof UX!=='undefined'?(UX.views[tab]||'main'):'main';
-    if(tab==='kingdom'&&landId)UI.panelView='detail';
+    if(tab==='kingdom')UI.panelView='detail';
     UI.tab = tab; UI.selSlot = null; UI.pendingHero = null;
     for(const id of ['lobby','deployment-panel','combat-actions']) document.getElementById(id).inert=true;
     document.getElementById('game').classList.add('panel-open');
@@ -115,9 +118,9 @@ const UI = {
     if(typeof UX!=='undefined')UX.remember();
     UI.tab = null; UI.pendingHero = null;
     for(const id of ['lobby','deployment-panel','combat-actions']) document.getElementById(id).inert=false;
-    document.getElementById('game').classList.remove('panel-open');
+    document.getElementById('game').classList.remove('panel-open','realm-detail-open');
     document.querySelectorAll('#tabs .ux-covered').forEach(b=>{
-      b.classList.remove('ux-covered');b.querySelector('.ux-icon-close')?.remove();
+      b.classList.remove('ux-covered');b.querySelector('.ux-icon-close')?.remove();b.querySelector('.tab-close-mark')?.remove();b.removeAttribute('title');
       b.setAttribute('aria-label',b.querySelector(':scope > span:not(.game-icon):not(.ux-icon-close)').textContent);
       b.setAttribute('aria-expanded','false');
     });
@@ -300,9 +303,9 @@ const UI = {
         const id=S.slots[i];
         if(unlockRank(i)!==rank)return '';
         if(i>=sc)return `<div class="deployment-member fixed-slot locked-slot">${gameIcon('lock')}<b>${i+1}번 자리</b><small>${i-1}차 전직 해금</small></div>`;
-        if(!id)return `<button class="deployment-member fixed-slot empty-slot" data-act="slot" data-i="${i}">${gameIcon('plus')}<b>${i+1}번 빈자리</b><small>영웅 선택 후 배치</small></button>`;
+        if(!id)return `<button class="deployment-member fixed-slot empty-slot" data-act="slot" data-i="${i}">${gameIcon('plus')}<b>${i+1}번 빈자리</b><small>배치 가능</small></button>`;
         const h=HERO_BY_ID[id],o=S.heroes[id];
-        return `<div class="deployment-member unit-tier" data-rarity="${h.rarity}" style="--unit-color:${RARITY[h.rarity].color}">${unitTierTrim(h.rarity)}<span class="unit-rarity" aria-label="${RARITY[h.rarity].name} 등급">${RARITY[h.rarity].name}</span><button class="deployment-unit ${UI.selSlot===i?'sel':''}" data-act="slot" data-i="${i}" aria-label="${h.unit.name} 이동 선택">${heroArt(id)}<span><b>${h.unit.name}</b><small>Lv.${o.level}</small></span></button><div class="deployment-controls">${o.level<heroMaxLevel(id)?UI.costBtn('레벨업',heroLevelCost(id),'hlv',`data-id="${id}"`):'<button class="btn small" disabled>최대 레벨</button>'}<span class="deployment-charge">1명 출격 <b>${productionCost(id)} 충전</b></span></div></div>`;
+        return `<div class="deployment-member unit-tier" data-rarity="${h.rarity}" style="--unit-color:${RARITY[h.rarity].color}">${unitTierTrim(h.rarity)}<span class="unit-rarity" aria-label="${RARITY[h.rarity].name} 등급">${RARITY[h.rarity].name}</span><button class="deployment-unit ${UI.selSlot===i?'sel':''}" data-act="slot" data-i="${i}" aria-label="${h.unit.name} 이동 선택">${heroArt(id)}<span><b>${h.unit.name}</b><small>Lv.${o.level}</small></span></button><div class="deployment-controls">${o.level<heroMaxLevel(id)?UI.costBtn('레벨업',heroLevelCost(id),'hlv',`data-id="${id}"`):'<button class="btn small" disabled>최대 레벨</button>'}<span class="deployment-charge"><b>${productionCost(id)} 충전</b></span></div></div>`;
       }).join('');
       return `<div class="deployment-row"><div class="rank-target"><b>${name}</b><small>${['돌격','엄호'][rank]}</small></div><div class="deployment-units">${members}</div></div>`;
     }).join('');
@@ -684,4 +687,5 @@ document.addEventListener('keydown', e => {
       else if (!e.shiftKey && document.activeElement === last) { first.focus(); e.preventDefault(); }
     }
   } else if (e.key === 'Escape' && UI.tab) UI.closeSheet();
+  else if(e.key==='Escape'&&MobileShell.mode==='lobby')MobileShell.show('battle');
 });

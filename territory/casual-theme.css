@@ -15,3 +15,281 @@
 #btn-skill{background:#547e9b;box-shadow:0 3px #315365;border-radius:12px;}
 #btn-auto{background:#5b896a;border-radius:12px;}
 #btn-boss{background:#b86e51;border-radius:12px;box-shadow:0 3px #754b3b;}
+
+/* Reference pass: Forge surfaces + RPG's persistent status/menu hierarchy.
+   Keep the kingdom's blue-green identity; reserve amber for selected/primary actions. */
+#game{--hud-rim:#28434e;--hud-paper:#fdf8eb;--hud-amber:#faca52;}
+#topbar{background:#365661;border-bottom:3px solid var(--hud-rim);}
+#tb-profile{border-radius:12px;}
+.tb-cur>div{background:var(--hud-paper);border:2px solid var(--hud-rim);border-bottom-width:4px;border-radius:12px;box-shadow:none;}
+.tb-cur b,.tb-cur>div:last-child b{color:#493a29;font-variant-numeric:tabular-nums;text-shadow:none;}
+#game .btn{border-radius:10px;text-shadow:none;transition:transform 80ms ease-out;}
+#game .btn.primary,#game .btn.gold,#lobby-battle{
+ background:var(--hud-amber);border:2px solid #725631;border-bottom-width:5px;
+ color:#49351e;box-shadow:none;text-shadow:none;border-radius:12px;
+}
+#game .btn:active:not(:disabled),#lobby-battle:active:not(:disabled){transform:translateY(2px);}
+#game .btn:disabled{opacity:1;background:#d8dccd;color:#566258;border-color:#87958a;box-shadow:none;}
+#game button:focus-visible,#game select:focus-visible{outline:3px solid #0078b6;outline-offset:-3px;}
+#tabs{background:var(--hud-paper);border-top:3px solid var(--hud-rim);box-shadow:none;gap:4px;padding-left:6px;padding-right:6px;}
+#tabs button{color:#3b5559;border-radius:10px!important;margin:4px 0;background:transparent;}
+#tabs button span{text-shadow:none;font-weight:800;}
+#tabs button.active,.lobby-mode #tabs button.active{
+ background:#fae7b3!important;color:#49351e!important;
+ box-shadow:inset 0 -4px #d49738!important;
+}
+#tabs button>.game-icon{filter:drop-shadow(0 2px 1px #28434e40);}
+#sheet{background:#f8ecd3;}
+#sheet .sheet-head{background:transparent;border:0;box-shadow:none;}
+#sheet .sheet-head b{color:#28434e;}
+#sheet .sheet-head #sheet-close{background:#fdf8eb;color:#28434e;border:2px solid var(--hud-rim);border-bottom-width:4px;box-shadow:none;}
+#sheet-views{background:transparent;border:0;gap:6px;}
+#sheet-views button{background:transparent;border:0;color:#584531;box-shadow:none;border-radius:0;}
+#sheet-views button.active{background:transparent;color:#49351e;box-shadow:inset 0 -3px #d49738;}
+#panel .sec{background:transparent;border:0;box-shadow:none;border-radius:0;}
+#panel .ux-hero-row,#panel .ux-land-row{background:transparent;border:0;border-bottom:1px solid #28434e20;box-shadow:none;border-radius:0;}
+#panel .ux-hero-detail .hero-art{border:0;background-color:transparent;box-shadow:none;}
+#panel .ux-command-board{background:#335b54;border-color:#71896d;}
+#panel .lord-upgrade{background:#345c55;border-color:#71896d;}
+#battle-objective{border:2px solid #88a58b;border-left:5px solid var(--hud-amber);background:#35574e;}
+.lobby-mode #objective-action{background:#faca52;border:2px solid #725631;border-bottom-width:4px;color:#49351e;box-shadow:none;}
+@media(prefers-reduced-motion:reduce){#game .btn{transition:none;}}
+
+/* English wordmark sized for the narrowest supported phone. */
+.boot-brand h1{font-size:clamp(30px,8.5vw,44px);letter-spacing:1px;line-height:1.2;}
+
+/* Content shares one sheet surface; only controls and illustrated stages need a plate. */
+#panel .ux-list-tools,#panel .roster-dock,#panel .reserve-section,
+#panel .growth-star-buff,#panel .growth-current,#panel .estate-bonuses,
+#lobby .lobby-squad{background:transparent;border:0;box-shadow:none;border-radius:0;}
+#tabs button.active,.lobby-mode #tabs button.active{background:transparent!important;}
+#sheet .sheet-head,#sheet .sheet-head b,#sheet-title{color:#28434e;text-shadow:none;}
+#sheet .sheet-head button:not(#sheet-close){color:#365661;}
+#panel .ux-hero-row:nth-child(n),#panel .ux-land-row:nth-child(n){background:transparent;}
+
+/* Lobby and combat: remove nested chrome, retain actionable controls and meters. */
+#lobby .lobby-heading,#lobby #lobby-route,#lobby .lobby-squad,
+#lobby #battle-objective,#lobby .lobby-play,#lobby .power-plaque,
+#lobby .lobby-unit,#lobby .kingdom-milestone:not(.promotion-ready){
+ background:transparent;border:0;border-radius:0;box-shadow:none;
+}
+#lobby .power-plaque{color:#fff7dd;text-shadow:0 1px 3px #163b36,0 0 5px #163b36;}
+#lobby .power-plaque strong{color:#ffe39a;}
+#game.battle-mode #deployment-panel,#game.battle-mode #deployment,
+#game.battle-mode #deployment-panel #dice-hud,
+#game.battle-mode #field>#combat-actions,#game.battle-mode #field .combat-skill{
+ background:transparent;border:0;box-shadow:none;
+}
+#lobby #kingdom-map-host .estate-map{background:transparent;border:0;border-radius:0;box-shadow:none;}
+#game.battle-mode{background:#8fbd8b;}
+#game.battle-mode #deployment .assigned-dice{color:#233f38;text-shadow:none;}
+
+/* One compact command dock: Forge's cream/brown surfaces and illustrated tabs,
+   with RPG-style persistent navigation beneath the combat roster. */
+#game{--nav-height:calc(66px + env(safe-area-inset-bottom));}
+#game.battle-mode,#game.lobby-mode,#game.panel-open{background:#f7ecd5;}
+#game.battle-mode #deployment-panel{
+ position:relative;padding:27px 12px 7px;background:linear-gradient(#fff8e8,#f7ecd5);
+ border:0;border-top:2px solid #a58a59;box-shadow:0 -4px 12px #243b3520;
+ border-radius:18px 18px 0 0;z-index:9;
+}
+#game.battle-mode #deployment-panel:before{content:'출전 부대';position:absolute;top:8px;left:16px;color:#796747;font-size:10px;font-weight:800;letter-spacing:.7px;}
+#game.battle-mode #deployment-panel #dice-hud.charge-dice{left:auto;right:14px;top:3px;transform:none;width:25px;height:25px;background:none;}
+#deployment-panel #dice-hud.charge-dice:before{content:'자동 충전';position:absolute;right:32px;white-space:nowrap;font-size:10px;color:#796747;font-weight:700;}
+#deployment-panel #dice-hud.charge-dice .dice-charge-ring{width:25px;height:25px;min-width:25px;padding:2px;border-radius:7px;}
+#deployment-panel #dice-hud.charge-dice .die-face,#deployment-panel #dice-hud.charge-dice .rolling-die{width:21px;height:21px;border-radius:5px;}
+#game.battle-mode #deployment{gap:8px;background:transparent;}
+#game #deployment .deploy-card{gap:4px;padding:2px 0;border-radius:10px;}
+#game #deployment .deploy-orb{width:44px;height:44px;border-radius:13px;box-shadow:0 2px 0 #9b845c,0 3px 5px #68482e22;background:conic-gradient(var(--summon-color,#efd17d) var(--progress,0%),#8b7755 0);}
+#game #deployment .orb-inner{width:38px;height:38px;border-radius:10px;background:radial-gradient(ellipse at 50% 20%,#63877a,#304e49);}
+#game #deployment .locked .deploy-orb{background:#d6cab2;box-shadow:0 2px #b9aa8b;}
+#game #deployment .locked .orb-inner{background:#e9dfca;color:#9c8b6c;}
+#game #deployment .slot-lock{color:#8b7b60;text-shadow:none;font-size:10px;}
+#game.battle-mode #deployment .assigned-dice{color:#655235;font-size:10px;font-weight:800;text-shadow:none;}
+#game #deployment .locked .assigned-dice{color:#9c8b6c;font-weight:600;}
+#game>#tabs{background:#f7ecd5;border:0;box-shadow:none;gap:4px;padding:5px 8px env(safe-area-inset-bottom);}
+#game>#tabs:before{content:'';position:absolute;top:0;left:18px;right:18px;height:1px;background:linear-gradient(90deg,transparent,#bda87c80,transparent);}
+#game>#tabs button{position:relative;min-width:0;min-height:44px;margin:0;padding:5px 0 6px;gap:3px;border:0;border-radius:12px!important;background:transparent!important;box-shadow:none!important;color:#7a6747;cursor:pointer;}
+#game>#tabs button>span:not(.game-icon):not(.ux-icon-close){font-size:11px;line-height:13px;font-weight:800;text-shadow:none;}
+#game>#tabs button>.game-icon{width:32px;height:32px;filter:drop-shadow(0 2px 1px #68482e44);transition:transform 120ms ease-out;}
+#game>#tabs button.active:not(.ux-covered){background:linear-gradient(#fff7df,#eddbb2)!important;color:#654521!important;box-shadow:inset 0 -3px #b89753!important;}
+#game>#tabs button.active>.game-icon{transform:translateY(-2px) scale(1.1);}
+#game>#tabs button.active::before{display:none;}
+#game>#tabs button:focus-visible,#game #deployment .deploy-card:focus-visible{outline:2px solid #0078b6;outline-offset:-2px;}
+#game>#tabs button:active>.game-icon{transform:translateY(1px) scale(.95);}
+@media(prefers-reduced-motion:reduce){#game>#tabs button>.game-icon{transition:none;}}
+/* Keep every pip readable while the automatic die rolls. */
+#deployment-panel .rolling-die>.die-face{animation:dock-dice-roll .32s ease-in-out infinite alternate;}
+@keyframes dock-dice-roll{from{transform:rotate(-12deg)}to{transform:rotate(12deg)}}
+@media(prefers-reduced-motion:reduce){#deployment-panel .rolling-die>.die-face{animation:none;}}
+@media(max-height:620px){
+ #game{--nav-height:calc(60px + env(safe-area-inset-bottom));}
+ #game>#tabs{padding-top:2px;}
+ #game>#tabs button>.game-icon{width:28px;height:28px;}
+ #game.battle-mode #deployment-panel{padding-top:24px;padding-bottom:4px;}
+}
+
+/* Combat belongs to the scene; navigation alone owns the bottom tray. */
+#game.battle-mode #deployment-panel{position:absolute;left:0;right:0;bottom:var(--nav-height);padding:5px 12px 9px;background:linear-gradient(transparent,#173c3855);border:0;border-radius:0;box-shadow:none;z-index:9;}
+#game.battle-mode #deployment-panel:before{display:none;}
+#game.battle-mode #deployment-panel #dice-hud.charge-dice{left:16px;right:auto;top:auto;bottom:calc(100% + 10px);width:64px;height:64px;transform:none;overflow:visible;}
+#deployment-panel #dice-hud.charge-dice:before{display:none;}
+#deployment-panel #dice-hud.charge-dice .dice-charge-ring{width:64px;height:64px;min-width:64px;border-radius:18px;padding:5px;box-shadow:0 3px 0 #51492d,0 5px 12px #143d3860;}
+#deployment-panel #dice-hud.charge-dice .die-face,#deployment-panel #dice-hud.charge-dice .rolling-die{width:52px;height:52px;border-radius:13px;}
+#deployment-panel #dice-hud .pip{width:7px;height:7px;}
+.dice-live-readout{position:absolute;top:68px;left:-6px;width:122px;text-align:left;color:#fff8de;font-size:10px;font-weight:800;text-shadow:0 1px 3px #193b30,0 0 4px #193b30;white-space:nowrap;pointer-events:none;}
+#game.battle-mode #field>#combat-actions{bottom:94px;}
+#game.battle-mode #deployment .assigned-dice{color:#fff4ca;text-shadow:0 1px 2px #173d32;}
+#game #deployment .locked .assigned-dice{color:#e0e9d5;}
+#game #deployment .locked .deploy-orb{opacity:.65;}
+/* Each popup repeats its tab's illustration and accent, with a visible connection. */
+#tabs [data-tab=summon],#sheet[data-nav=summon]{--tab-accent:#8850a4;--tab-tint:#efe1f3;}
+#tabs [data-tab=territory],#sheet[data-nav=territory]{--tab-accent:#36748d;--tab-tint:#deedf0;}
+#tabs [data-tab=lobby],#sheet[data-nav=lobby]{--tab-accent:#587a45;--tab-tint:#e7edda;}
+#tabs [data-tab=lord],#sheet[data-nav=lord]{--tab-accent:#a97629;--tab-tint:#f4e9cc;}
+#tabs [data-tab=nation],#sheet[data-nav=nation]{--tab-accent:#a6544a;--tab-tint:#f2e0d9;}
+#game>#tabs{border-top:2px solid #bda87c;}
+#game>#tabs button.ux-covered>span:not(.ux-icon-close){visibility:visible;}
+#game>#tabs button.active,#game>#tabs button.ux-covered.active{background:var(--tab-tint,#f4e9cc)!important;color:var(--tab-accent,#654521)!important;box-shadow:inset 0 -3px var(--tab-accent,#b89753)!important;}
+#game>#tabs button.ux-covered:before{display:block;content:'';position:absolute;top:-8px;left:calc(50% - 7px);width:14px;height:14px;transform:rotate(45deg);background:var(--tab-tint);border:0;box-shadow:none;}
+#game #sheet{border-bottom:3px solid var(--tab-accent);}
+#sheet .sheet-head{background:var(--tab-tint);border:0;border-bottom:1px solid var(--tab-accent);gap:8px;}
+#sheet .sheet-head .sheet-tab-icon{width:30px;height:30px;flex:0 0 30px;}
+#sheet .sheet-head #sheet-title{flex:1;color:var(--tab-accent);}
+#sheet .sheet-head #sheet-close{width:32px;height:32px;min-height:32px!important;background:none;border:0;box-shadow:none;padding:6px;color:var(--tab-accent);}
+#sheet-views button.active{color:var(--tab-accent);box-shadow:inset 0 -3px var(--tab-accent);}
+@media(max-height:620px){
+ #game.battle-mode #deployment-panel{padding-top:2px;padding-bottom:4px;}
+ #game.battle-mode #deployment-panel #dice-hud.charge-dice{bottom:calc(100% + 6px);}
+ #game.battle-mode #field>#combat-actions{bottom:84px;}
+}
+#sheet .sheet-head #sheet-title{color:var(--tab-accent,#28434e)!important;text-shadow:none;}
+#sheet .sheet-head #sheet-close{order:3;}
+@media(max-height:620px){#sheet .sheet-head{min-height:44px;padding-top:3px;padding-bottom:3px;}}
+@media(max-height:620px){
+ #panel .lord-upgrade{gap:3px;}
+ #panel .ux-lord-stats>div{padding:1px 0;}
+ #panel .growth-action #lord-merit-rate{margin:2px 0;}
+ #panel .growth-action #lord-breakthrough{min-height:44px;margin-top:2px;}
+ #panel [data-ux=war]>div:last-child{gap:4px!important;}
+ #panel [data-ux=war]>div:last-child>.btn{min-height:44px;}
+}
+
+/* The selected tab is an extension of its popup, not a speech pointer. */
+#game.panel-open>#tabs{border-top:0;overflow:visible;padding-top:5px;}
+#game.panel-open>#tabs:before{display:none;}
+#game.panel-open #sheet>#sheet-views{background:#f3f3ee;border-top:1px solid #28434e20;}
+#game.panel-open #sheet-views button.active{outline:0;border-radius:0;background:transparent;box-shadow:inset 0 -3px var(--tab-accent);}
+#game.panel-open #sheet{border-bottom:2px solid var(--tab-accent);}
+#game.panel-open>#tabs button.ux-covered.active{
+ background:#f3f3ee!important;color:var(--tab-accent)!important;
+ border:2px solid var(--tab-accent);border-top:0;
+ border-radius:0 0 11px 11px!important;box-shadow:none!important;
+}
+#game.panel-open>#tabs button.ux-covered:before{
+ content:'';display:block;position:absolute;left:-2px;right:-2px;top:-7px;
+ width:auto;height:7px;transform:none;border-radius:0;background:#f3f3ee;
+ border:2px solid var(--tab-accent);border-top:0;border-bottom:0;box-shadow:none;
+}
+
+/* Content hierarchy: status at the top, the decision in the body, action at the foot. */
+#panel .kingdom-growth.ux-ambient-land{flex:1;min-height:0;display:flex;flex-direction:column;gap:12px;padding:4px 6px;}
+#panel .kingdom-growth .growth-honors{flex-shrink:0;padding-bottom:8px;}
+#panel .kingdom-growth .growth-honors>b{font-size:22px;}
+#panel .kingdom-growth>.growth-current{flex:1;min-height:120px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:14px;padding:16px 8px;text-align:center;}
+#panel .kingdom-growth .growth-node-icon{width:76px;height:76px;flex:0 0 76px;}
+#panel .kingdom-growth .growth-node-icon .game-icon{width:76px;height:76px;filter:drop-shadow(0 4px 2px #28434e25);}
+#panel .kingdom-growth .growth-current h4{font-size:26px;margin:0 0 12px;}
+#panel .kingdom-growth .growth-current p{font-size:24px;line-height:1.5;}
+#panel .kingdom-growth .growth-current p small{display:block;font-size:13px;margin-bottom:8px;}
+#panel .kingdom-growth .growth-current p>span:first-of-type{color:#748277;}
+#panel .kingdom-growth .growth-current p>b{color:#286944;font-size:30px;}
+#panel .kingdom-growth>.growth-star-buff{order:0;flex-shrink:0;padding:10px 0;border-top:1px solid #28434e20;}
+#panel .kingdom-growth>.growth-build{order:1;flex-shrink:0;width:100%;min-height:56px;display:flex;justify-content:center;align-items:center;gap:20px;font-size:18px;}
+#panel .kingdom-growth>.growth-gate{order:1;flex-shrink:0;}
+#panel .lord-upgrade{flex:1;min-height:0;grid-template-columns:90px minmax(0,1fr);grid-template-rows:minmax(85px,1fr) auto auto;align-content:stretch;gap:16px;background:transparent;padding:6px;}
+#panel .growth-portrait{height:100%;max-height:190px;min-height:80px;}
+#panel .growth-portrait .lord-art{width:90px!important;height:140px!important;max-height:180px;}
+#panel .growth-identity h3{font-size:23px;}
+#panel .lord-upgrade>.ux-lord-stats{padding:12px 0;background:transparent;border-top:1px solid #28434e20;border-radius:0;}
+#panel .ux-lord-stats>div{padding:8px 0;font-size:14px;}
+#panel .growth-action #lord-breakthrough{width:100%;min-height:52px;}
+/* A formation slot is one fixed-sized object, regardless of its contents. */
+#panel .ux-restored-formation .deployment-board{padding:6px;}
+#panel .ux-restored-formation .deployment-row{display:grid;grid-template-columns:28px minmax(0,1fr);gap:5px;align-items:center;}
+#panel .ux-restored-formation .deployment-units{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;align-items:stretch;}
+#panel .ux-restored-formation .deployment-member{box-sizing:border-box;width:100%;height:100px;min-height:100px;max-height:100px;margin:0;padding:18px 4px 4px;flex:none;border-radius:9px;display:flex;flex-direction:column;justify-content:center;align-items:center;position:relative;}
+#panel .ux-restored-formation .fixed-slot{padding:8px 3px;border:1px dashed #9bb1a0;background:#264a4355;gap:5px;}
+#panel .ux-restored-formation .fixed-slot .game-icon{width:23px;height:23px;}
+#panel .ux-restored-formation .fixed-slot b{font-size:11px;}
+#panel .ux-restored-formation .fixed-slot small{font-size:9px;white-space:nowrap;}
+#panel .ux-restored-formation .deployment-unit{width:100%;height:58px;min-height:58px;display:flex;flex-direction:column;justify-content:center;gap:0;padding:0;}
+#panel .ux-restored-formation .deployment-unit .hero-art{width:34px;height:34px;flex:0 0 34px;}
+#panel .ux-restored-formation .deployment-unit b{font-size:11px;line-height:13px;}
+#panel .ux-restored-formation .deployment-unit small{font-size:9px;}
+#panel .ux-restored-formation .deployment-controls{width:100%;line-height:12px;}
+#panel .ux-restored-formation .deployment-charge{font-size:10px;color:#f8edc7;}
+/* Rarity has a permanent label and a distinct edge, separate from selection. */
+#panel [data-rarity=C]{--rarity-ink:#52665b;--rarity-paper:#e4e9df;}
+#panel [data-rarity=R]{--rarity-ink:#216c92;--rarity-paper:#deeff8;}
+#panel [data-rarity=H]{--rarity-ink:#946014;--rarity-paper:#fff0bd;}
+#panel .reserve-unit.unit-tier{border:2px solid var(--rarity-ink);border-top-width:4px;background:var(--rarity-paper);box-shadow:none;border-radius:10px;}
+#panel .unit-rarity,#panel .ux-rarity-badge{position:static;display:inline-block;background:var(--rarity-ink);color:white;font-size:10px;font-weight:900;line-height:17px;padding:0 7px;border:0;border-radius:4px;text-shadow:none;}
+#panel .deployment-member>.unit-rarity{position:absolute;top:3px;left:4px;font-size:9px;line-height:15px;padding:0 5px;}
+#panel .reserve-unit .unit-rarity{position:absolute;top:4px;left:5px;}
+#panel .reserve-grid:not(.ux-reserve-list){grid-auto-rows:126px;gap:8px;}
+#panel .reserve-grid:not(.ux-reserve-list) .reserve-unit{height:122px;min-height:122px;}
+#panel .reserve-grid:not(.ux-reserve-list) .reserve-select{padding-top:24px;gap:3px;color:#29443d;}
+#panel .reserve-grid:not(.ux-reserve-list) .reserve-select .hero-art{height:44px;width:42px;}
+#panel .reserve-unit .reserve-info{background:transparent;color:var(--rarity-ink);border-color:var(--rarity-ink);}
+#panel .reserve-unit.selected{outline:3px solid #f3ac2f;outline-offset:1px;}
+#panel .ux-hero-row[data-rarity]{border-left:3px solid var(--rarity-ink);padding-left:8px;}
+#panel .ux-rarity-badge{margin-bottom:3px;}
+/* Other decisions follow the same visual scale; explanatory prose stays in help. */
+#panel .ux-land-item{min-height:76px;padding:10px 8px;}
+#panel .ux-facility-list{display:flex;flex-direction:column;justify-content:center;gap:12px;flex:1!important;}
+#panel .ux-facility-item{min-height:100px;margin:0;}
+#panel .ux-facility-item .estate-building{width:54px;height:60px;flex-basis:54px;}
+#panel .ux-promotion .ux-promo-summary{flex:1;min-height:90px;max-height:190px;align-items:center;}
+#panel .ux-promo-summary>.lord-art{height:120px!important;width:90px!important;flex-basis:90px;}
+#panel .ux-battle-options>.hint{margin:10px 0;font-size:16px;}
+#panel .ux-battle-options .row{min-height:70px;align-items:center;}
+#panel .ux-summon-caption{font-size:20px;}
+@media(max-height:650px){
+ #panel .kingdom-growth.ux-ambient-land{gap:6px;padding:0;}
+ #panel .kingdom-growth>.growth-current{min-height:70px;padding:4px;gap:5px;}
+ #panel .kingdom-growth .growth-node-icon,#panel .kingdom-growth .growth-node-icon .game-icon{width:38px;height:38px;flex-basis:38px;}
+ #panel .kingdom-growth .growth-current h4{font-size:19px;margin:0 0 3px;}
+ #panel .kingdom-growth .growth-current p,#panel .kingdom-growth .growth-current p>b{font-size:21px;}
+ #panel .kingdom-growth .growth-current p small{margin-bottom:2px;}
+ #panel .kingdom-growth>.growth-build{min-height:44px;font-size:16px;}
+ #panel .lord-upgrade{grid-template-columns:58px minmax(0,1fr);grid-template-rows:60px auto auto;gap:4px;padding:0;}
+ #panel .growth-portrait{min-height:0;}
+ #panel .growth-portrait .lord-art{width:54px!important;height:60px!important;}
+ #panel .growth-identity h3{font-size:18px;}
+ #panel .lord-upgrade>.ux-lord-stats{padding:3px 0;}
+ #panel .ux-lord-stats>div{padding:1px 0;font-size:12px;}
+ #panel .growth-action #lord-breakthrough{min-height:44px;}
+ #panel .ux-restored-formation .deployment-member{height:80px;min-height:80px;max-height:80px;padding-top:17px;}
+ #panel .ux-restored-formation .deployment-unit{height:43px;min-height:43px;}
+ #panel .ux-restored-formation .deployment-unit .hero-art{height:24px;width:26px;flex-basis:24px;}
+ #panel .ux-restored-formation .deployment-unit small{display:none;}
+ #panel .reserve-grid:not(.ux-reserve-list){grid-auto-rows:112px;}
+ #panel .reserve-grid:not(.ux-reserve-list) .reserve-unit{height:108px;min-height:108px;}
+ #panel .reserve-grid:not(.ux-reserve-list) .reserve-select .hero-art{height:32px;width:34px;}
+ #panel .ux-facility-item{min-height:76px;}
+ #panel .ux-facility-list{gap:6px;}
+ #panel .ux-promotion .ux-promo-summary{min-height:48px;max-height:70px;}
+ #panel .ux-promo-summary>.lord-art{height:54px!important;width:42px!important;flex-basis:42px;}
+}
+#panel .growth-portrait{grid-row:1;}
+#panel .unit-tier .unit-rarity{font-size:10px!important;line-height:17px;background:var(--rarity-ink);color:#fff;padding:0 6px;border:0;border-radius:4px;text-shadow:none;letter-spacing:0;}
+#panel .deployment-member.unit-tier>.unit-rarity{top:3px;left:4px;font-size:9px!important;line-height:15px;padding:0 4px;}
+#panel .reserve-unit.unit-tier .reserve-select>small{font-size:10px;color:#506355;text-shadow:none;margin:0;}
+#panel .ux-restored-formation .empty-slot{color:#e2ebd6!important;}
+
+/* Selected tab becomes the close control: cover both artwork and caption. */
+#game>#tabs button.ux-covered>span:not(.tab-close-mark){visibility:hidden;}
+#game>#tabs button>.tab-close-mark{position:absolute;inset:0;display:grid;place-items:center;background:#f3f3ee;color:var(--tab-accent);border-radius:0 0 8px 8px;pointer-events:none;z-index:2;}
+#game>#tabs .tab-close-mark svg{width:42px;height:42px;fill:none;stroke:currentColor;stroke-width:4;stroke-linecap:round;}
+#game>#tabs button.ux-covered:active .tab-close-mark svg{transform:scale(.92);}
