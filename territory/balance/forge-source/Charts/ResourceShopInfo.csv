@@ -1,0 +1,6 @@
+RewardType,UnlockFeature,AdAmount,Tier1Cost,Tier1Amount,Tier2Cost,Tier2Amount,AdDailyLimit
+Hammers,shop,80,50,200,100,400,3
+SkillSummonTickets,spells,40,50,100,100,200,3
+Eggshells,pets,20,50,50,100,100,3
+ClockWinders,mounts,10,50,25,100,50,3
+TechPotions,tech,20,50,50,100,100,3

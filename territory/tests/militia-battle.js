@@ -19,6 +19,7 @@ function fixture(ri=0, cls='mage', gender='m', completeRoster=false) {
   const keys=completeRoster?Object.keys(ENEMIES):Object.keys(ENEMIES).slice((ri%5)*4,(ri%5)*4+4);
   keys.forEach((key,i)=>{const u=spawnEnemy(key,1);u.x=W*.65+Math.floor(i/4)*19;u.y=55+(i%4)*70;});
   B.spawnT=[.3,.5,.7,0,0];
+  confine();
 }
 async function test(){
  for(const src of CombatArt.files)await new Promise((ok,no)=>{const im=new Image;im.onload=()=>{CombatArt.images[src]=im;ok();};im.onerror=no;im.src='../'+src;});

@@ -15,7 +15,14 @@ function ensureKingdom(){
  if(!S.kingdom||typeof S.kingdom!=='object') S.kingdom={lands:{}};
  if(!S.kingdom.lands||typeof S.kingdom.lands!=='object') S.kingdom.lands={};
  for(const land of LANDS)if(S.maxStage>land.boss&&!S.kingdom.lands[land.id])S.kingdom.lands[land.id]='outpost';
- for(const [id,value] of Object.entries(S.kingdom.lands)) if(!LANDS.some(l=>l.id===id)||(value!=='outpost'&&!FACILITIES[value])) delete S.kingdom.lands[id];
+ for(const [id,value] of Object.entries(S.kingdom.lands)) {
+  if(!LANDS.some(l=>l.id===id)){delete S.kingdom.lands[id];continue;}
+  if(value==='outpost')continue;
+  if(typeof value==='string'&&Object.hasOwn(FACILITIES,value)){S.kingdom.lands[id]={training:value==='training'?1:0,mine:value==='mine'?1:0};continue;}
+  if(!value||typeof value!=='object'||Array.isArray(value)){delete S.kingdom.lands[id];continue;}
+  for(const type of Object.keys(FACILITIES))value[type]=Number.isInteger(value[type])?Math.max(0,Math.min(2,value[type])):0;
+ }
+
 }
 function castleLand(stage){return LANDS.find(l=>l.boss===stage);}
 function conquerLand(stage){
@@ -26,32 +33,55 @@ function conquerLand(stage){
 function hasVanguard(){ensureKingdom();return !!S.kingdom.lands.grove;}
 function vanguardReward(owned){return `<div class="vanguard-reward">${buildingArt(2)}<div><b>${owned?'원정 선발대 · 지원 중':'함락 보상 · 원정 선발대'}</b><p>매 원정 시작에 선발병 2명 출격<br>주사위 부대와 별도로 캠프를 지원합니다.</p></div></div>`;}
 function ownedLands(){ensureKingdom();return Object.keys(S.kingdom.lands).length;}
-function facilityCount(type){ensureKingdom();return Object.values(S.kingdom.lands).filter(v=>v===type).length;}
+function facilityLevel(id,type){ensureKingdom();return S.kingdom.lands[id]?.[type]||0;}
+function facilityCount(type){ensureKingdom();return LANDS.reduce((sum,l)=>sum+facilityLevel(l.id,type),0);}
+function facilitySummary(id){return `훈련장 ${facilityLevel(id,'training')}/2 · 금광 ${facilityLevel(id,'mine')}/2`;}
+function facilitiesComplete(id){return facilityLevel(id,'training')===2&&facilityLevel(id,'mine')===2;}
+function facilityCost(id,type){const land=LANDS.find(l=>l.id===id);return land?land.cost*(facilityLevel(id,type)+1):0;}
 function kingdomTitle(){const n=ownedLands();return n>=6?'왕도':n>=3?'성채 도시':n>=1?'개척 영지':'작은 거점';}
-function availableLand(){ensureKingdom();return LANDS.find(l=>S.kingdom.lands[l.id]==='outpost');}
-function claimLandError(id,type){
+function availableLand(){ensureKingdom();return LANDS.find(l=>S.kingdom.lands[l.id]&&!facilitiesComplete(l.id));}
+function claimLandError(id,type,expectedLevel){
  ensureKingdom();const land=LANDS.find(l=>l.id===id);
  if(!land)return '선택한 영지를 찾을 수 없습니다.';
  if(!Object.hasOwn(FACILITIES,type))return '시설을 선택해 주세요.';
- if(FACILITIES[S.kingdom.lands[id]])return '이미 시설을 건설한 영지입니다.';
+ if(facilityLevel(id,type)>=2)return '최대 2단계 시설입니다.';
+ if(expectedLevel!==undefined&&Number(expectedLevel)!==facilityLevel(id,type))return '시설 단계가 변경되었습니다. 다시 확인해 주세요.';
  if(S.maxStage<=land.boss)return `${land.boss}단계 보스를 먼저 격파해야 합니다.`;
- if(S.gold<land.cost)return `${fmt(land.cost-S.gold)} 골드가 부족합니다.`;
+ const cost=facilityCost(id,type);
+ if(S.gold<cost)return `${fmt(cost-S.gold)} 골드가 부족합니다.`;
  return '';
 }
-function claimLand(id,type){
+function claimLand(id,type,rng=Math.random,expectedLevel){
  if(typeof featureAccess==='function'&&!featureAccess('land').unlocked)return false;
- if(claimLandError(id,type))return false;
- const land=LANDS.find(l=>l.id===id);
- S.gold-=land.cost;S.kingdom.lands[id]=type;saveGame();return true;
+ if(claimLandError(id,type,expectedLevel))return false;
+ const level=facilityLevel(id,type),cost=facilityCost(id,type),target=level+3;
+ const face=Math.min(6,Math.max(1,Math.floor(rng()*6)+1));
+ if(!Number.isFinite(face))return false;
+ S.gold-=cost;
+ if(S.kingdom.lands[id]==='outpost')S.kingdom.lands[id]={training:0,mine:0};
+ const success=face>=target;
+ if(success)S.kingdom.lands[id][type]=level+1;
+ S.kingdom.lastRoll={id,type,face,target,success,level:level+(success?1:0),cost};
+ saveGame();return success;
+}
+function facilityDetail(id){
+ ensureKingdom();const land=LANDS.find(l=>l.id===id)||LANDS[0],owned=!!S.kingdom.lands[land.id],last=S.kingdom.lastRoll;
+ const header=`<header class="ux-summary"><div><b>${land.name.replace('첫 개척지 · ','')}</b><small>${owned?facilitySummary(land.id):'미확보 영토'}</small></div></header>`;
+ if(!owned)return header+`<p>${land.boss}단계 성을 함락하면 영토를 확보합니다.</p>`;
+ return header+`<p class="ux-facility-rule"><b>두 시설 모두 강화 가능</b><span>각각 최대 2단계</span></p><div class="ux-facility-list">${Object.entries(FACILITIES).map(([type,f])=>{
+ const level=facilityLevel(land.id,type),cost=facilityCost(land.id,type),target=level+3;
+ return `<article class="ux-facility-item" data-facility-card="${type}">${buildingArt(f.tile)}<div><h3>${f.name} ${level}/2</h3><p>${type==='training'?`주사위 쿨타임 ${Math.round((1-Math.pow(.9,level))*100)}% 단축`:`골드 수입 +${level*15}%`}</p>${level<2?`<strong class="facility-threshold">${target} 이상 성공</strong><small>${level+1}단계 도전 · 성공률 ${level===0?'66.7':'50'}%</small>`:'<small>최대 단계</small>'}</div>${level<2?`<button class="btn gold" data-act="claimland" data-id="${land.id}" data-facility="${type}" data-level="${level}" data-cost="${cost}" ${S.gold<cost?'disabled':''}><b>주사위 굴리기</b><span>${fmt(cost)} 골드</span></button>`:'<span class="ux-state">완료</span>'}</article>`;
+ }).join('')}</div><p class="ux-support-note">1단계 3 이상 · 2단계 4 이상<br>시도마다 골드를 사용하며, 실패해도 단계는 내려가지 않습니다.</p>${land.id==='grove'?'<p class="ux-support-note">선발대 지원 · 원정 시작 시 선발병 2명</p>':''}`;
 }
 function buildingArt(tile,extra=''){if(tile===8)return `<span class="estate-building mine-art ${extra}" aria-hidden="true"></span>`;return `<span class="estate-building ${extra}" style="background-position:${tile%4/3*100}% ${Math.floor(tile/4)*50}%" aria-hidden="true"></span>`;}
 function kingdomMap(){
  ensureKingdom();return `<div class="estate-map" aria-label="내 왕국 지도 · 개척 영토 ${ownedLands()}곳">
  <div class="estate-terrain" aria-hidden="true"></div><div class="estate-home" style="--growth:${1+ownedLands()*.055}">${buildingArt(0)}<b>${kingdomTitle()}</b></div>
- ${LANDS.map(l=>{const f=S.kingdom.lands[l.id],ready=S.maxStage>l.boss;return `<button class="estate-land ${f?'owned':ready?'available':'locked'} ${typeof UI!=='undefined'&&UI.tab==='kingdom'&&UI.kingdomLand===l.id?'selected':''}" style="--x:${l.x}%;--y:${l.y}%" data-land="${l.id}" aria-label="${l.name} · ${f?(FACILITIES[f]?.name||'확보한 영토'):ready?'개척 가능':l.boss+'단계 성 함락 필요'}">${f?buildingArt((FACILITIES[f]?.tile??(l.id==='grove'?2:0)))+(l.id==='grove'?'<span class="vanguard-map-badge">선발대 주둔</span>':'')+'<span class="estate-flag"></span>':landScenery(ready,l.boss)}<b><span>${l.name.replace('첫 개척지 · ','')}</span><small>${f?(FACILITIES[f]?.name||'확보한 영토'):ready?'개척하기':l.boss+'단계 성'}</small></b></button>`;}).join('')}</div>`;
+ ${LANDS.map(l=>{const f=S.kingdom.lands[l.id],ready=S.maxStage>l.boss;return `<button class="estate-land ${f?'owned':ready?'available':'locked'} ${typeof UI!=='undefined'&&UI.tab==='kingdom'&&UI.kingdomLand===l.id?'selected':''}" style="--x:${l.x}%;--y:${l.y}%" data-land="${l.id}" aria-label="${l.name} · ${f?facilitySummary(l.id):ready?'개척 가능':l.boss+'단계 성 함락 필요'}">${f?buildingArt((facilityLevel(l.id,'training')?2:facilityLevel(l.id,'mine')?8:0))+(l.id==='grove'?'<span class="vanguard-map-badge">선발대 주둔</span>':'')+'<span class="estate-flag"></span>':landScenery(ready,l.boss)}<b><span>${l.name.replace('첫 개척지 · ','')}</span><small>${f?facilitySummary(l.id):ready?'개척하기':l.boss+'단계 성'}</small></b></button>`;}).join('')}</div>`;
 }
 function kingdomPanel(){
- ensureKingdom();const selected=UI.kingdomLand||availableLand()?.id||LANDS[0].id;return `${LANDS.filter(l=>l.id===selected).map(l=>{const f=S.kingdom.lands[l.id],ready=S.maxStage>l.boss;return `<section class="sec land-detail" id="land-${l.id}"><h3>${l.name}<small>${FACILITIES[f]?'시설 완공':f?'영토 확보':'미확보'}</small></h3>${l.id==='grove'?vanguardReward(!!f):''}${FACILITIES[f]?`<div class="built-facility" role="status">${buildingArt((FACILITIES[f]?.tile??0))}<div><b>${(FACILITIES[f]?.name||'확보한 영토')}</b><p>${FACILITIES[f].desc}</p></div></div><button class="btn gold kingdom-return" data-act="kingdomhome">내 영토에서 보기</button>`:!ready?`<p>${l.boss}단계 성을 함락하면 영토를 획득합니다.</p>`:`<p>시설 건설 <b>${fmt(l.cost)} 골드</b> · 시설 하나를 선택하세요.<br>건설 후 시설은 변경할 수 없습니다.</p><div class="facility-choices">${Object.entries(FACILITIES).map(([id,f])=>`<button class="facility-choice" data-act="claimland" data-id="${l.id}" data-facility="${id}" data-cost="${l.cost}" ${S.gold<l.cost?'disabled':''}>${buildingArt(f.tile)}<b>${f.name}</b><small>${f.desc}</small><strong>${fmt(l.cost)} 골드 · 건설</strong></button>`).join('')}</div>${S.gold<l.cost?`<p class="land-shortage">${fmt(l.cost-S.gold)} 골드 부족 · 반복 사냥으로 획득하세요.</p>`:''}`}</section>`;}).join('')}<section class="sec estate-summary"><span class="eyebrow">MY KINGDOM</span><h3>${kingdomTitle()} · 영토 ${ownedLands()}/6</h3><p>성을 함락하면 내 영토가 됩니다. 확보한 땅에는 골드로 시설을 건설하세요.</p>${kingdomMap()}<div class="estate-bonuses"><b>훈련장 ${facilityCount('training')}곳</b><b>금광 수입 +${facilityCount('mine')*15}%</b></div></section>`;
+ ensureKingdom();const selected=UI.kingdomLand||availableLand()?.id||LANDS[0].id;
+ return `<section class="sec land-detail" id="land-${selected}">${facilityDetail(selected)}</section><section class="sec estate-summary"><h3>${kingdomTitle()} · 영토 ${ownedLands()}/6</h3>${kingdomMap()}<div class="estate-bonuses"><b>훈련장 총 ${facilityCount('training')}단계</b><b>금광 수입 +${facilityCount('mine')*15}%</b></div></section>`;
 }
 function bindKingdomMap(root){root.querySelectorAll('[data-land]').forEach(b=>b.onclick=(event)=>{event.preventDefault();event.stopPropagation();UI.openSheet('kingdom',b.dataset.land);});}
 
@@ -136,4 +166,30 @@ function playKingdomStarRise(){
   flight.animate([{transform:'translate(-50%,-50%) scale(.15) rotate(-100deg)',opacity:0,offset:0},{transform:'translate(-50%,-50%) scale(1.25) rotate(8deg)',opacity:1,offset:.28},{transform:'translate(-50%,-50%) scale(1) rotate(0deg)',opacity:1,offset:.55},{transform:`translate(calc(-50% + ${x}px),calc(-50% + ${y}px)) scale(.3) rotate(0deg)`,opacity:1,offset:.93},{transform:`translate(calc(-50% + ${x}px),calc(-50% + ${y}px)) scale(.15)`,opacity:0}],{duration:1150,easing:'ease-in-out',fill:'forwards'}).onfinish=finish;
  }
  setTimeout(()=>{effect.remove();card.classList.remove('star-rise');crest.classList.remove('star-landed');buff.classList.remove('star-empowered');if(card.isConnected){label.textContent=originalLabel;buff.removeAttribute('role');}},3200);
+}
+
+// Cosmetic inline roll; the paid result has already been committed exactly once.
+const FacilityRoll={active:false};
+function playFacilityRoll(result,onFinish){
+ if(FacilityRoll.active)return;
+ const card=document.querySelector(`[data-facility-card="${result.type}"]`);
+ if(!card){onFinish();return;}
+ FacilityRoll.active=true;
+ UI.refresh();
+ const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+ const button=card.querySelector('[data-act="claimland"]');
+ const dots=[[5],[1,9],[1,5,9],[1,3,7,9],[1,3,5,7,9],[1,3,4,6,7,9]];
+ const effect=document.createElement('div');effect.className='facility-inline-roll';effect.dataset.phase='rolling';
+ effect.innerHTML=`<div class="facility-dice-arena"><div class="facility-dice-cube" aria-hidden="true">${dots.map((cells,i)=>`<div class="facility-cube-face face-${i+1}">${Array.from({length:9},(_,j)=>`<i class="${cells.includes(j+1)?'facility-pip':''}"></i>`).join('')}</div>`).join('')}</div><div class="facility-roll-burst" aria-hidden="true">${Array.from({length:8},(_,i)=>`<i style="--angle:${i*45}deg"></i>`).join('')}</div></div><span class="facility-roll-announcement" role="status" aria-live="polite">주사위 굴리는 중</span>`;
+ if(button)button.style.visibility='hidden';card.append(effect);
+ const cube=effect.querySelector('.facility-dice-cube');
+ const rotations=[[0,0],[0,-90],[-90,0],[90,0],[0,90],[180,0]];
+ if(!reduced)[20,160,330,530,750].forEach((ms,i)=>setTimeout(()=>{cube.style.transform=`rotateX(${200+i*177}deg) rotateY(${160+i*223}deg) rotateZ(${i%2?12:-12}deg)`;},ms));
+ setTimeout(()=>{const [x,y]=rotations[result.face-1];cube.style.transition=reduced?'none':'transform 300ms ease-out';cube.style.transform=`rotateX(${x+1080}deg) rotateY(${y+1440}deg)`;},reduced?0:930);
+ setTimeout(()=>{
+  effect.dataset.phase=result.success?'success':'failure';
+  card.classList.add(result.success?'facility-success':'facility-failure');
+  effect.querySelector('[role="status"]').textContent=`${result.face} · ${result.success?'강화 성공':'강화 실패, 단계 유지'}`;
+ },reduced?100:1250);
+ setTimeout(()=>{effect.remove();FacilityRoll.active=false;onFinish();},reduced?600:2000);
 }

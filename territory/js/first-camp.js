@@ -23,11 +23,10 @@ function refreshFirstCamp(){
  let host=document.getElementById('first-camp');
  if(!waiting){host?.remove();refreshTutorialUnitMarker();refreshTutorialSpotlight();return;}
  const step=firstCampStep();game.dataset.firstStep=step;
- if(!host){host=document.createElement('section');host.id='first-camp';document.getElementById('lobby').prepend(host);}
+ if(!host){host=document.createElement('section');host.id='first-camp';document.getElementById('field').append(host);}
  const key=step+S.lord.cls+S.lord.gender;
  if(host.dataset.key!==key){host.dataset.key=key;
- host.innerHTML=`<header><small>첫 원정 · 햇살 숲</small><h2>작은 캠프에서<br>시작되는 나의 왕국</h2></header><div class="journey-track" aria-label="원정 준비"><span class="done">영주</span><i></i><span class="${step!=='recruit'?'done':''}">동료</span><i></i><span class="${step==='depart'?'done':''}">편성</span><i></i><span>원정</span></div><div class="journey-scene">${buildingArt(2)}<div class="journey-lord lord-art" data-tier="0"></div><div class="journey-companion ${step==='depart'?'joined':''}">${step==='depart'?heroArt('militia'):'<span>동료의 자리</span>'}</div><div class="journey-banner">햇살 숲으로 향하는 원정대</div></div><div class="journey-order"><small>${step==='recruit'?'01 · 동료를 만나세요':step==='place'?'02 · 원정대를 편성하세요':'준비 완료'}</small><b>${step==='recruit'?'첫 동료가 영주님의 부름을 기다립니다':step==='place'?'한스를 전열에 배치해 주세요':'한스가 선두에서 길을 엽니다'}</b></div>${step==='depart'?'<button class="btn gold" id="first-expedition-go">첫 원정 출발 <span>→</span></button>':`<div class="journey-tab-hint">아래 <b>${step==='recruit'?'영입':'편성'}</b> 탭을 눌러주세요 <span>↓</span></div>`}`;
- setLordArt(host.querySelector('.lord-art'),S.lord.cls,S.lord.gender);
+ host.innerHTML=`<small>첫 원정 준비</small><b>${step==='recruit'?'첫 동료와 함께 출발하세요':step==='place'?'한스를 전열에 배치하세요':'원정대 준비 완료'}</b>${step==='depart'?'<button class="btn gold" id="first-expedition-go">첫 원정 출발 →</button>':`<span>아래 ${step==='recruit'?'영입':'부대'} 탭에서 준비하세요</span>`}`;
  const go=host.querySelector('#first-expedition-go');if(go)go.onclick=()=>{if(launchFirstExpedition()){UI.closeSheet();MobileShell.show('battle');UI.refresh();}};
  }
  refreshTutorialSpotlight();
@@ -43,7 +42,7 @@ function tutorialInstruction(){
  ['#tabs [data-tab="territory"]','첫 동료 한스가 합류했어요','편성 탭을 눌러 한스를 출전시켜 보세요.']:
  ['[data-act="summon"][data-free="1"]','무료 1회로 첫 동료를 만나세요','매일 무료로 한 번 영입할 수 있어요. 첫 무료 영입은 한스가 합류합니다.'];
  if(UI.tab==='territory')return step==='depart'?
- ['#tabs [data-tab="lobby"]','한스가 전열에 배치됐어요','왕국 탭으로 돌아가 첫 원정을 출발하세요.']:
+ ['#tabs [data-tab="territory"]','한스가 전열에 배치됐어요','부대 탭의 X를 눌러 전장으로 돌아가세요.']:
  UI.pendingHero==='militia'?['[data-act="slot"][data-i="0"]','이곳이 전열이에요','빛나는 자리를 누르면 한스가 들어갑니다.']:
  ['[data-act="place"][data-id="militia"]','함께할 동료를 선택하세요','방금 영입한 한스 카드를 누르세요.'];
  return step==='recruit'?['#tabs [data-tab="summon"]','왕국의 첫 동료를 만나세요','영입 탭을 눌러 모집을 시작하세요.']:
@@ -177,7 +176,7 @@ function territoryGuideConquest(stage){
 function territoryGuideInstruction(){
  return {
  boss:['#field','첫 번째 성에 도착했어요','보스와 수비대를 쓰러뜨리고 성을 함락하면 햇살 숲이 내 영토가 됩니다.','성 공략 시작'],
- won:['#tabs [data-tab="lobby"]','햇살 숲이 내 영토가 됐어요','왕국에 돌아가 새로 세워진 거점을 확인하세요.','내 왕국 보기'],
+ won:['#tabs [data-tab="lobby"]','햇살 숲이 내 영토가 됐어요','왕국 탭을 열어 새로 확보한 영토와 지원 효과를 확인하세요.','내 왕국 보기'],
  map:['#kingdom-map-host','작은 거점 → 개척 영지','햇살 숲이 내 영토에 추가됐어요. 이제 매 원정에 선발병 2명이 먼저 합류합니다.','지원군 만나기'],
  support:['#tutorial-unit-marker','햇살 숲 선발병 2명 합류','주사위를 기다리지 않고 먼저 출격합니다. 얻은 영토가 다음 원정을 돕는 거예요.','다음 원정 계속']
  }[S?.territoryTutorial]||null;

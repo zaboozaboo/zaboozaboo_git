@@ -6,7 +6,12 @@ function cameraFocus(){
  const allies=B.units.filter(u=>u.team===0&&u.hp>0);
  if(!allies.length)return P_CASTLE_X;
  const fighting=allies.filter(u=>u.target&&u.target.hp>0&&Math.hypot(u.target.x-u.x,u.target.y-u.y)<=u.range+u.target.size+45);
- const pool=fighting.length>=2?fighting:allies;
+ let pool=fighting.length>=2?fighting:allies;
+ if(typeof S!=='undefined'&&S.portal?.master){
+  // Keep following survivors at the front instead of jumping to larger reinforcements.
+  const front=Math.max(...allies.map(u=>u.x));
+  pool=allies.filter(u=>u.x>=front-100);
+ }
  // Densest longitudinal group wins; stragglers cannot pull the camera away.
  let group=[],score=-1;
  for(const seed of pool){const near=pool.filter(u=>Math.abs(u.x-seed.x)<100);

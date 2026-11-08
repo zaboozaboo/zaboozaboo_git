@@ -1,0 +1,404 @@
+{
+  "project": "forge-clone-2",
+  "captured": "2026-11-07",
+  "authority": "current local charts and active contracts; not archived visual references or APK-only tables",
+  "files": [
+    {
+      "path": "Charts/StageWave.csv",
+      "source": "Assets/_Project/Data/Charts/StageWave.csv",
+      "sha256": "d8ce404cdc49cb1c48158717592951762832fdb6266682061c80414cc237c2a2",
+      "rows": 2154
+    },
+    {
+      "path": "Charts/035_Guild_War_Days.csv",
+      "source": "Assets/_Project/Data/Charts/035_Guild_War_Days.csv",
+      "sha256": "3747ab14630436c7c01e786800d4de5a8fffdc4be01df5dcc503d63ce58250e3",
+      "rows": 124
+    },
+    {
+      "path": "Charts/018_Summon_Rates.csv",
+      "source": "Assets/_Project/Data/Charts/018_Summon_Rates.csv",
+      "sha256": "9793b18963ccf102df40f61852d5f0a9fee1207ee1d762bda022e687cb412431",
+      "rows": 200
+    },
+    {
+      "path": "Charts/032_Arena_Leagues.csv",
+      "source": "Assets/_Project/Data/Charts/032_Arena_Leagues.csv",
+      "sha256": "c8de8d395a15f247a71f935c973fbe5cd0bbc9c0a1f1326e8cf1a5a5f9c296ad",
+      "rows": 8
+    },
+    {
+      "path": "Charts/026_Guild_Tech.csv",
+      "source": "Assets/_Project/Data/Charts/026_Guild_Tech.csv",
+      "sha256": "49234f2f0921b0900f63d599ee72eedce76b03fbb8e4e583fa57ddc99e51393c",
+      "rows": 68
+    },
+    {
+      "path": "Charts/007_Secondary_Stats.csv",
+      "source": "Assets/_Project/Data/Charts/007_Secondary_Stats.csv",
+      "sha256": "c46da07c4bc561eb086ce6810cb039ee6bcdbdf869db5f789bb3ff9048fff1ef",
+      "rows": 16
+    },
+    {
+      "path": "Charts/036_Progress_Pass.csv",
+      "source": "Assets/_Project/Data/Charts/036_Progress_Pass.csv",
+      "sha256": "cf5dd904f6e1ff67a2c0f70ae5db719fef5d5e0a560be40747e27b5406b65f30",
+      "rows": 260
+    },
+    {
+      "path": "Charts/020_Skill_Passive.csv",
+      "source": "Assets/_Project/Data/Charts/020_Skill_Passive.csv",
+      "sha256": "bc0f752ef8424f154de75b39872af0731debc300adf4995c241388c54aee995d",
+      "rows": 100
+    },
+    {
+      "path": "Charts/016_Mounts.csv",
+      "source": "Assets/_Project/Data/Charts/016_Mounts.csv",
+      "sha256": "8603ab8b4a91c5da2981b082fc118356a02d77b22ecc87af164d0b4703a0f50f",
+      "rows": 12
+    },
+    {
+      "path": "Charts/ShopProductInfo.csv",
+      "source": "Assets/_Project/Data/Charts/ShopProductInfo.csv",
+      "sha256": "5e92ba07a097169b5b6007c61d1cb0843fbfb29e1c384fee9d32b94bf07fb069",
+      "rows": 14
+    },
+    {
+      "path": "Charts/024_Tech_Layout.csv",
+      "source": "Assets/_Project/Data/Charts/024_Tech_Layout.csv",
+      "sha256": "4896d8a34891e7e2b90929cef3d94ddbc0857453a12955a34feeae5a50629ca0",
+      "rows": 282
+    },
+    {
+      "path": "Charts/034_Guild_Tiers.csv",
+      "source": "Assets/_Project/Data/Charts/034_Guild_Tiers.csv",
+      "sha256": "bf54703095caa8aabaec77771cecfbb5cf1b66806fddd35aee033fb9734ce543",
+      "rows": 96
+    },
+    {
+      "path": "Charts/030_Dungeons.csv",
+      "source": "Assets/_Project/Data/Charts/030_Dungeons.csv",
+      "sha256": "ceeb7933d6695012ff32fafd34a69137e16c3a3d0bea5843fd8ee7559ffb787d",
+      "rows": 1600
+    },
+    {
+      "path": "Charts/StageData.csv",
+      "source": "Assets/_Project/Data/Charts/StageData.csv",
+      "sha256": "492c2998da2ab4d78abdecca828094126f24d9ce447b2e6e36043b872328c8d7",
+      "rows": 630
+    },
+    {
+      "path": "Charts/EnemyPreset.csv",
+      "source": "Assets/_Project/Data/Charts/EnemyPreset.csv",
+      "sha256": "05b2bce50fc036fc4bfcc9d67fccb893e82eef5b6a9b13479d45ce3cdb1b17da",
+      "rows": 72
+    },
+    {
+      "path": "Charts/SkillSummonInfo.csv",
+      "source": "Assets/_Project/Data/Charts/SkillSummonInfo.csv",
+      "sha256": "4c12b2fd11114338bb2b768c2c80d64f9e1422675304f640454062ba22c227dd",
+      "rows": 100
+    },
+    {
+      "path": "Charts/002_Forge_Upgrades.csv",
+      "source": "Assets/_Project/Data/Charts/002_Forge_Upgrades.csv",
+      "sha256": "831a85106b092952af3c324ffefce0d797562c2b0a2d620e2879b00fd639bcf2",
+      "rows": 34
+    },
+    {
+      "path": "Charts/033_Arena_Rewards.csv",
+      "source": "Assets/_Project/Data/Charts/033_Arena_Rewards.csv",
+      "sha256": "5788e32502b82c93ac8ccd1cb00c77a4967e1a3aa2c0b51e6bae81c01c6bb5cb",
+      "rows": 354
+    },
+    {
+      "path": "Charts/005_Item_Level_Brackets.csv",
+      "source": "Assets/_Project/Data/Charts/005_Item_Level_Brackets.csv",
+      "sha256": "3f9c8b2dc9d4e84afb3a2df4fb27ff4fa0a7ffb477bfe2216c4e7bfce7fd71a4",
+      "rows": 29
+    },
+    {
+      "path": "Charts/043_Reference_Configs.csv",
+      "source": "Assets/_Project/Data/Charts/043_Reference_Configs.csv",
+      "sha256": "23a41073aff812381cf7c00dfdcc040c491584933b8cb225e34f4ecb28188de0",
+      "rows": 185
+    },
+    {
+      "path": "Charts/022_Tech_Nodes.csv",
+      "source": "Assets/_Project/Data/Charts/022_Tech_Nodes.csv",
+      "sha256": "c9624a0a949f4a710b3f14f6c565345e4382a536bb08dfab7d5463499c7edcc2",
+      "rows": 94
+    },
+    {
+      "path": "Charts/008_Item_Stat_Unlocks.csv",
+      "source": "Assets/_Project/Data/Charts/008_Item_Stat_Unlocks.csv",
+      "sha256": "c4b9455736708d9819da2be2e5d2a48af18a8ad53aee32c61554ed9b6a05927d",
+      "rows": 16
+    },
+    {
+      "path": "Charts/025_Tech_Tier_Costs.csv",
+      "source": "Assets/_Project/Data/Charts/025_Tech_Tier_Costs.csv",
+      "sha256": "0d6c58e10957d7f92a9db2968ef4f02c3ba95f30fb308cf0f6406ade499f7dda",
+      "rows": 25
+    },
+    {
+      "path": "Charts/FeatureUnlock.csv",
+      "source": "Assets/_Project/Data/Charts/FeatureUnlock.csv",
+      "sha256": "2e51f6d47a0e3819da0ea5278fd173d836aebc52b5790752aa31ef2e0df2863e",
+      "rows": 27
+    },
+    {
+      "path": "Charts/StoreProductInfo.csv",
+      "source": "Assets/_Project/Data/Charts/StoreProductInfo.csv",
+      "sha256": "ae3c10294aedd3ea1e1100506bc1b988f6653670abd9e902af72abfb24558a43",
+      "rows": 32
+    },
+    {
+      "path": "Charts/042_Ascension_Bonuses.csv",
+      "source": "Assets/_Project/Data/Charts/042_Ascension_Bonuses.csv",
+      "sha256": "d5888279ea3f4e8f9b4557ba8531a3cc2e816f5e38fb1877518ce6a2f6c47c0e",
+      "rows": 12
+    },
+    {
+      "path": "Charts/028_Enemies.csv",
+      "source": "Assets/_Project/Data/Charts/028_Enemies.csv",
+      "sha256": "3afd7acd851964b54aaee70a8c2cbd23becd5635f8e4f1799ca051684006b403",
+      "rows": 72
+    },
+    {
+      "path": "Charts/012_Pets.csv",
+      "source": "Assets/_Project/Data/Charts/012_Pets.csv",
+      "sha256": "5190196efe9a14bbc440aa285de6993015f6e2c617fd407b45a052dd5c43fe05",
+      "rows": 100
+    },
+    {
+      "path": "Charts/010_Skins.csv",
+      "source": "Assets/_Project/Data/Charts/010_Skins.csv",
+      "sha256": "dddee448059585f2abefd42473964fd1934a1537b396ac690a93bba9ce747e89",
+      "rows": 156
+    },
+    {
+      "path": "Charts/SkillAscensionInfo.csv",
+      "source": "Assets/_Project/Data/Charts/SkillAscensionInfo.csv",
+      "sha256": "24af99f4356e874464af19bdccc2d2601039e4b9a1028666e5759565ebd17c55",
+      "rows": 3
+    },
+    {
+      "path": "Charts/027_Main_Battles.csv",
+      "source": "Assets/_Project/Data/Charts/027_Main_Battles.csv",
+      "sha256": "1093e1b2f9bf04e9645400b2c0bdb825f5ecb0c12ade7529d57febbff0091dc1",
+      "rows": 718
+    },
+    {
+      "path": "Charts/ForgeUpgradeInfo.csv",
+      "source": "Assets/_Project/Data/Charts/ForgeUpgradeInfo.csv",
+      "sha256": "3e4be4510d1a836772521294e871ced8f578da52660a34a345d11b1df1aed826",
+      "rows": 34
+    },
+    {
+      "path": "Charts/014_Pet_Upgrades.csv",
+      "source": "Assets/_Project/Data/Charts/014_Pet_Upgrades.csv",
+      "sha256": "4230c0d7c3fef6a04cb2b8aa29655494044e801f6404094d4487d4efa5081be7",
+      "rows": 1000
+    },
+    {
+      "path": "Charts/MainBattleDifficulty.csv",
+      "source": "Assets/_Project/Data/Charts/MainBattleDifficulty.csv",
+      "sha256": "7910dc737d7f48df45b8a568f042509b27c16e856fdff6cfcf65221254459ce1",
+      "rows": 3
+    },
+    {
+      "path": "Charts/004_Item_Drop_Chances.csv",
+      "source": "Assets/_Project/Data/Charts/004_Item_Drop_Chances.csv",
+      "sha256": "35700eafa9e7f5e8043d49a4f5213998f46f5250ae94294d67da0077ad657b9e",
+      "rows": 35
+    },
+    {
+      "path": "Charts/006_Weapons.csv",
+      "source": "Assets/_Project/Data/Charts/006_Weapons.csv",
+      "sha256": "c6199645e4912708cdabfaf3573b1c144f79e01efc35703d49d5a90e13937891",
+      "rows": 100
+    },
+    {
+      "path": "Charts/021_Skill_Upgrades.csv",
+      "source": "Assets/_Project/Data/Charts/021_Skill_Upgrades.csv",
+      "sha256": "9d480a9950b207c8bcafdfcbc6f5e6832a12687b6462e30e7abe235b662798fc",
+      "rows": 99
+    },
+    {
+      "path": "Charts/EquipmentCatalog.csv",
+      "source": "Assets/_Project/Data/Charts/EquipmentCatalog.csv",
+      "sha256": "9c034c4b61b2e8df0edb08ea32e737b51f8c430e57eee285c5d8f2c5b846209f",
+      "rows": 282
+    },
+    {
+      "path": "Charts/PlayerLevelInfo.csv",
+      "source": "Assets/_Project/Data/Charts/PlayerLevelInfo.csv",
+      "sha256": "f97abb0f516ea9e2614e1f1c91fb436528593403275336db1bd243c48606ae93",
+      "rows": 920
+    },
+    {
+      "path": "Charts/EquipmentPartInfo.csv",
+      "source": "Assets/_Project/Data/Charts/EquipmentPartInfo.csv",
+      "sha256": "ccefaedca32f22196357690552ed804f316a3f488e5f91a604418e396a69caf2",
+      "rows": 10
+    },
+    {
+      "path": "Charts/003_Item_Base_Stats.csv",
+      "source": "Assets/_Project/Data/Charts/003_Item_Base_Stats.csv",
+      "sha256": "34782b37dd0ebe3f2824aa29d731f8cf28b917e3b8c4d63df4c94e7e4a5e1a73",
+      "rows": 239
+    },
+    {
+      "path": "Charts/StageEncounter.csv",
+      "source": "Assets/_Project/Data/Charts/StageEncounter.csv",
+      "sha256": "a8a1e64774ac648eecf7b8f802335e4b34bb16fdda7f10ee33d444992d37f113",
+      "rows": 630
+    },
+    {
+      "path": "Charts/009_Sets.csv",
+      "source": "Assets/_Project/Data/Charts/009_Sets.csv",
+      "sha256": "60a3c6124f447685f881fa66b7eb03fe8732673b065ed4fab24901aafdc4e545",
+      "rows": 42
+    },
+    {
+      "path": "Charts/011_Skin_Upgrades.csv",
+      "source": "Assets/_Project/Data/Charts/011_Skin_Upgrades.csv",
+      "sha256": "e7c0b7db914fd28b5324c2ee6d9d78615c7aa2b8f30883e714a688eceffe5244",
+      "rows": 15
+    },
+    {
+      "path": "Charts/038_Mission_Rewards.csv",
+      "source": "Assets/_Project/Data/Charts/038_Mission_Rewards.csv",
+      "sha256": "5dd4507cb347df57e643c91c8aeeb01db342263b1062df6ddc808996d1f39b07",
+      "rows": 420
+    },
+    {
+      "path": "Charts/ResourceShopInfo.csv",
+      "source": "Assets/_Project/Data/Charts/ResourceShopInfo.csv",
+      "sha256": "b97b02ff4d1bf2a65ea10ae597f4f9d7bb87a40e8c9ff35fec16fafa89477f95",
+      "rows": 5
+    },
+    {
+      "path": "Charts/SpellInfo.csv",
+      "source": "Assets/_Project/Data/Charts/SpellInfo.csv",
+      "sha256": "065a5094667094f734a4a69153f870b3d79ccd5155e205fc1f67c97839285a68",
+      "rows": 18
+    },
+    {
+      "path": "Charts/041_Projectiles.csv",
+      "source": "Assets/_Project/Data/Charts/041_Projectiles.csv",
+      "sha256": "4f876fd5178a096af703dc8f1630be4e01c474678855b1ac9095f7925bb490e1",
+      "rows": 16
+    },
+    {
+      "path": "Charts/013_Pet_Balance.csv",
+      "source": "Assets/_Project/Data/Charts/013_Pet_Balance.csv",
+      "sha256": "9d3db55bd2ef6b8a39cfe47efe806fc26b0543393f05c6a6a5f450a55dd16a90",
+      "rows": 9
+    },
+    {
+      "path": "Charts/031_Dungeon_Rewards.csv",
+      "source": "Assets/_Project/Data/Charts/031_Dungeon_Rewards.csv",
+      "sha256": "efeadbd37f653a2be7df8b5668c3026eea0d33bad8d1b84d6d67da1df7c22164",
+      "rows": 5
+    },
+    {
+      "path": "Charts/037_Missions.csv",
+      "source": "Assets/_Project/Data/Charts/037_Missions.csv",
+      "sha256": "bcb6530c55460a5b3088b1676246e1c0a4d671823121550e2b93e4dbc2cb1012",
+      "rows": 83
+    },
+    {
+      "path": "Charts/040_Stats.csv",
+      "source": "Assets/_Project/Data/Charts/040_Stats.csv",
+      "sha256": "7ed174d42ca7e565590f796a9f5212aa18fd30fdc4ba89e2a576808d710c4da2",
+      "rows": 21
+    },
+    {
+      "path": "Charts/023_Tech_Values.csv",
+      "source": "Assets/_Project/Data/Charts/023_Tech_Values.csv",
+      "sha256": "4145c404ae6855d0c1988c7774737f235c1d56baea68e149dbe1920cbcfbd21d",
+      "rows": 1155
+    },
+    {
+      "path": "Charts/039_Economy_Deals.csv",
+      "source": "Assets/_Project/Data/Charts/039_Economy_Deals.csv",
+      "sha256": "c57343498d43f480220b22ed96684e25ec3c8bdc777ead478bf72819e1655ef4",
+      "rows": 104
+    },
+    {
+      "path": "Charts/001_Global_Config.csv",
+      "source": "Assets/_Project/Data/Charts/001_Global_Config.csv",
+      "sha256": "e86013b244f290f599d60709fa2932a70c8920e2b178a520f0034afb9eb58817",
+      "rows": 360
+    },
+    {
+      "path": "Charts/015_Eggs.csv",
+      "source": "Assets/_Project/Data/Charts/015_Eggs.csv",
+      "sha256": "9087f1dc09fbb3f4d2affc349d5dcc1d0ef47a0a5516b06b6076814cdcb4cfe9",
+      "rows": 5
+    },
+    {
+      "path": "Charts/EquipmentTierInfo.csv",
+      "source": "Assets/_Project/Data/Charts/EquipmentTierInfo.csv",
+      "sha256": "f8686ba1786f7f40d02631ae0faeb737925f0c9f259c4ebf4028c138a200c055",
+      "rows": 10
+    },
+    {
+      "path": "Charts/019_Skills.csv",
+      "source": "Assets/_Project/Data/Charts/019_Skills.csv",
+      "sha256": "c9eb59066e0b5bf10ac1220e1fb8f41b5dcd5560cc4a6c95fe19872cf838c49c",
+      "rows": 1800
+    },
+    {
+      "path": "Charts/029_Enemy_Scaling.csv",
+      "source": "Assets/_Project/Data/Charts/029_Enemy_Scaling.csv",
+      "sha256": "4d7d3fa5c7f95c32d9ca76f4b986eee27e44a47fec32e884f935d0c248ab88e9",
+      "rows": 11
+    },
+    {
+      "path": "Charts/017_Mount_Upgrades.csv",
+      "source": "Assets/_Project/Data/Charts/017_Mount_Upgrades.csv",
+      "sha256": "44d379f32bf2e213b975c4d89ede60fde27ee2fd55a41f624080ebc412a2067f",
+      "rows": 600
+    },
+    {
+      "path": "Charts/GameplayConfig.csv",
+      "source": "Assets/_Project/Data/Charts/GameplayConfig.csv",
+      "sha256": "b36689975bb8ad4aa55b7dac6b8afb13221855c64220bc139034d4e1dec1d843",
+      "rows": 37
+    },
+    {
+      "path": "Charts/MilitaryRankInfo.csv",
+      "source": "Assets/_Project/Data/Charts/MilitaryRankInfo.csv",
+      "sha256": "c2884aa4f29bfc85d0012d8e7d0509e5309c54e626e589d99d2637cde96448a2",
+      "rows": 32
+    },
+    {
+      "path": "Docs/BalanceContract.md",
+      "source": "Docs/BalanceContract.md",
+      "sha256": "4b016194fa9e036a107be6b8ef7630a960aec3c737c33e2e5e3b02bf8f910c33"
+    },
+    {
+      "path": "Docs/BalanceSheets.md",
+      "source": "Docs/BalanceSheets.md",
+      "sha256": "cc4cfd1881616182be2a4e1be48469f1d6ee5ce36d975897c626820e3fe6068b"
+    },
+    {
+      "path": "Docs/GrowthRuntime.md",
+      "source": "Docs/GrowthRuntime.md",
+      "sha256": "4a5cdc7c2417b547742952d830680d03ec86993e9fb5b10663b13b7c371005e4"
+    },
+    {
+      "path": "Docs/CommerceBalance.md",
+      "source": "Docs/CommerceBalance.md",
+      "sha256": "38ac4dcd4e2343c97606c2afe82dba0fc5b3c5596cfbfeeae06b7091cf66a6a7"
+    },
+    {
+      "path": "Docs/CombatFormulas.md",
+      "source": "Docs/CombatFormulas.md",
+      "sha256": "877d5f3558341f0852e207c3ec13d620636d63704021697730a92bd2df8a6138"
+    }
+  ]
+}

@@ -1,0 +1,498 @@
+{
+  "version": 1,
+  "generator": "built-in image_gen",
+  "reference": "pm_0_0.png",
+  "layout": {
+    "columns": 2,
+    "rows": 1,
+    "directions": [
+      "down",
+      "up"
+    ],
+    "camera": "45-degree elevated orthographic"
+  },
+  "style": "Create ONE production game character asset. Reference image is STYLE, CAMERA and TWO-CELL LAYOUT reference only. Replace its stone soldier with SUBJECT. Exactly TWO equal square cells side by side in one wide transparent PNG: LEFT is front facing straight DOWN toward image bottom, RIGHT is identical unit's BACK facing straight UP. Elevated orthographic 45-degree overhead view, see top of head/shoulders, no profile, no diagonal facing. Very simple chunky matte toy shapes, same large-head short-limb proportions as reference. Only 3-tone broad shading, no textures, tiny ornaments, realistic anatomy or fine detail. Each unit full-body centered at x25% and x75%, feet at y85%, equal scale, height70% image, generous transparent margins including all weapons. Weapons shift correctly between front and back. Readable at32px. Distinct role silhouette as specified. Soft upper-left light. NO text, floor, shadows, backgrounds, scenery, borders, extra characters. Genuine transparent alpha. Two idle directions, not animation frames.",
+  "promptFirst": "Create one production game sprite asset of a simple STONE AGE STONE AXE INFANTRY for Portal Master. One transparent PNG with exactly TWO equal square cells side by side. LEFT cell: character facing straight DOWN toward bottom of image, seen from elevated orthographic 45-degree overhead camera. RIGHT cell: SAME character facing straight UP toward top of image, rear of head and back visible, same overhead camera. Absolutely NOT side-facing or profile, NOT isometric diagonal orientation. Full body in each cell, centered, feet at 85% cell height, height 70% cell, generous empty transparent margins. Character: tiny compact tan-hide tunic, short dark hair, ONE large simple grey stone axe in right hand, bare short legs. Slim small infantry silhouette, no shield. Cute chunky toy game soldier, head 40% body height, short limbs, simple broad matte clay shapes with 3-tone shading, no fine textures, fingers, stitching, fur strands, facial wrinkles or intricate ornament. Muted warm beige/brown, one small jade band for ally identification. Readable at 32 pixels tall. Soft upper-left light. Transparent empty background with alpha, no ground, no floor, no drop shadow, no scene, no text, no grid, no borders, no extra weapons or extra characters. Same character size in both cells. This is a two-direction idle sprite, not concept illustration.",
+  "units": [
+    {
+      "id": "pm_0_0",
+      "era": 0,
+      "variant": 0,
+      "role": 0,
+      "file": "pm_0_0.png",
+      "subject": "stone axe infantry, tan hide tunic, small grey axe"
+    },
+    {
+      "id": "pm_0_1",
+      "era": 0,
+      "variant": 1,
+      "role": 0,
+      "file": "pm_0_1.png",
+      "subject": "bone shield guardian, broad stocky torso, enormous ivory oval bone shield and short club, skullcap"
+    },
+    {
+      "id": "pm_0_2",
+      "era": 0,
+      "variant": 2,
+      "role": 1,
+      "file": "pm_0_2.png",
+      "subject": "sling hunter, slim torso, forked leather sling and round stone pouch, short hair"
+    },
+    {
+      "id": "pm_0_3",
+      "era": 0,
+      "variant": 3,
+      "role": 1,
+      "file": "pm_0_3.png",
+      "subject": "ember thrower, broad round clay pot with simple orange ember, hide apron, short hair"
+    },
+    {
+      "id": "pm_0_4",
+      "era": 0,
+      "variant": 4,
+      "role": 2,
+      "file": "pm_0_4.png",
+      "subject": "tribal healer, pale sage robe, single leafy wooden staff and green medicine pouch"
+    },
+    {
+      "id": "pm_0_5",
+      "era": 0,
+      "variant": 5,
+      "role": 2,
+      "file": "pm_0_5.png",
+      "subject": "war drummer, ochre tunic, large round hide drum strapped to chest and short drumsticks"
+    },
+    {
+      "id": "pm_1_0",
+      "era": 1,
+      "variant": 0,
+      "role": 0,
+      "file": "pm_1_0.png",
+      "subject": "bronze swordsman, simple teal tunic and bronze short sword, open bronze helmet"
+    },
+    {
+      "id": "pm_1_1",
+      "era": 1,
+      "variant": 1,
+      "role": 0,
+      "file": "pm_1_1.png",
+      "subject": "legion shield guard, bulky bronze helmet and large red rectangular shield, short sword"
+    },
+    {
+      "id": "pm_1_2",
+      "era": 1,
+      "variant": 2,
+      "role": 1,
+      "file": "pm_1_2.png",
+      "subject": "composite bow archer, sand tunic and crescent composite bow, teal headband"
+    },
+    {
+      "id": "pm_1_3",
+      "era": 1,
+      "variant": 3,
+      "role": 1,
+      "file": "pm_1_3.png",
+      "subject": "catapult operator, squat soldier holding a simple miniature wooden stone-launcher crossbar with stone basket, no vehicle"
+    },
+    {
+      "id": "pm_1_4",
+      "era": 1,
+      "variant": 4,
+      "role": 2,
+      "file": "pm_1_4.png",
+      "subject": "temple medic, cream robe and green herb satchel, smooth bronze staff"
+    },
+    {
+      "id": "pm_1_5",
+      "era": 1,
+      "variant": 5,
+      "role": 2,
+      "file": "pm_1_5.png",
+      "subject": "legion standard bearer, red tunic, tall simple bronze disc standard, smooth bronze helmet"
+    },
+    {
+      "id": "pm_2_0",
+      "era": 2,
+      "variant": 0,
+      "role": 0,
+      "file": "pm_2_0.png",
+      "subject": "levy infantry, blue cloth hood, short iron sword, simple leather vest"
+    },
+    {
+      "id": "pm_2_1",
+      "era": 2,
+      "variant": 1,
+      "role": 0,
+      "file": "pm_2_1.png",
+      "subject": "heavy knight, broad steel armor and bucket helmet, enormous blue kite shield"
+    },
+    {
+      "id": "pm_2_2",
+      "era": 2,
+      "variant": 2,
+      "role": 1,
+      "file": "pm_2_2.png",
+      "subject": "longbow archer, green hood, tall wooden longbow, narrow tunic"
+    },
+    {
+      "id": "pm_2_3",
+      "era": 2,
+      "variant": 3,
+      "role": 1,
+      "file": "pm_2_3.png",
+      "subject": "siege gunner, round grey iron hand cannon with wide black muzzle and small red fuse, leather apron"
+    },
+    {
+      "id": "pm_2_4",
+      "era": 2,
+      "variant": 4,
+      "role": 2,
+      "file": "pm_2_4.png",
+      "subject": "monastery healer, ivory hooded robe, green medicine bag, simple wood staff"
+    },
+    {
+      "id": "pm_2_5",
+      "era": 2,
+      "variant": 5,
+      "role": 2,
+      "file": "pm_2_5.png",
+      "subject": "royal standard bearer, blue tabard and simple gold pennant on pole, open steel helmet"
+    },
+    {
+      "id": "pm_3_0",
+      "era": 3,
+      "variant": 0,
+      "role": 0,
+      "file": "pm_3_0.png",
+      "subject": "mercenary swordsman, burgundy padded jacket, short steel sabre, simple soft cap"
+    },
+    {
+      "id": "pm_3_1",
+      "era": 3,
+      "variant": 1,
+      "role": 0,
+      "file": "pm_3_1.png",
+      "subject": "plate guardsman, broad smooth steel breastplate, large rectangular steel shield, closed helmet"
+    },
+    {
+      "id": "pm_3_2",
+      "era": 3,
+      "variant": 2,
+      "role": 1,
+      "file": "pm_3_2.png",
+      "subject": "arquebus marksman, brown coat, long chunky wooden arquebus, brimmed cap"
+    },
+    {
+      "id": "pm_3_3",
+      "era": 3,
+      "variant": 3,
+      "role": 1,
+      "file": "pm_3_3.png",
+      "subject": "field artilleryman, short dark iron mortar held low, rust coat and rounded helmet"
+    },
+    {
+      "id": "pm_3_4",
+      "era": 3,
+      "variant": 4,
+      "role": 2,
+      "file": "pm_3_4.png",
+      "subject": "regimental surgeon, cream coat, large sage medical bag, simple soft cap"
+    },
+    {
+      "id": "pm_3_5",
+      "era": 3,
+      "variant": 5,
+      "role": 2,
+      "file": "pm_3_5.png",
+      "subject": "regimental standard bearer, navy coat, broad golden triangular flag, plain hat"
+    },
+    {
+      "id": "pm_4_0",
+      "era": 4,
+      "variant": 0,
+      "role": 0,
+      "file": "pm_4_0.png",
+      "subject": "line infantry, navy coat, smooth shako hat, short musket with tiny fixed bayonet"
+    },
+    {
+      "id": "pm_4_1",
+      "era": 4,
+      "variant": 1,
+      "role": 0,
+      "file": "pm_4_1.png",
+      "subject": "grenadier guard, bulky dark coat, tall black simple cap, broad forearm armor and heavy musket"
+    },
+    {
+      "id": "pm_4_2",
+      "era": 4,
+      "variant": 2,
+      "role": 1,
+      "file": "pm_4_2.png",
+      "subject": "rifle sharpshooter, olive cloak, long wooden rifle with a single simple scope, low cap"
+    },
+    {
+      "id": "pm_4_3",
+      "era": 4,
+      "variant": 3,
+      "role": 1,
+      "file": "pm_4_3.png",
+      "subject": "howitzer operator, ochre coat, large short barrel recoilless mortar with broad circular muzzle, helmet"
+    },
+    {
+      "id": "pm_4_4",
+      "era": 4,
+      "variant": 4,
+      "role": 2,
+      "file": "pm_4_4.png",
+      "subject": "field nurse, cream coat, teal cap with green medical leaf emblem, square medicine bag"
+    },
+    {
+      "id": "pm_4_5",
+      "era": 4,
+      "variant": 5,
+      "role": 2,
+      "file": "pm_4_5.png",
+      "subject": "tactical officer, blue coat, peaked cap, simple brass telescope and signal pennant"
+    },
+    {
+      "id": "pm_5_0",
+      "era": 5,
+      "variant": 0,
+      "role": 0,
+      "file": "pm_5_0.png",
+      "subject": "mechanized infantry, olive helmet and smooth khaki uniform, compact dark rifle"
+    },
+    {
+      "id": "pm_5_1",
+      "era": 5,
+      "variant": 1,
+      "role": 0,
+      "file": "pm_5_1.png",
+      "subject": "steel shield trooper, wide grey metal breastplate, oversized steel rectangular shield, rounded helmet"
+    },
+    {
+      "id": "pm_5_2",
+      "era": 5,
+      "variant": 2,
+      "role": 1,
+      "file": "pm_5_2.png",
+      "subject": "machine gunner, olive helmet, chunky dark machine gun with broad drum magazine"
+    },
+    {
+      "id": "pm_5_3",
+      "era": 5,
+      "variant": 3,
+      "role": 1,
+      "file": "pm_5_3.png",
+      "subject": "mortar trooper, squat figure, short green mortar tube angled up, helmet and small backpack"
+    },
+    {
+      "id": "pm_5_4",
+      "era": 5,
+      "variant": 4,
+      "role": 2,
+      "file": "pm_5_4.png",
+      "subject": "combat medic, cream helmet, khaki coat, big green medical backpack with white plus"
+    },
+    {
+      "id": "pm_5_5",
+      "era": 5,
+      "variant": 5,
+      "role": 2,
+      "file": "pm_5_5.png",
+      "subject": "communications officer, brown cap, large square radio backpack and one tall antenna"
+    },
+    {
+      "id": "pm_6_0",
+      "era": 6,
+      "variant": 0,
+      "role": 0,
+      "file": "pm_6_0.png",
+      "subject": "assault rifle soldier, slate helmet and compact blue vest, small black assault rifle"
+    },
+    {
+      "id": "pm_6_1",
+      "era": 6,
+      "variant": 1,
+      "role": 0,
+      "file": "pm_6_1.png",
+      "subject": "heavy assault soldier, oversized graphite armor plates, large dark riot shield, broad helmet"
+    },
+    {
+      "id": "pm_6_2",
+      "era": 6,
+      "variant": 2,
+      "role": 1,
+      "file": "pm_6_2.png",
+      "subject": "precision sniper, narrow sage hood, long dark scoped rifle, no camouflage texture"
+    },
+    {
+      "id": "pm_6_3",
+      "era": 6,
+      "variant": 3,
+      "role": 1,
+      "file": "pm_6_3.png",
+      "subject": "rocket artillery soldier, stocky blue armor, big single shoulder rocket tube with orange muzzle ring"
+    },
+    {
+      "id": "pm_6_4",
+      "era": 6,
+      "variant": 4,
+      "role": 2,
+      "file": "pm_6_4.png",
+      "subject": "rescue specialist, cream helmet and teal vest, broad green medical pack with simple white plus"
+    },
+    {
+      "id": "pm_6_5",
+      "era": 6,
+      "variant": 5,
+      "role": 2,
+      "file": "pm_6_5.png",
+      "subject": "tactical controller, navy helmet and vest, simple orange signal baton and two-antenna backpack"
+    },
+    {
+      "id": "pm_7_0",
+      "era": 7,
+      "variant": 0,
+      "role": 0,
+      "file": "pm_7_0.png",
+      "subject": "combat android, slim smooth pale steel limbs, cyan visor, compact pulse rifle"
+    },
+    {
+      "id": "pm_7_1",
+      "era": 7,
+      "variant": 1,
+      "role": 0,
+      "file": "pm_7_1.png",
+      "subject": "exosuit trooper, broad squared cobalt shoulder armor, large smooth energy shield with cyan center"
+    },
+    {
+      "id": "pm_7_2",
+      "era": 7,
+      "variant": 2,
+      "role": 1,
+      "file": "pm_7_2.png",
+      "subject": "railgun marksman, slim indigo suit, long straight railgun with two cyan stripes, narrow visor"
+    },
+    {
+      "id": "pm_7_3",
+      "era": 7,
+      "variant": 3,
+      "role": 1,
+      "file": "pm_7_3.png",
+      "subject": "drone bombardier, broad violet suit, twin square launch pods above shoulders with small orange apertures"
+    },
+    {
+      "id": "pm_7_4",
+      "era": 7,
+      "variant": 4,
+      "role": 2,
+      "file": "pm_7_4.png",
+      "subject": "medical drone, compact hovering round ivory robot body, two stubby arms, sage medical plus, simple teal lens; no human legs"
+    },
+    {
+      "id": "pm_7_5",
+      "era": 7,
+      "variant": 5,
+      "role": 2,
+      "file": "pm_7_5.png",
+      "subject": "network commander, cobalt suit, cyan antenna crown with only two prongs, small square green command tablet"
+    },
+    {
+      "id": "pm_8_0",
+      "era": 8,
+      "variant": 0,
+      "role": 0,
+      "file": "pm_8_0.png",
+      "subject": "space marine, blue rounded sealed helmet, compact ivory plasma rifle, simple space boots"
+    },
+    {
+      "id": "pm_8_1",
+      "era": 8,
+      "variant": 1,
+      "role": 0,
+      "file": "pm_8_1.png",
+      "subject": "orbital heavy guard, broad cream armor, enormous rounded blue shield, orange visor"
+    },
+    {
+      "id": "pm_8_2",
+      "era": 8,
+      "variant": 2,
+      "role": 1,
+      "file": "pm_8_2.png",
+      "subject": "plasma marksman, slim violet space suit, long ivory rifle with cyan emitter, simple sealed helmet"
+    },
+    {
+      "id": "pm_8_3",
+      "era": 8,
+      "variant": 3,
+      "role": 1,
+      "file": "pm_8_3.png",
+      "subject": "gravity artillery trooper, broad navy suit, large round purple gravity projector with single dark core"
+    },
+    {
+      "id": "pm_8_4",
+      "era": 8,
+      "variant": 4,
+      "role": 2,
+      "file": "pm_8_4.png",
+      "subject": "biorestoration medic, ivory sealed helmet and mint suit, round green healing canister and short injector staff"
+    },
+    {
+      "id": "pm_8_5",
+      "era": 8,
+      "variant": 5,
+      "role": 2,
+      "file": "pm_8_5.png",
+      "subject": "fleet controller, blue officer suit, cream helmet, simple golden circular signal dish backpack"
+    },
+    {
+      "id": "pm_9_0",
+      "era": 9,
+      "variant": 0,
+      "role": 0,
+      "file": "pm_9_0.png",
+      "subject": "phase infantry, pale cyan smooth suit, short glowing teal blade, featureless dark visor"
+    },
+    {
+      "id": "pm_9_1",
+      "era": 9,
+      "variant": 1,
+      "role": 0,
+      "file": "pm_9_1.png",
+      "subject": "dimensional guardian, very broad violet rounded armor, huge smooth diamond shield with cyan rim"
+    },
+    {
+      "id": "pm_9_2",
+      "era": 9,
+      "variant": 2,
+      "role": 1,
+      "file": "pm_9_2.png",
+      "subject": "particle marksman, slim white suit, long forked teal particle rifle with one gold emitter"
+    },
+    {
+      "id": "pm_9_3",
+      "era": 9,
+      "variant": 3,
+      "role": 1,
+      "file": "pm_9_3.png",
+      "subject": "singularity gunner, stocky dark indigo suit, large circular black-core launcher with violet rim"
+    },
+    {
+      "id": "pm_9_4",
+      "era": 9,
+      "variant": 4,
+      "role": 2,
+      "file": "pm_9_4.png",
+      "subject": "time restorer, ivory mint robe-like suit, simple hourglass-shaped green healing staff, rounded helmet"
+    },
+    {
+      "id": "pm_9_5",
+      "era": 9,
+      "variant": 5,
+      "role": 2,
+      "file": "pm_9_5.png",
+      "subject": "quantum coordinator, midnight blue suit, three large golden connected nodes on short backpack antenna, simple teal tablet"
+    }
+  ]
+}

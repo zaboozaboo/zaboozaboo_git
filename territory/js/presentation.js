@@ -17,6 +17,8 @@ function gameIcon(name, extra = '') {
 }
 const HERO_ART_ORDER = ['militia','archer','spear','crossbow','apprentice','cavalry','monk','pyro','ranger','griffin','paladin','dragon','archangel'];
 function heroArt(id) {
+  const authored=typeof PortalUnitArt!=='undefined'?PortalUnitArt.portrait(id):null;
+  if(authored)return `<span class="hero-art portal-unit-art" aria-hidden="true" style="background-image:url('${authored.url}');background-size:contain;background-position:center;background-repeat:no-repeat"></span>`;
   const cell = (ALLY_ART[id] ?? 6);
   return `<span class="hero-art" aria-hidden="true" style="background-image:url('${CombatArt.allies[cell]?.url||''}');background-size:contain;background-position:center;background-repeat:no-repeat"></span>`;
 }
@@ -98,8 +100,8 @@ async function bootGame() {
     button.disabled = false; button.textContent = '다시 시도'; button.onclick = () => location.reload();
     return;
   }
-  label.textContent = saved ? '영주님, 왕국이 당신을 기다립니다.' : '당신의 깃발 아래, 새로운 왕국이 시작됩니다.';
-  button.innerHTML = (saved ? '왕국으로 돌아가기' : '모험 시작하기') + gameIcon('chevron');
+  label.textContent = saved ? '포탈 너머의 전장이 기다립니다.' : '포탈을 열고 첫 부대를 만나세요.';
+  button.innerHTML = (saved ? '원정 이어하기' : '포탈 열기') + gameIcon('chevron');
   button.disabled = false;
   document.getElementById('boot').classList.add('loaded');
   button.onclick = () => {

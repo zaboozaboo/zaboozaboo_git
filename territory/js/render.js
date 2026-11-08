@@ -11,7 +11,7 @@ const SX = (y,x) => x===undefined?y:LANE_W/2+(y-LANE_W/2)*perspectiveScale(x);
 const SY = x => W - x;
 const TAU = Math.PI * 2;
 const CombatArt = {
-  files: ['assets/toy-allies.png', 'assets/toy-enemies.png', 'assets/toy-buildings.png', 'assets/toy-camps.png'],
+  files: BattleArtSet.files,
   images: {}, allies: [], enemies: [], buildings: [], camps: [], terrain: null, ground: null, groundKey: '',
   reducedMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches,
 };
@@ -83,10 +83,11 @@ function fitCanvas() {
   VIEW.height=height/(width/LANE_W);
   VIEW.sx=width/LANE_W;VIEW.sy=VIEW.sx;
   // Keep the camp above the overlaid roster while terrain continues behind it.
-  VIEW.hudInset=Math.min(86,height*.2)/VIEW.sy;
+  VIEW.hudInset=S.portal?.master?0:Math.min(86,height*.2)/VIEW.sy;
   CombatArt.groundKey='';
 }
 function spriteFor(u) {
+  const authored=typeof PortalUnitArt!=='undefined'?PortalUnitArt.sprite(u):null;if(authored)return authored;
   if(u.isVanguard)return CombatArt.allies[ALLY_ART.militia];
   if(u.monster) return CombatArt.enemies[ENEMY_ART[u.key] ?? 0];
   if(u.isLord) return CombatArt.allies[({knight:0,mage:1,priest:2}[u.cls] ?? 0)+(u.gender==='f'?3:0)];
@@ -110,9 +111,9 @@ function roundRect(x,y,w,h,r) {
   r=Math.max(0,Math.min(r,w/2,h/2));ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();
 }
 function bar(x,y,w,h,ratio,color) {
-  ctx.fillStyle='#06111ee6';roundRect(x,y,w,h,2);ctx.fill();
+  ctx.fillStyle='#414d37e6';roundRect(x,y,w,h,2);ctx.fill();
   ctx.fillStyle=color;roundRect(x+1,y+1,(w-2)*clamp01(ratio),h-2,1);ctx.fill();
-  ctx.strokeStyle='#c9c1a540';ctx.lineWidth=.5;roundRect(x,y,w,h,2);ctx.stroke();
+  ctx.strokeStyle='#e2c88a99';ctx.lineWidth=.6;roundRect(x,y,w,h,2);ctx.stroke();
 }
 function text(txt,x,y,size=10,color='#eee3c8',align='center') {
   ctx.textAlign=align;ctx.font=`600 ${size}px "Apple SD Gothic Neo",sans-serif`;ctx.lineWidth=2.5;ctx.strokeStyle='#07101ec9';ctx.strokeText(txt,x,y);ctx.fillStyle=color;ctx.fillText(txt,x,y);
@@ -142,7 +143,9 @@ function render() {
    }
   }
   for(const f of B.fx) if(f.type==='fall') drawFx(f);
-  for(const u of units) drawUnit(u);
+  const actors=typeof PetField!=='undefined'&&S.portal?[...units,...PetField.actors.map(p=>({...p,isPet:true}))].sort((a,b)=>SY(a.x)-SY(b.x)):units;
+  for(const actor of actors){if(actor.isPet)PetField.draw(actor);else drawUnit(actor);}
+  if(typeof PetField!=='undefined'&&S.portal)PetField.drawEffects();
   for(const p of B.projs) drawProj(p);
   for(const f of B.fx) if(f.type!=='fall'&&f.type!=='ring') drawFx(f);
   for(const t of B.texts) {
@@ -154,36 +157,23 @@ function render() {
   drawAtmosphere();ctx.restore();drawHud();
 }
 function currentRegionIndex() {return B.mode==='stage'?Math.floor(((B.stage||1)-1)/10)%5:5;}
+// The background is painted in elevated orthographic perspective already.
+// Draw one continuous world-space panel; strip projection would bend trees/cliffs.
 function drawBackground() {
-  const ri=currentRegionIndex();
-  const key=`${ri}:${W}`;
-  if(CombatArt.groundKey!==key) {
-    const layer=document.createElement('canvas');layer.width=640;layer.height=W*2;
-    const c=layer.getContext('2d');
-    // Quiet, broad color shapes keep moving units as the highest-contrast layer.
-    const palettes=[['#82b989','#d4dbac'],['#a9b4cd','#d5d5e0'],['#d9ad78','#efcf9b'],['#a9d9e8','#e0f1ed'],['#bc8b8b','#dec0ae'],['#9fc9a4','#d9dfad']];
-    const [edge,path]=palettes[ri];
-    c.fillStyle=edge;c.fillRect(0,0,640,layer.height);
-    c.fillStyle=path;c.beginPath();c.moveTo(150,0);c.bezierCurveTo(210,layer.height*.3,80,layer.height*.7,115,layer.height);c.lineTo(530,layer.height);c.bezierCurveTo(570,layer.height*.7,435,layer.height*.3,490,0);c.closePath();c.fill();
-    // Only the edges carry decoration; the central battlefield stays clear.
-    for(let i=0;i<24;i++) {
-      const x=i%2?590+(i*13%25):25+(i*17%30),y=(i*137)%layer.height;
-      // Rounded low-detail shrubs and stones share the toy-like sprite language.
-      c.fillStyle='#31534220';c.beginPath();c.ellipse(x+4,y+8,19,8,0,0,TAU);c.fill();
-      c.fillStyle=i%3===0?'#a9bdad':['#63a77c','#9aa5bd','#c9a16e','#bddde4','#ad8387','#79aa85'][ri];
-      c.beginPath();c.ellipse(x,y,17+i%5,11+i%4,0,0,TAU);c.fill();
-      c.fillStyle='#ffffff20';c.beginPath();c.ellipse(x-4,y-4,10,5,0,0,TAU);c.fill();
-    }
-    CombatArt.ground=layer;CombatArt.groundKey=key;
+  const ri=currentRegionIndex(),atlas=CombatArt.images[CombatArt.files[4]];
+  const inset=VIEW.hudInset||0;
+  const top=Math.min(0,W-VIEW.height-BattleCamera.offset+inset);
+  const height=W+inset-top;
+  if(atlas&&atlas.complete&&atlas.naturalWidth){
+    const {columns,rows,widthScale}=BattleArtSet.terrain;
+    const sw=atlas.naturalWidth/columns,sh=atlas.naturalHeight/rows;
+    // Inset sampling prevents neighboring regions bleeding at the atlas seams.
+    ctx.drawImage(atlas,(ri%columns)*sw+2,Math.floor(ri/columns)*sh+2,sw-4,sh-4,
+      LANE_W*(1-widthScale)/2,top,LANE_W*widthScale,height);
+  }else{
+    ctx.fillStyle=['#809766','#8d829c','#b08b5c','#bed6df','#594e4b','#86976b'][ri];
+    ctx.fillRect(0,top,LANE_W,height);
   }
-  // Project horizontal terrain strips so the road narrows toward the distant ridge.
-  ctx.fillStyle=['#82b989','#a9b4cd','#d9ad78','#a9d9e8','#bc8b8b','#9fc9a4'][ri];ctx.fillRect(0,0,LANE_W,W+(VIEW.hudInset||0));
-  const top=Math.max(0,W-VIEW.height-BattleCamera.offset+(VIEW.hudInset||0)),bottom=Math.min(W+(VIEW.hudInset||0),W-BattleCamera.offset+(VIEW.hudInset||0));
-  for(let y=Math.floor(top/3)*3;y<bottom;y+=3){
-   const h=Math.min(3,bottom-y),scale=perspectiveScale(W-y),width=LANE_W*scale;
-   ctx.drawImage(CombatArt.ground,0,Math.min(y,W-3)*2,640,h*2,(LANE_W-width)/2,y,width,h+.5);
-  }
-  const haze=ctx.createLinearGradient(0,top,0,bottom);haze.addColorStop(0,'#e5edc226');haze.addColorStop(.55,'#e5edc200');haze.addColorStop(1,'#183b2510');ctx.fillStyle=haze;ctx.fillRect(0,top,LANE_W,bottom-top);
 }
 function drawAtmosphere() {
   const ri=currentRegionIndex(),time=CombatArt.reducedMotion?0:B.time;
@@ -249,8 +239,8 @@ function drawUnit(u) {
   const lift=u.flying?10+(CombatArt.reducedMotion?0:Math.sin(B.time*3+u.id)*2):Math.abs(walk)*.35;
   const x=SX(u.y,u.x),y=SY(u.x)-lift;
   const face=(u.face|| (u.team===0?1:-1))*(u.monster?-1:1);
-  ctx.save();ctx.translate(x+(u.face||1)*attack*2,y);
-  ctx.scale(face<0?-1:1,1);
+  ctx.save();ctx.translate(x+(a.vertical?0:(u.face||1)*attack*2),y+(a.vertical?(u.artUp?-1:1)*attack*2:0));
+  ctx.scale(a.vertical?1:face<0?-1:1,1);
   if(!CombatArt.reducedMotion) ctx.rotate(attack*.035);
   const breathe=CombatArt.reducedMotion||authored?1:1+Math.sin(B.time*2+u.id)*.006;
   ctx.scale(1,breathe);
@@ -351,8 +341,12 @@ function drawHud() {
   const boss=B.units.find(u=>u.team===1&&u.boss&&u.hp>0);
   if(boss) {
     // 상단 재화 표시와 보스 도전 버튼을 피해 제목 아래 왼쪽에 둔다
-    ctx.save();ctx.fillStyle='#101a2be6';roundRect(8,80,98,31,4);ctx.fill();ctx.strokeStyle='#be907066';ctx.lineWidth=.7;ctx.stroke();
-    text(boss.name,57,92,8,'#f0c8aa');bar(14,99,86,5,boss.hp/boss.maxHp,'#d56f68');ctx.restore();
+    const stageHeader=document.getElementById('battle-top');
+    const bossY=stageHeader&&stageHeader.getClientRects().length?Math.max(80,(stageHeader.getBoundingClientRect().bottom-cv.getBoundingClientRect().top)/VIEW.sy+5):80;
+    ctx.save();ctx.translate(0,bossY-80);hudPlaque(8,80,98,31);
+    ctx.fillStyle='#9c503c';roundRect(12,85,3,10,1);ctx.fill();
+    ctx.textAlign='center';ctx.font='700 8px "Apple SD Gothic Neo",sans-serif';ctx.fillStyle='#5b4930';ctx.fillText(boss.name,59,93);
+    bar(14,100,86,4,boss.hp/boss.maxHp,'#bf6751');ctx.restore();
   }
 
   const buffY=buffAnchorY();
@@ -363,17 +357,24 @@ function drawHud() {
     const title=B.mode==='stage'?`${region(B.stage).name} · ${B.stage}`:B.mode==='war'?'국가전':'서열전';
     drawBanner(title,B.mode==='stage'?(B.fortress?'성을 함락하고 영토를 확보하세요':'새 병력 출격 · 적 캠프 공략'):'BATTLE START',alpha,'#e6cf9b');
   }
-  if(B.ended) drawBanner(B.result==='win'?(B.fortress?'성 함락':B.mode==='stage'?'진군 성공':'전투 승리'):B.resultMsg,B.result==='win'?(B.fortress?'새 영토 확보':B.mode==='stage'?`${B.stage}단계 돌파 · 전선 전진${B.stage>=S.maxStage?' · 보석 +'+(isBossStage(B.stage)?30:3):''}`:'승리'):'재정비 후 다시 도전',.94,B.result==='win'?'#f7d69b':'#ecaaa0');
+  if(B.ended) drawBanner(B.result==='win'?(B.fortress?'성 함락':B.mode==='stage'?'진군 성공':'전투 승리'):B.resultMsg,B.result==='win'?(B.fortress?'새 영토 확보':B.mode==='stage'?`${B.stage}단계 돌파 · 전선 전진${S.portal?' · 보급 +'+(S.portal.master?Portal.stageInfo(B.stage).hammerReward:isBossStage(B.stage)?40:12):B.stage>=S.maxStage?' · 보석 +'+(isBossStage(B.stage)?30:3):''}`:'승리'):'재정비 후 다시 도전',.94,B.result==='win'?'#f7d69b':'#ecaaa0');
   if(B.skillCue && B.skillCue.t>0) {
     const a=Math.min(1,B.skillCue.t*3);
-    ctx.save();ctx.globalAlpha=a;ctx.fillStyle='#102238dc';roundRect(85,55,150,29,3);ctx.fill();ctx.strokeStyle='#c5aa6c88';ctx.lineWidth=.7;ctx.stroke();text(B.skillCue.name,160,74,12,'#f6dca5');ctx.restore();
+    ctx.save();ctx.globalAlpha=a;hudPlaque(85,55,150,29);ctx.textAlign='center';ctx.font='700 12px sans-serif';ctx.fillStyle='#526244';ctx.fillText(B.skillCue.name,160,74);ctx.restore();
   }
 }
+function hudPlaque(x,y,w,h){
+ ctx.fillStyle='#4b51352e';roundRect(x,y+2,w,h,6);ctx.fill();
+ const fill=ctx.createLinearGradient(0,y,0,y+h);fill.addColorStop(0,'#fbf0d8f5');fill.addColorStop(1,'#e8d3a2f5');
+ ctx.fillStyle=fill;roundRect(x,y,w,h,6);ctx.fill();ctx.strokeStyle='#b39761';ctx.lineWidth=.8;ctx.stroke();
+ ctx.strokeStyle='#fff8e5b3';ctx.beginPath();ctx.moveTo(x+7,y+2);ctx.lineTo(x+w-7,y+2);ctx.stroke();
+}
 function drawBanner(title,subtitle,alpha,color) {
-  const y=VIEW.height*.4;
-  ctx.save();ctx.globalAlpha=alpha;const g=ctx.createLinearGradient(0,0,LANE_W,0);g.addColorStop(0,'transparent');g.addColorStop(.2,'#081323e8');g.addColorStop(.8,'#081323e8');g.addColorStop(1,'transparent');ctx.fillStyle=g;ctx.fillRect(0,y-25,LANE_W,63);
-  ctx.strokeStyle=color;ctx.lineWidth=.6;ctx.beginPath();ctx.moveTo(55,y-24);ctx.lineTo(265,y-24);ctx.moveTo(55,y+37);ctx.lineTo(265,y+37);ctx.stroke();
-  text(subtitle,160,y-7,8,color);text(title,160,y+17,18,color);ctx.restore();
+ const y=VIEW.height*.4;
+ ctx.save();ctx.globalAlpha=alpha;hudPlaque(28,y-25,264,63);
+ ctx.fillStyle=color;for(const x of [36,284]){ctx.beginPath();ctx.moveTo(x,y+1);ctx.lineTo(x+3,y+5);ctx.lineTo(x,y+9);ctx.lineTo(x-3,y+5);ctx.closePath();ctx.fill();}
+ ctx.textAlign='center';ctx.fillStyle='#7b7052';ctx.font='600 8px "Apple SD Gothic Neo",sans-serif';ctx.fillText(subtitle,160,y-7);
+ ctx.fillStyle=B.ended&&B.result!=='win'?'#99523e':'#435d41';ctx.font='800 18px "Apple SD Gothic Neo",sans-serif';ctx.fillText(title,160,y+17);ctx.restore();
 }
 
 // Raised at the defeated base, grounded in the same world as the troops.

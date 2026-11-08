@@ -30,6 +30,27 @@ const JourneyGuide={
    {id:'settings',ready:stage>=8,tab:null,target:'#battle-top .settings-open',text:'설정에서 소리 크기를 바꿀 수 있어요.'}
   ];
  },
+ guidedValue(id){
+  if(id==='roster')return JSON.stringify(S.slots);
+  if(id==='growth')return String(S.kingdom.growth.step);
+  if(id==='lord')return String(S.lord.level);
+  return JSON.stringify(Object.entries(S.heroes).map(([id,h])=>[id,h.level,h.stars]));
+ },
+ guidedStep(l){
+  const tab=l.tab,view=({roster:'main',hero:'heroes',star:'heroes',growth:'main',lord:'lord'})[l.id];
+  if(l.completed){
+   if(!UI.tab){this.finish();return null;}
+   return [`#tabs [data-tab="${tab}"]`,'완료했어요. 아래 탭의 X를 눌러 전투로 돌아가세요.'];
+  }
+  if(this.guidedValue(l.id)!==l.before){l.completed=true;return this.guidedStep(l);}
+  if(UI.tab!==tab)return [`#tabs [data-tab="${tab}"]`,`${tab==='territory'?'부대':'성장'} 탭을 열어 ${l.id==='roster'?'출전 편성을':'강화를'} 시작하세요.`];
+  if(UI.panelView!==view)return [`#sheet-views [data-view="${view}"]`,`${({main:'왕국 강화',heroes:'영웅 강화',lord:'영주'})[view]} 화면을 선택하세요.`];
+  if(l.id==='roster'){
+   if(UI.pendingHero){const slot=S.slots.slice(0,slotCount()).findIndex(id=>id!==UI.pendingHero);return [`[data-act="slot"][data-i="${slot}"]`,'출전할 자리를 누르세요. 사용 중인 자리라면 기존 영웅과 교체돼요.'];}
+   return ['[data-act="place"]','출전시킬 영웅 카드를 선택하세요.'];
+  }
+  return [l.target+':not([disabled])',l.text];
+ },
  finish(){
   if(this.active){(S.fieldGuideSeen??={})[this.active.id]=true;saveGame();}
   this.active=null;this.cooldown=Date.now()+12000;this.clear();
@@ -42,13 +63,23 @@ const JourneyGuide={
   if(this.speech&&this.speech.until>now&&!UI.tab&&MobileShell.mode==='battle'){
    document.querySelectorAll('.journey-focus').forEach(e=>e.classList.remove('journey-focus'));this.show(this.speech.text,document.getElementById('battle-top'),true);return;
   }
-  if(this.active&&now>this.active.until){this.finish();return;}
+  if(this.active&&!this.active.guided&&now>this.active.until){this.finish();return;}
   if(!this.active&&now>=this.cooldown){
    const lesson=this.lessons().find(l=>l.ready&&!(typeof learningPath==='function'&&learningPath()&&featureRules()[l.id]&&!featureAccess(l.id).unlocked)&&!S.fieldGuideSeen?.[l.id]&&(l.tab||MobileShell.mode==='battle'));
-   if(lesson)this.active={...lesson,until:now+12000};
+   if(lesson){const guided=['roster','hero','star','growth','lord'].includes(lesson.id);this.active={...lesson,guided,before:guided?this.guidedValue(lesson.id):null,until:now+12000};}
   }
   if(!this.active){this.clear();return;}
   const l=this.active;
+  if(l.guided){
+   const step=this.guidedStep(l);if(!step)return;
+   const targets=[...document.querySelectorAll(step[0])];
+   let target=targets.find(e=>e.getBoundingClientRect().height&&e.getClientRects().length);
+   if(!target&&step[0].endsWith(':not([disabled])')){target=[...document.querySelectorAll(l.target)].find(e=>e.getBoundingClientRect().height);step[1]='지금은 강화 조건이 부족해요. 필요한 비용을 확인하고 탭의 X로 전투에 돌아가 자원을 모으세요.';}
+   if(!target){this.clear();return;}
+   if(target.closest('.ux-scroll'))target.scrollIntoView({block:'nearest'});
+   document.querySelectorAll('.journey-focus').forEach(e=>e.classList.remove('journey-focus'));
+   target.classList.add('journey-focus');this.show(step[1],target,false);document.getElementById('journey-hint')?.classList.add('guided-flow');return;
+  }
   if(!l.tab&&UI.tab){this.clear();return;}
   // Follow the same tab into its real control; do not open a screen automatically.
   const tab=l.tab==='kingdom'?'lobby':l.tab==='promo'?'lord':l.tab;
@@ -66,6 +97,7 @@ const JourneyGuide={
  show(text,target,speech){
   let box=document.getElementById('journey-hint');
   if(!box){box=document.createElement('aside');box.id='journey-hint';box.setAttribute('role','status');box.innerHTML='<span></span><button aria-label="안내 닫기">×</button><i aria-hidden="true">↓</i>';document.getElementById('game').append(box);box.querySelector('button').onclick=()=>{this.speech=null;this.finish();};}
+  box.classList.remove('guided-flow');
   if(box.querySelector('span').textContent!==text)box.querySelector('span').textContent=text;box.classList.toggle('speech',speech);box.classList.toggle('on-tab',!!target.closest('#tabs'));
   const game=document.getElementById('game').getBoundingClientRect(),r=target.getBoundingClientRect();
   box.style.width=Math.min(280,game.width-24)+'px';

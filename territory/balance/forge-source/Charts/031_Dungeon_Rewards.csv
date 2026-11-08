@@ -1,0 +1,6 @@
+DungeonType,CurrencyType,RewardBase,RewardIncreasePerLevel
+Hammer,Hammers,60,1
+Hammer,Coins,4000,100
+Skill,SkillSummonTickets,200,2
+Potion,TechPotions,100,1
+Pet,Eggshells,200,0.6499999999068677

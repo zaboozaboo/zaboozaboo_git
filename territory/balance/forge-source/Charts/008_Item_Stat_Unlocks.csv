@@ -1,0 +1,17 @@
+SourceFile,ConfigKey,ItemAge,NumberOfSecondStats,PetRarity
+SecondaryStatItemUnlockLibrary.json,0,0,0,
+SecondaryStatItemUnlockLibrary.json,1,1,0,
+SecondaryStatItemUnlockLibrary.json,2,2,0,
+SecondaryStatItemUnlockLibrary.json,3,3,1,
+SecondaryStatItemUnlockLibrary.json,4,4,1,
+SecondaryStatItemUnlockLibrary.json,5,5,1,
+SecondaryStatItemUnlockLibrary.json,6,6,1,
+SecondaryStatItemUnlockLibrary.json,7,7,2,
+SecondaryStatItemUnlockLibrary.json,8,8,2,
+SecondaryStatItemUnlockLibrary.json,9,9,2,
+SecondaryStatPetUnlockLibrary.json,Common,,1,Common
+SecondaryStatPetUnlockLibrary.json,Rare,,1,Rare
+SecondaryStatPetUnlockLibrary.json,Epic,,1,Epic
+SecondaryStatPetUnlockLibrary.json,Legendary,,2,Legendary
+SecondaryStatPetUnlockLibrary.json,Ultimate,,2,Ultimate
+SecondaryStatPetUnlockLibrary.json,Mythic,,2,Mythic

@@ -11,7 +11,7 @@ function unitRank(u) {
 }
 function formationPosition(slot) {
   const rank=unlockRank(slot);
-  const peers=Array.from({length:5},(_,i)=>unlockRank(i)===rank?i:-1).filter(i=>i>=0);
+  const peers=Array.from({length:S.portal?.master?3:5},(_,i)=>unlockRank(i)===rank?i:-1).filter(i=>i>=0);
   const index=Math.max(0,peers.indexOf(slot));
   return {x:166-rank*48,y:LANE_W*(index+1)/(peers.length+1)};
 }

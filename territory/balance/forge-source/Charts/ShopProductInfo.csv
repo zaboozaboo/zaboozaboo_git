@@ -1,0 +1,15 @@
+ProductId,RewardType,RewardAmount,Price,GoogleId,AppleId,EquipmentTier,EquipmentIndex,AttackSpeed,DurationSeconds,PriceKRW,DealSizeId,CriticalChance,UnlockStage,EquipmentLevel,BonusGems
+DailyFreeGems,Gems,10,0,,,,,,,,,,,,
+GemPack5,Gems,1640,49.99,conquestgo.con.gems.04,conquestgo.con.gems.04,,,,,,,,,,
+MedievalWeaponOffer,Equipment,1,1.99,conquestgo.con.weaponpack.01,conquestgo.con.weaponpack.01,5,104,0.10,3600,2800,,,31,1,60
+IndustrialWeaponOffer,Equipment,1,5.99,conquestgo.con.weaponpack.02,conquestgo.con.weaponpack.02,7,102,0.10,86400,8400,,,,50,180
+InformationWeaponOffer,Equipment,1,9.99,conquestgo.con.weaponpack.03,conquestgo.con.weaponpack.03,8,102,0.10,259200,14000,,0.05,,99,300
+DailyDeal0,DailyDealRewardProxy,0,2.0,,,,,,,,0,,,,
+DailyDeal1,DailyDealRewardProxy,0,7.0,,,,,,,,1,,,,
+DailyDeal2,DailyDealRewardProxy,0,20.0,,,,,,,,2,,,,
+DailyDeal3,DailyDealRewardProxy,0,50.0,,,,,,,,3,,,,
+GemPack0,Gems,60,2,conquestgo.con.gems.01,conquestgo.con.gems.01,,,,,,,,,,
+GemPack1,Gems,220,7,conquestgo.con.gems.02,conquestgo.con.gems.02,,,,,,,,,,
+GemPack2,Gems,800,25,conquestgo.con.gems.03,conquestgo.con.gems.03,,,,,,,,,,
+GemPack3,Gems,3300,99,conquestgo.con.gems.05,conquestgo.con.gems.05,,,,,,,,,,
+ProgressPass0,ProgressPassPurchaseReward,0,10,conquestgo.non.pass.growth.01,conquestgo.non.pass.growth.01,,,,,,,,,,

@@ -82,10 +82,10 @@ const UI = {
     for(const parent of ['topbar','battle-top']){
       const button=document.createElement('button');button.className='settings-open';button.setAttribute('aria-label','설정');button.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 3-1 3-3 1 1 3-2 2 2 2-1 3 3 1 1 3h6l1-3 3-1-1-3 2-2-2-2 1-3-3-1-1-3Z"/><circle cx="12" cy="12" r="3"/></svg>';button.onclick=()=>UI.openSettings();document.getElementById(parent).append(button);
     }
-    $('#btn-skill').onclick = () => { if (!castSkill()) UI.toast('스킬을 아직 사용할 수 없습니다'); };
+    $('#btn-skill').onclick = () => { if(!equippedLordSkill().id){UI.openSheet('lord');UX.select('skills');return;} if (!castSkill()) UI.toast('스킬을 아직 사용할 수 없습니다'); };
     $('#btn-auto').onclick = () => { S.settings.autoSkill = !S.settings.autoSkill; UI.refresh(); };
     $('#btn-boss').onclick = () => challengeBoss();
-    $('#sk-icon').textContent = CLASSES[S.lord.cls].skill.icon;
+    $('#sk-icon').textContent = equippedLordSkill().icon;
     MobileShell.init();
     UI.refresh();
   },
@@ -180,6 +180,7 @@ const UI = {
     timer.classList.toggle('warn', B.timeLimit > 0 && left < 10);
     $('#ct-power').textContent = `⚡ 전투력 ${fmt(myPower())} · 최고 ${S.maxStage - 1}단계`;
     $('#btn-boss').classList.toggle('hidden', !(S.farming && B.mode === 'stage'&&!B.ended));
+    $('#sk-icon').textContent=equippedLordSkill().icon;
     $('#btn-auto').classList.toggle('on', S.settings.autoSkill);
     const cd = B.skillT > 0 ? Math.ceil(B.skillT) : (B.units.some(u => u.isLord && u.team === 0) ? '' : '💀');
     $('#sk-cd').textContent = cd === '' ? '준비' : cd === '💀' ? '부활' : Math.max(0,B.skillT/S.settings.speed).toFixed(1)+'초';
@@ -187,9 +188,11 @@ const UI = {
     const targetStage=Math.min(S.maxStage,S.stage+1),bossButton=$('#btn-boss'),bossTarget=isBossStage(targetStage);
     const challengeKey=targetStage+':'+bossTarget;
     if(bossButton.dataset.challenge!==challengeKey){bossButton.dataset.challenge=challengeKey;bossButton.dataset.boss=bossTarget;bossButton.innerHTML=`<span class="challenge-alert" aria-hidden="true">!</span><span><small>${targetStage}단계 · ${bossTarget?'위험 구역':'전선 돌파'}</small><b>${bossTarget?'보스 도전 가능':'다음 단계 도전'}</b></span><strong>도전<span aria-hidden="true"> ›</span></strong>`;bossButton.setAttribute('aria-label',`${targetStage}단계 ${bossTarget?'보스':'돌파'} 도전 시작`);}
-    $('#btn-skill').classList.toggle('ready', cd === '');
-    $('#btn-skill').style.setProperty('--cooldown',Math.max(0,Math.min(100,B.skillT/CLASSES[S.lord.cls].skill.cd*100))+'%');
-    $('#btn-skill').setAttribute('aria-label', CLASSES[S.lord.cls].skill.name + (cd === '' ? ' 사용 가능' : ' 대기 중'));
+    $('#btn-skill').classList.toggle('ready', cd === ''&&!!equippedLordSkill().id);
+    if(!$('#btn-skill').querySelector('.battle-charge-meter'))$('#btn-skill').insertAdjacentHTML('beforeend',battleChargeMeter());
+    $('#btn-skill').style.setProperty('--meter-value',Math.max(0,Math.min(100,equippedLordSkill().id?(1-B.skillT/equippedLordSkill().cd)*100:0)));
+    $('#btn-skill').style.setProperty('--cooldown',Math.max(0,Math.min(100,B.skillT/equippedLordSkill().cd*100))+'%');
+    $('#btn-skill').setAttribute('aria-label', equippedLordSkill().name + (!equippedLordSkill().id?' · 습득 및 장착 안내':cd === '' ? ' 사용 가능' : ' 대기 중'));
     $('#btn-auto').setAttribute('aria-pressed', S.settings.autoSkill);
     document.querySelector('[data-tab="summon"]').classList.toggle('has-reward', S.daily.freeSummon > 0);
     polishIcons($('#topbar')); polishIcons($('#battle-top')); polishIcons($('#combat-actions')); polishIcons($('#tabs'));
@@ -204,7 +207,7 @@ const UI = {
     // 비용 버튼 활성화
     document.querySelectorAll('[data-cost]').forEach(b => {
       const cur = b.dataset.cur || 'gold';
-      b.disabled = S[cur] < Number(b.dataset.cost) || b.dataset.block === '1';
+      b.disabled = S[cur] < Number(b.dataset.cost) || b.dataset.block === '1' || (b.dataset.act==='claimland'&&FacilityRoll.active);
     });
     if(typeof refreshLearningLocks==='function')refreshLearningLocks();
   },
@@ -305,7 +308,7 @@ const UI = {
         if(i>=sc)return `<div class="deployment-member fixed-slot locked-slot">${gameIcon('lock')}<b>${i+1}번 자리</b><small>${i-1}차 전직 해금</small></div>`;
         if(!id)return `<button class="deployment-member fixed-slot empty-slot" data-act="slot" data-i="${i}">${gameIcon('plus')}<b>${i+1}번 빈자리</b><small>배치 가능</small></button>`;
         const h=HERO_BY_ID[id],o=S.heroes[id];
-        return `<div class="deployment-member unit-tier" data-rarity="${h.rarity}" style="--unit-color:${RARITY[h.rarity].color}">${unitTierTrim(h.rarity)}<span class="unit-rarity" aria-label="${RARITY[h.rarity].name} 등급">${RARITY[h.rarity].name}</span><button class="deployment-unit ${UI.selSlot===i?'sel':''}" data-act="slot" data-i="${i}" aria-label="${h.unit.name} 이동 선택">${heroArt(id)}<span><b>${h.unit.name}</b><small>Lv.${o.level}</small></span></button><div class="deployment-controls">${o.level<heroMaxLevel(id)?UI.costBtn('레벨업',heroLevelCost(id),'hlv',`data-id="${id}"`):'<button class="btn small" disabled>최대 레벨</button>'}<span class="deployment-charge"><b>${productionCost(id)} 충전</b></span></div></div>`;
+        return `<div class="deployment-member unit-tier" data-rarity="${h.rarity}" style="--unit-color:${RARITY[h.rarity].color}">${unitTierTrim(h.rarity)}<span class="unit-rarity" aria-label="${RARITY[h.rarity].name} 등급">${RARITY[h.rarity].name}</span><button class="deployment-unit ${UI.selSlot===i?'sel':''}" data-act="slot" data-i="${i}" aria-label="${h.name} 상세 및 강화">${heroArt(id)}<span><b>${h.unit.name}</b><small>Lv.${o.level}</small></span></button><div class="deployment-controls">${o.level<heroMaxLevel(id)?UI.costBtn('레벨업',heroLevelCost(id),'hlv',`data-id="${id}"`):'<button class="btn small" disabled>최대 레벨</button>'}<span class="deployment-charge"><b>${productionCost(id)} 충전</b></span></div></div>`;
       }).join('');
       return `<div class="deployment-row"><div class="rank-target"><b>${name}</b><small>${['돌격','엄호'][rank]}</small></div><div class="deployment-units">${members}</div></div>`;
     }).join('');
@@ -334,7 +337,7 @@ const UI = {
         <div>부대 공격 배율<b>x${am.atk.toFixed(2)}</b></div><div>부대 체력 배율<b>x${am.hp.toFixed(2)}</b></div>
         <div>총 부대 정원<b>${armyCap()}명</b></div><div>성 체력<b>${fmt(castleMaxHp())}</b></div><div>골드 배율<b>x${goldMult().toFixed(2)}</b></div><div>영토 슬롯<b>${slotCount()}칸</b></div>
       </div>
-      <div class="row" style="margin-top:8px"><div class="ic">${c.skill.icon}</div><div class="body"><div class="t">${c.skill.name} <small style="color:var(--muted)">쿨타임 ${c.skill.cd}s</small></div><div class="d">${c.skill.desc}</div></div></div>
+      <div class="row" style="margin-top:8px"><div class="ic">${equippedLordSkill().icon}</div><div class="body"><div class="t">${equippedLordSkill().name} <small style="color:var(--muted)">쿨타임 ${equippedLordSkill().cd.toFixed(1)}s</small></div><div class="d">${equippedLordSkill().desc}</div></div></div>
 </details>`;
   },
 
@@ -345,13 +348,44 @@ const UI = {
       <div class="summon-stage"><div class="recruit-banner"><small>새로운 동료, 더 강한 부대</small><h2>왕국을 지킬 영웅을 만나세요</h2></div><div class="recruit-lineup">${['paladin','apprentice','ranger'].map((id,i)=>`<div class="recruit-display recruit-${i}">${heroArt(id)}</div>`).join('')}</div><div class="recruit-guarantee">10회 영입 · <b>고급 이상 1명 확정</b></div></div>
       <p class="hint recruit-hint">영입한 영웅을 편성하면 주사위로 부대가 출격합니다.</p>
       <div class="summon-btns">
-        ${S.daily.freeSummon > 0 ? '<button class="btn gold" data-act="summon" data-n="1" data-free="1">무료 1회</button>' : ''}
-        ${UI.costBtn('1명 영입', 100, 'summon', 'data-n="1"', 'gems').replace('btn small', 'btn')}
+        ${S.daily.freeSummon > 0 ? '<button class="btn gold" data-act="summon" data-n="1" data-free="1">1회 영입 · 무료</button>' : UI.costBtn('1회 영입', 100, 'summon', 'data-n="1"', 'gems').replace('btn small', 'btn')}
         ${UI.costBtn('10명 영입', 900, 'summon', 'data-n="10"', 'gems').replace('btn small', 'btn')}
       </div>
       <p class="hint" style="text-align:center">중복 영웅은 조각으로 전환 · 모아서 승급</p>
       <div class="rates">${RARITY_ORDER.map(r => `<span><span class="rbadge" style="--r:${RARITY[r].color}">${RARITY[r].name}</span>${(RARITY[r].weight / total * 100).toFixed(0)}%</span>`).join('')}</div></div>
-      <details class="sec compact-details" data-section="catalog"><summary>영웅 도감 · 전체 ${HEROES.length}종</summary>${HEROES.map(h => {
+      `;
+  },
+
+  skillTutorial(){
+    const k=ensureLordSkills();if(!['draw','equip'].includes(k.tutorial))return '';
+    return `<section class="skill-tutorial" role="status"><b>${k.tutorial==='draw'?'1. 첫 스킬 습득':'2. 스킬 장착'}</b><p>${k.tutorial==='draw'?'무료 뽑기로 첫 액티브 스킬을 습득하세요. 처음에는 기본 액티브 2종 중 하나가 등장합니다.':'아래 보유 카드에서 습득한 스킬을 선택하고, 위 액티브 슬롯을 누르세요.'}</p>${k.tutorial==='draw'&&UI.tab!=='summon'?'<button class="btn gold" data-act="navigate" data-tab="summon" data-view="skills">무료 스킬 습득하기</button>':''}</section>`;
+  },
+  skillRecruitment() {
+    const pool=ensureLordSkills().tutorial==='draw'?skillPool().filter(sk=>sk.type==='active'&&sk.tier===0):skillPool(),rarities=Object.keys(SKILL_RARITIES).filter(r=>pool.some(sk=>sk.rarity===r)),total=rarities.reduce((v,r)=>v+SKILL_RARITIES[r].weight,0);
+    return `<section class="sec recruitment ux-summon-scene skill-summon"><h3>스킬 습득 <small>${lordTitle()} · ${pool.length}종</small></h3><div class="summon-stage"><div class="ux-summon-rays" aria-hidden="true"></div><div class="ux-summon-sigil" aria-hidden="true">✦</div><div class="ux-summon-caption">스킬 습득</div></div><div class="summon-btns ux-summon-actions">${S.daily.freeSkillSummon>0?'<button class="btn gold" data-act="skillsummon" data-n="1"><span class="ux-summon-cost">무료 · '+S.daily.freeSkillSummon+'회</span><b>1회 습득</b></button>':`<button class="btn primary" data-act="skillsummon" data-n="1" data-cost="100" data-cur="gems"><span class="ux-summon-cost">${gameIcon('gem')}100</span><b>1회 습득</b></button>`}<button class="btn primary" data-act="skillsummon" data-n="10" data-cost="900" data-cur="gems" data-block="${ensureLordSkills().tutorial==='draw'?1:0}"><span class="ux-summon-cost">${gameIcon('gem')}900</span><b>10회 습득</b></button></div><p class="ux-summon-guarantee">${ensureLordSkills().tutorial==='draw'?'첫 습득 · 기본 액티브 2종 중 1종 → 성장에서 장착':'중복 획득으로 <b>스킬 레벨 성장</b>'}</p><details class="skill-rules"><summary>획득 확률 · 레벨 성장</summary><p>매일 무료 1회. 현재 직업의 해금된 스킬만 등장합니다.</p><p>${rarities.map(r=>SKILL_RARITIES[r].name+' '+(SKILL_RARITIES[r].weight/total*100).toFixed(2)+'%').join(' · ')}<br>등급 안에서는 각 스킬이 같은 확률로 등장합니다.</p><p>누적 1 / 2 / 4 / 7 / 11장에 Lv.1 / 2 / 3 / 4 / 5. 이후에도 다음 레벨에 필요한 획득 수가 1장씩 증가합니다. 재료를 소모하지 않으며 레벨마다 기본 효과가 10% 증가합니다.</p><p>전직마다 액티브 2종·패시브 2종 추가. 회복·피해 감소·재사용 감소는 스킬별 상한이 적용됩니다.</p></details></section>`;
+  },
+  skillManagement() {
+    const k=ensureLordSkills(),pending=LORD_SKILL_BY_ID[UI.pendingSkill],owned=skillPool().filter(sk=>k.owned[sk.id]);
+    const slot=(id,index)=>{const sk=LORD_SKILL_BY_ID[id],eligible=pending&&(pending.type==='active'?index===-1:index>=0);return `<button class="skill-loadout-slot ${eligible?'skill-target':''}" data-act="skillplace" data-slot="${index}" aria-label="${index<0?'액티브':'패시브 '+(index+1)} · ${sk?sk.name:'빈 슬롯'}"><small>${index<0?'액티브':'패시브 '+(index+1)}</small><span>${sk?sk.icon:'+'}</span><b>${sk?sk.name:'빈 슬롯'}</b>${sk?'<small>Lv.'+skillLevel(k.owned[id])+'</small>':''}</button>`;};
+    return `<div class="skill-formation">${UI.skillTutorial()}<div class="roster-dock ${pending?'choosing':''}"><div class="roster-dock-title"><b>스킬 장착 · ${Number(!!k.active)+k.passives.filter(Boolean).length}/5</b>${pending?'<button class="btn small" data-act="skillcancel">취소</button>':''}</div><div class="skill-equip-groups"><section class="skill-active-group"><h3>액티브</h3><div class="skill-loadout">${slot(k.active,-1)}</div></section><section class="skill-passive-group"><h3>패시브</h3><div class="skill-loadout">${k.passives.map((id,i)=>slot(id,i)).join('')}</div></section></div><p role="status">${pending?pending.name+' · 빛나는 슬롯을 눌러 장착하세요':'스킬 선택 → 슬롯 장착'}</p></div><div class="skill-inventory">${['active','passive'].map(type=>`<section class="sec reserve-section"><h3>보유 ${type==='active'?'액티브':'패시브'} <small>${owned.filter(sk=>sk.type===type).length}종</small></h3><div class="reserve-grid skill-reserve-grid">${owned.filter(sk=>sk.type===type).map(sk=>{const r=SKILL_RARITIES[sk.rarity],equipped=k.active===sk.id||k.passives.includes(sk.id);return `<div class="unit-tier reserve-unit ${equipped?'placed':''} ${UI.pendingSkill===sk.id?'selected':''}" style="--r:${r.color}"><button class="reserve-select" data-act="skillselect" data-id="${sk.id}" aria-label="${sk.name} 선택"><span class="unit-rarity">${r.name} · ${sk.type==='active'?'액티브':'패시브'}</span><span class="skill-card-art">${sk.icon}</span><b>${sk.name}</b><small>Lv.${skillLevel(k.owned[sk.id])} · ${equipped?'장착 중':'대기'}</small></button><button class="reserve-info" data-act="skillinfo" data-id="${sk.id}" aria-label="${sk.name} 상세">i</button></div>`;}).join('')||'<p class="skill-empty">아직 습득한 스킬이 없습니다.</p>'}</div></section>`).join('')}</div></div>`;
+  },
+
+  showSkill(id) {
+    const sk=LORD_SKILL_BY_ID[id];if(!sk||sk.cls!==S.lord.cls)return;
+    const k=ensureLordSkills(),copies=k.owned[id]||0,level=copies?skillLevel(copies):1,owned=copies>0&&sk.tier<=S.lord.promo,r=SKILL_RARITIES[sk.rarity];
+    const equipped=sk.type==='active'?k.active===id:k.passives.includes(id);
+    let selected=Math.max(0,k.passives.indexOf(id)>=0?k.passives.indexOf(id):k.passives.findIndex(v=>!v));
+    const actions=[];
+    if(owned&&!equipped)actions.push({label:'장착',cls:'gold skill-equip-confirm',fn:()=>UI.act('skillequip',{id,slot:sk.type==='active'?-1:selected})});
+    actions.push({label:'닫기'});
+    UI.modal(`<div class="hero-detail skill-hero-detail" style="--r:${r.color}"><div class="hc-ic big skill-detail-art">${sk.icon}</div><h2><span class="rbadge">${r.name}</span>${sk.name}</h2><p class="stars">${copies?'Lv.'+level:'미보유'} · ${sk.type==='active'?'액티브':'패시브'}${equipped?' · 장착 중':''}</p><p><b class="trait">${CLASSES[sk.cls].promos[sk.tier]}</b><br>${skillDescription(sk,level)}</p><div class="statgrid"><div>누적 습득<b>${copies}장</b></div><div>다음 레벨<b>${copies?skillNextCopies(level)+'장':'첫 습득 시 Lv.1'}</b></div><div>해금 조건<b>${sk.tier?sk.tier+'차 전직':'기본 직업'}</b></div><div>${sk.type==='active'?'재사용':'적용 방식'}<b>${sk.cd?sk.cd+'초':'장착 시 적용'}</b></div></div>${owned&&sk.type==='passive'?`<section class="skill-slot-picker"><h3>장착 위치</h3><div class="skill-slot-grid">${k.passives.map((current,i)=>`<button type="button" data-equip-slot="${i}" aria-pressed="${i===selected}" ${equipped?'disabled':''}><small>패시브 ${i+1}</small><span>${current?LORD_SKILL_BY_ID[current].icon:'+'}</span><b>${current?LORD_SKILL_BY_ID[current].name:'빈 슬롯'}</b></button>`).join('')}</div><p class="skill-replace-hint" role="status"></p></section>`:''}</div>`,actions);
+    const box=$('#modal-box'),hint=box.querySelector('.skill-replace-hint');
+    const update=()=>{if(hint)hint.textContent=equipped?'현재 장착된 스킬입니다.':k.passives[selected]?LORD_SKILL_BY_ID[k.passives[selected]].name+' → '+sk.name:'패시브 '+(selected+1)+'에 장착';};update();
+    box.querySelectorAll('[data-equip-slot]').forEach(btn=>btn.onclick=()=>{selected=Number(btn.dataset.equipSlot);box.querySelectorAll('[data-equip-slot]').forEach(b=>b.setAttribute('aria-pressed',String(b===btn)));update();});
+  },
+
+  heroCatalog() {
+    return `      <details class="sec compact-details" data-section="catalog"><summary>영웅 도감 · 전체 ${HEROES.length}종</summary>${HEROES.map(h => {
         const o = S.heroes[h.id];
         return `<div class="row" style="${o ? '' : 'opacity:.35'}"><div class="ic">${heroArt(h.id)}</div><div class="body"><div class="t"><span class="rbadge" style="--r:${RARITY[h.rarity].color}">${RARITY[h.rarity].name}</span>${h.name}</div><div class="d">${h.trait} · ${h.unit.name} · 1명당 ${productionCost(h.id)} 충전 · 정원 ${h.cap}</div></div>${o ? '★' + o.stars : '미보유'}</div>`;
       }).join('')}</details>`;
@@ -445,7 +479,8 @@ const UI = {
         UI.pendingHero=null;UI.selSlot=null;
       }else if(UI.selSlot!==null&&UI.selSlot!==i&&S.slots[UI.selSlot]){
         if(!moveRoster(UI.selSlot,i))return;UI.selSlot=null;
-      }else UI.selSlot=UI.selSlot===i?null:i;
+      }else if(S.slots[i]&&UI.selSlot===null){UI.showHero(S.slots[i]);return;}
+      else UI.selSlot=UI.selSlot===i?null:i;
     } else if (a === 'place') {
       UI.panelView='main';
       if(!S.heroes[d.id])return;
@@ -480,18 +515,47 @@ const UI = {
       if (!breakthroughLord(Number(d.level))) return;
 
     } else if (a === 'openpromo') { UI.openSheet('promo');
+    } else if(a==='skillselect') {
+      if(!skillPool().some(sk=>sk.id===d.id)||!ensureLordSkills().owned[d.id])return;
+      UI.pendingSkill=UI.pendingSkill===d.id?null:d.id;
+    } else if(a==='skillcancel') {
+      UI.pendingSkill=null;
+    } else if(a==='skillplace') {
+      const sk=LORD_SKILL_BY_ID[UI.pendingSkill],slot=Number(d.slot);
+      if(!sk){UI.toast('아래에서 장착할 스킬을 선택하세요');return;}
+      if((sk.type==='active'&&slot!==-1)||(sk.type==='passive'&&slot<0)){UI.toast(sk.type==='active'?'액티브 슬롯을 선택하세요':'패시브 슬롯을 선택하세요');return;}
+      if(!equipLordSkill(sk.id,slot))return;
+      UI.pendingSkill=null;UI.toast(sk.name+' 장착');
+    } else if(a==='skillinfo') {
+      UI.showSkill(d.id);return;
+    } else if(a==='skillslot') {
+      UI.skillSlot=Number(d.slot);
+    } else if(a==='skillequip') {
+      if(!equipLordSkill(d.id,d.slot))return;
+      UI.toast(LORD_SKILL_BY_ID[d.id].name+' 장착');
+    } else if(a==='skillsummon') {
+      const result=drawLordSkills(Number(d.n));
+      if(!result)return;
+      UI.modal('<h2>영주 스킬 획득</h2><div class="result-grid skill-results-shared">'+result.map(r=>'<article class="rcard skill-result" style="--r:'+SKILL_RARITIES[LORD_SKILL_BY_ID[r.id].rarity].color+'"><span>'+LORD_SKILL_BY_ID[r.id].icon+'</span><b>'+LORD_SKILL_BY_ID[r.id].name+'</b><small>'+(r.fresh?'새 스킬 · Lv.1':(r.leveled?'레벨 상승 · ':'누적 '+r.copies+'장 · ')+'Lv.'+r.level)+'</small></article>').join('')+'</div>',[{label:'바로 장착',cls:'primary',fn:()=>{UI.openSheet('lord');UX.select('skills');}},{label:'계속 습득'}]);
     } else if (a === 'summon') {
       const n = Number(d.n);
-      if (d.free) { if (S.daily.freeSummon <= 0) return; S.daily.freeSummon--; }
+      if(n!==1&&n!==10)return;
+      if(n===1&&S.daily.freeSummon>0)S.daily.freeSummon--;
+      else if(d.free){UI.renderTab();return;}
       else if (!spend(n === 10 ? 900 : 100, 'gems')) return;
       UI.showSummon(summon(n));
     } else if (a === 'claimland') {
-      const error=claimLandError(d.id,d.facility);
+      if(FacilityRoll.active)return;
+      const error=claimLandError(d.id,d.facility,d.level);
       if(error){UI.toast(error);UI.renderTab();return;}
-      if(!claimLand(d.id,d.facility))return;
+      claimLand(d.id,d.facility,Math.random,d.level);
       UI.kingdomLand=d.id;
       MobileShell.refresh();
-      UI.toast(`${FACILITIES[d.facility].name} 완공 · 내 영토 ${ownedLands()}곳!`);
+      if(feature&&S.learning)S.learning.intro[feature]=true;
+      if(feedbackBefore)CombatFeedback.record(feedbackBefore,a);
+      saveGame();
+      playFacilityRoll({...S.kingdom.lastRoll},()=>UI.renderTab());
+      return;
 
     } else if (a === 'promo') {
       const p = PROMOTIONS[S.lord.promo + 1];
@@ -534,7 +598,7 @@ const UI = {
           <div>1명 출격<b>${productionCost(id)} 충전</b></div><div>부대 정원<b>${heroCap(id)}명</b></div>
           <div>공격력<b>${fmt(u.atk * am.atk * lm)}</b></div><div>체력<b>${fmt(u.hp * am.hp * lm)}</b></div>
           <div>자동 주사위<b>${(diceCooldown()/S.settings.speed).toFixed(1)}초 / 굴림</b></div><div>조각<b>${o.stars >= MAX_STARS ? 'MAX' : `${o.shards}/${shardsForStar(o.stars)}`}</b></div>
-        </div></div>`, [{ label: '편성 변경', fn:()=>{UI.openSheet('territory');UI.act('place',{id});} }, ...(o.stars<MAX_STARS&&o.shards>=shardsForStar(o.stars)?[{label:'승급 · 조각 '+shardsForStar(o.stars),cls:'gold',fn:()=>UI.act('hstar',{id})}]:[]), { label: '닫기' }]);
+        </div></div>`, [...(o.level<heroMaxLevel(id)?[{label:'강화 · '+fmt(heroLevelCost(id))+' 골드',cls:'gold',fn:()=>{UI.act('hlv',{id});UI.showHero(id);}}]:[]), { label: '편성 변경', fn:()=>{UI.openSheet('territory');UI.act('place',{id});} }, ...(o.stars<MAX_STARS&&o.shards>=shardsForStar(o.stars)?[{label:'승급 · 조각 '+shardsForStar(o.stars),cls:'gold',fn:()=>UI.act('hstar',{id})}]:[]), { label: '닫기' }]);
   },
 
   showSummon(res) {
@@ -640,6 +704,7 @@ const UI = {
     box.classList.toggle('settings-modal',html.includes('class="settings-panel"'));
     box.innerHTML = `<button class="modal-close" aria-label="닫기"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 7 10 10M17 7 7 17"/></svg></button>` + html + `<div class="modal-actions">${buttons.map((b, i) => `<button class="btn ${b.cls || ''}" data-i="${i}">${b.label}</button>`).join('')}</div>`;
     UI.modalFocus = document.activeElement;
+    document.querySelectorAll('.production-token').forEach(token=>{token.getAnimations().forEach(a=>a.cancel());token.remove();});
     $('#modal').classList.remove('hidden');
     $('#game').inert = true; $('#setup').inert = true;
     polishIcons(box);

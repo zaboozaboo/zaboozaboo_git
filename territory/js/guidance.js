@@ -27,19 +27,22 @@ function refreshBattleGuide() {
     strip.dataset.roster=key;
     strip.innerHTML=Array.from({length:5},(_,i)=>{
       const locked=i>=slotCount(),id=locked?null:S.slots[i],tier=PROMOTIONS.findIndex(p=>p.slots>i);
-      return `<button class="deploy-card ${locked?'locked':''}" data-slot="${i}" aria-label="${locked?tier+'차 전직 해금':id?HERO_BY_ID[id].unit.name+' 편성':'빈 슬롯 편성'}"><span class="deploy-orb"><span class="orb-inner">${locked?'<span class="slot-lock">잠금</span>':id?heroArt(id):'<span class="empty-slot">＋</span>'}</span><span class="spawn-burst"></span></span><span class="assigned-dice">${id?'0 / '+productionCost(id):locked?tier+'차 전직':'편성'}</span></button>`;
+      return `<button class="deploy-card ${locked?'locked':''}" data-slot="${i}" aria-label="${locked?tier+'차 전직 해금':id?HERO_BY_ID[id].unit.name+' 편성':'빈 슬롯 편성'}"><span class="deploy-orb">${battleChargeMeter()}<span class="orb-inner">${locked?'<svg class="slot-lock-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10V7a5 5 0 0 1 10 0v3"/><rect x="4" y="10" width="16" height="12" rx="4"/><path d="M12 15v3"/></svg>':id?heroArt(id):'<svg class="empty-slot slot-plus-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>'}</span><span class="spawn-burst"></span></span><span class="assigned-dice">${id?'0 / '+productionCost(id):''}</span></button>`;
     }).join('');
-    strip.querySelectorAll('button').forEach(b=>b.onclick=()=>{const i=Number(b.dataset.slot);UI.openSheet(i>=slotCount()?'promo':'territory');if(i<slotCount()){UI.selSlot=i;UI.renderTab();}});
+    strip.querySelectorAll('button').forEach(b=>b.onclick=()=>{const i=Number(b.dataset.slot);UI.openSheet(i>=slotCount()?'promo':'territory');if(i<slotCount()){if(S.slots[i])UI.showHero(S.slots[i]);else{UI.selSlot=i;UI.renderTab();}} });
   }
   strip.querySelectorAll('button').forEach((el,i)=>{
     const locked=i>=slotCount(),d=locked?null:deploymentInfo(i),event=B.diceCue,r=event?.results?.find(r=>r.slot===i&&r.id===d?.id),active=!!r&&event.until>Date.now();
     const elapsed=active?Date.now()-event.at:9999;
     const shown=typeof firstBattlePhase!=='undefined'&&firstBattlePhase==='full'&&i===0?d.cost:d?(elapsed<380&&r?r.before:elapsed<700&&r?Math.min(r.cost,r.before+event.face):d.charge):0;
     el.style.setProperty('--progress',(d?shown/d.cost*100:0)+'%');
+    el.style.setProperty('--meter-value',d?Math.max(0,Math.min(100,shown/d.cost*100)):0);
+    el.classList.toggle('charge-full',!!d&&shown>=d.cost);
+    el.classList.toggle('slot-empty',!locked&&!d);
     el.style.setProperty('--summon-color',d?summonColor(d.id):'#aaa');
     el.classList.toggle('dice-selected',!!active&&elapsed>=380);
     el.classList.toggle('charge-produced',!!active&&r.count>0&&elapsed>=700);
-    el.querySelector('.assigned-dice').textContent=d?`${shown} / ${d.cost}`:locked?PROMOTIONS.findIndex(p=>p.slots>i)+'차 전직':'편성';
+    el.querySelector('.assigned-dice').textContent=d?`${shown} / ${d.cost}`:'';
     el.querySelector('.spawn-burst').textContent=active?(elapsed<700?'+'+event.face:r.count?r.count+'명 출격':'+'+event.face+' 충전'):'';
 
   });

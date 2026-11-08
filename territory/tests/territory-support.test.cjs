@@ -9,7 +9,7 @@ const support=B.units.filter(u=>u.isVanguard);assert.equal(support.length,2);ass
 assert.equal(slotAlive(0,0,'militia'),0);assert.equal(S.dice.history.length,0);
 const ids=support.map(u=>u.id);startStage(7);assert.equal(B.units.filter(u=>u.isVanguard).length,2);assert.ok(B.units.every(u=>!ids.includes(u.id)));
 B.units=B.units.filter(u=>!u.isVanguard);spawnPhase(.1);assert.equal(B.units.filter(u=>u.isVanguard).length,0);
-S.maxStage=6;S.kingdom.lands.grove='training';startStage(6);assert.equal(B.units.filter(u=>u.isVanguard).length,2);assert.equal(S.kingdom.lands.grove,'training');
+S.maxStage=6;S.kingdom.lands.grove='training';startStage(6);assert.equal(B.units.filter(u=>u.isVanguard).length,2);assert.equal(facilityLevel('grove','training'),1);
 B.units=[];const lord=spawnLord(0);assert.equal(marchMultiplier(lord),2.2);
 const foe=spawnEnemy('goblin',6);foe.x=lord.x+100;foe.y=lord.y;assert.equal(marchMultiplier(lord),1);assert.equal(marchMultiplier(foe),1);
 foe.hp=0;lord.x=E_CASTLE_X-70;assert.equal(marchMultiplier(lord),1);

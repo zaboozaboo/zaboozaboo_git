@@ -1,0 +1,5 @@
+Generated with built-in image_gen, 2026-11-08.
+Shared prompt: Wide landscape mobile game dungeon card background, no text or UI. Rounded chunky sculpted stone forms, painterly 3D-like shading, polished casual fantasy raid game, rich restrained colors, perspective depth. Not flat outlined cartoon, not photoreal, not plastic toy. Wide 3:2 composition readable in panoramic center crop; dark quiet left edge for UI text. No characters, letters, borders or watermark.
+dungeon-summon-v1.png: Ancient mossy stone sanctuary, luminous cyan portal arch and blue crystal deposits, cool purple shadows and warm stone highlights.
+dungeon-pet-v1.png: Enchanted forest sanctuary, enormous hollow tree den, magical rolled parchment scrolls with jade seals near its roots, soft green light, inviting secret glade.
+dungeon-enhance-v1.png: Dwarven forge cavern, chunky stone furnace and anvil, golden mineral veins, amber molten glow, purple rock shadows.

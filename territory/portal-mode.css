@@ -1,0 +1,145 @@
+/* Production frontier: one battlefield, one field resource, three destinations. */
+#app #game.portal-mode #lobby,#app #game.portal-mode #combat-actions,#app #game.portal-mode #btn-boss,#app #game.portal-mode #sheet-views,#app #game.portal-mode #camera-return{display:none!important}
+#app #game.portal-mode #topbar{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:8px!important;padding:12px 16px!important;background:linear-gradient(#354c3d,#24382e)!important;border-bottom:2px solid #bba16b!important;color:#f4e4b5!important;font-size:12px!important;min-height:54px!important}
+.portal-brand{border:0!important;background:none!important;color:#f1d794!important;font-weight:900!important;font-size:15px!important;padding:0!important}
+#app #game.portal-mode #battle-top{top:65px!important;pointer-events:none!important;justify-content:center!important}
+#app #game.portal-mode #ct-stage{background:#263e32de!important;border:1px solid #d0b67b!important;border-radius:16px!important;padding:6px 20px!important;color:#fff0c9!important}
+#app #game.portal-mode #ct-timer,#app #game.portal-mode #ct-wave,#app #game.portal-mode #ct-power{display:none!important}
+#app #game.portal-mode #tabs{display:grid!important;grid-template-columns:repeat(3,1fr)!important;height:64px!important;background:#23392e!important;border-top:2px solid #ae965f!important;padding:0 8px!important}
+#app #game.portal-mode #tabs button{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:3px!important;background:none!important;border:0!important;color:#b9bfa2!important;font-size:20px!important;min-width:0!important}
+#app #game.portal-mode #tabs button span{font-size:12px!important}#app #game.portal-mode #tabs button.active{color:#ffe7a7!important;background:linear-gradient(#bda66930,transparent)!important}
+#app #game.portal-mode #deployment-panel{position:absolute!important;bottom:70px!important;left:8px!important;right:8px!important;width:auto!important;transform:none!important;display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:6px!important;padding:10px 8px 8px!important;background:linear-gradient(#294735ed,#1c3028f5)!important;border:1px solid #b9a36b!important;border-radius:22px!important;box-shadow:0 8px 22px #101b2180!important;pointer-events:auto!important}
+#app #game.portal-mode #dice-hud{position:absolute!important;bottom:calc(100% + 10px)!important;left:50%!important;transform:translateX(-50%)!important;margin:0!important;width:64px!important;height:64px!important}
+#app #game.portal-mode #dice-hud .dice-live-readout{display:none!important}
+#app #game.portal-mode #deployment{display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:6px!important;padding:0!important;margin:0!important;width:100%!important}
+#app #game.portal-mode .portal-socket{position:relative!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:3px!important;width:100%!important;height:116px!important;min-width:0!important;padding:6px 2px!important;border:1px solid #9c9d68!important;border-radius:17px!important;background:radial-gradient(ellipse at 50% 40%,#7e9c65,#3b5943 70%)!important;box-shadow:inset 0 2px #eddfa64d,0 3px #14271e!important;color:#f8ecc5!important;transform:none!important;overflow:hidden!important}
+#app #game.portal-mode .portal-socket.selected{outline:2px solid #ffe3a0!important;outline-offset:1px!important;background:radial-gradient(#91ae70,#496547)!important}
+#app #game.portal-mode .portal-socket.mergeable{outline:2px dashed #a9f7cb!important;outline-offset:1px!important}
+#app #game.portal-mode .portal-socket b{font-size:11px!important;line-height:15px!important;white-space:nowrap!important}#app #game.portal-mode .portal-socket small{font-size:10px!important;color:#dfdfb6!important}
+#app #game.portal-mode .portal-socket .deploy-orb{position:relative!important;display:block!important;width:50px!important;height:49px!important;margin:0!important;inset:auto!important;transform:none!important;background:none!important;border:0!important;box-shadow:none!important}
+#app #game.portal-mode .deploy-orb .hero-art{width:100%!important;height:100%!important}#app #game.portal-mode .portal-tier{font-size:9px!important;color:#ffe49e!important;letter-spacing:1px!important;line-height:10px!important}
+#app #game.portal-mode .portal-empty{font-size:40px!important;line-height:48px!important;color:#d3e0af!important}
+#app #game.portal-mode progress{appearance:none!important;width:80%!important;height:5px!important;border:0!important;border-radius:5px!important;overflow:hidden!important;background:#172c25!important}
+#app #game.portal-mode progress::-webkit-progress-bar{background:#172c25!important}#app #game.portal-mode progress::-webkit-progress-value{background:#f0d38a!important}
+#portal-orders{display:flex!important;align-items:center!important;justify-content:center!important;gap:8px!important;min-height:42px!important;color:#ecdfb8!important;font-size:11px!important;text-align:center!important}
+#portal-orders small{display:block!important;font-size:9px!important;color:#c2cbaa!important;margin-top:3px!important}
+#portal-orders button,#app #game.portal-mode #panel button,.portal-welcome button{background:linear-gradient(#e8cf8b,#b79b5c)!important;border:1px solid #f1dda2!important;border-bottom:3px solid #80673b!important;border-radius:10px!important;padding:8px 10px!important;color:#2b3c2c!important;font-weight:800!important;cursor:pointer!important}
+#portal-orders button small{color:#4e573b!important}#app #game.portal-mode button:disabled{opacity:.4!important;cursor:default!important}
+#app #game.portal-mode #sheet{bottom:70px!important;max-height:72%!important;border:2px solid #b6a16b!important;border-radius:22px!important;background:#f2e9ce!important;color:#304532!important;overflow:hidden!important}
+#app #game.portal-mode #sheet .sheet-head{background:#304c3a!important;color:#f3dfaa!important;border-bottom:2px solid #b6a16b!important}
+#app #game.portal-mode #panel{overflow-y:auto!important;max-height:calc(72dvh - 65px)!important;padding:16px!important;overscroll-behavior:contain!important}
+.portal-intro{text-align:center!important;font-size:12px!important;line-height:1.7!important;color:#5b694c!important;margin:0 0 14px!important}
+.portal-library{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important}
+.portal-blueprint{display:flex!important;flex-direction:column!important;align-items:center!important;text-align:center!important;background:linear-gradient(#fff8e6,#e3d7b4)!important;border:1px solid #bba673!important;border-top:4px solid var(--rarity)!important;border-radius:15px!important;padding:12px 6px!important;box-shadow:0 3px 0 #bba67340!important}
+.portal-blueprint .hero-art{width:80px!important;height:80px!important}.portal-blueprint h3{font-size:16px!important;margin:5px 0!important}.portal-blueprint p,.portal-blueprint small{font-size:11px!important;margin:4px 0 8px!important}.portal-blueprint button{margin-top:7px!important;font-size:11px!important}
+.portal-land{padding:16px!important;margin-bottom:12px!important;border:1px solid #bba673!important;border-radius:14px!important;background:#fff7e3!important}.portal-land .building-art{float:right!important;width:70px!important;height:70px!important}.portal-land h3{margin:0!important;font-size:16px!important}.portal-land p{font-size:12px!important}.portal-land button{display:inline-block!important;margin:4px!important;font-size:11px!important}.portal-land small{display:block!important;font-size:10px!important;margin-top:5px!important}
+#app #game.portal-mode .unaffordable{opacity:.5!important}.portal-welcome{margin:auto!important;max-width:420px!important;padding:80px 30px!important;text-align:center!important;color:#f7e7bf!important;background:#304a38!important;border:2px solid #bba16b!important;border-radius:25px!important}.portal-welcome p{line-height:1.9!important}
+@media(max-width:380px){#app #game.portal-mode #topbar{padding:10px 8px!important;font-size:10px!important}.portal-brand{font-size:12px!important}#app #game.portal-mode #deployment{gap:4px!important}#app #game.portal-mode .portal-socket b{font-size:9px!important}#portal-orders{gap:4px!important;font-size:10px!important}#portal-orders button{padding:7px 5px!important}}
+#app #game.portal-mode #portal-home{width:auto!important;height:auto!important;flex:none!important;white-space:nowrap!important;font-size:14px!important}
+#app #game.portal-mode #topbar{background:linear-gradient(#354c3d,#24382e)!important}
+#app #game.portal-mode #battle-top{background:none!important;border:0!important;box-shadow:none!important;height:auto!important;min-height:0!important;padding:0!important;left:0!important;right:0!important;width:100%!important}
+#app #game.portal-mode #battle-top::before,#app #game.portal-mode #battle-top::after,#app #game.portal-mode #deployment-panel::before,#app #game.portal-mode #deployment-panel::after,#app #game.portal-mode .portal-socket::before,#app #game.portal-mode .portal-socket::after{display:none!important}
+#app #game.portal-mode .portal-socket{color:#f8ecc5!important}
+#app #game.portal-mode #deployment-panel{background:linear-gradient(#294735ed,#1c3028f5)!important}
+#app #game.portal-mode #tabs button{box-shadow:none!important;border-radius:0!important}
+#app #game.portal-mode .hero-art{display:block!important;position:relative!important;inset:auto!important;transform:none!important}
+#app #game.portal-mode #battle-top .stage-info{background:none!important;border:0!important;box-shadow:none!important;padding:0!important;width:auto!important;min-height:0!important}
+#app #game.portal-mode #battle-top .wave{display:none!important}
+#app #game.portal-mode #battle-top .ct-row{justify-content:center!important}
+#app #game.portal-mode #dice-hud.dual-dice{width:270px!important;height:auto!important;padding:7px!important;border:1px solid #b9a36b!important;border-radius:18px!important;background:#243d30f5!important;pointer-events:auto!important}
+.dual-dice .dice-mode-switch{display:flex;gap:4px;margin-bottom:4px}.dual-dice .dice-mode-switch button{flex:1;padding:5px;border:0;border-radius:8px;background:#182c23;color:#c9cfad}.dual-dice .dice-mode-switch button[aria-pressed=true]{background:#dfc787;color:#30452d;font-weight:bold}
+#app #game.portal-mode [data-roll-die]{display:flex!important;align-items:center!important;justify-content:center!important;width:100%!important;gap:8px!important;background:none!important;border:0!important;color:#f3e3b6!important;padding:2px!important;text-align:left!important}
+#app #game.portal-mode [data-roll-die] .dice-charge-ring{position:relative!important;width:58px!important;height:58px!important;flex-shrink:0!important;background:none!important;border:0!important;box-shadow:none!important}
+[data-roll-die] small{display:block;font-size:10px;margin:4px 0}[data-roll-die] em{font-style:normal;font-size:12px;color:#efcf82}.portal-placement{display:grid;gap:8px;margin:15px 0}.portal-sell{width:100%;margin:8px 0}
+#app #game.portal-mode #dice-hud.dual-dice{display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:3px!important}
+#app #game.portal-mode .dual-dice .dice-mode-switch{display:flex!important;width:100%!important;gap:4px!important}
+#app #game.portal-mode .dual-dice .dice-mode-switch button{width:50%!important;white-space:nowrap!important;min-height:27px!important}
+#app #game.portal-mode .dual-dice .dice-perspective{transform:translate(-50%,-50%) scale(.72)!important}
+/* Compact controls live inside the tray, leaving the battlefield unobstructed. */
+#app #game.portal-mode #dice-hud.dual-dice{position:relative!important;inset:auto!important;transform:none!important;align-self:center!important;flex-direction:row!important;width:246px!important;height:48px!important;min-height:48px!important;padding:2px 8px!important;border-radius:15px!important;margin:0 0 3px!important;background:#1b3028!important}
+#app #game.portal-mode .dual-dice .dice-mode-switch{width:110px!important;flex-shrink:0!important;align-items:center!important;margin:0!important}
+#app #game.portal-mode .dual-dice .dice-mode-switch button{height:32px!important;font-size:12px!important}
+#app #game.portal-mode [data-roll-die]{gap:2px!important;flex:1!important;width:auto!important;white-space:nowrap!important}
+#app #game.portal-mode [data-roll-die] .dice-charge-ring{width:42px!important;height:42px!important}
+#app #game.portal-mode .dual-dice .dice-perspective{transform:translate(-50%,-50%) scale(.56)!important}
+#app #game.portal-mode [data-roll-die] b{font-size:11px!important}#app #game.portal-mode [data-roll-die] em{display:block!important;font-size:10px!important}
+#app #game.portal-mode .portal-socket{height:100px!important;gap:2px!important}
+#app #game.portal-mode #portal-orders{min-height:30px!important}
+#app #game.portal-mode #portal-orders .pending-loot{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:9px!important;width:100%!important;padding:3px 10px!important;text-align:left!important;border:1px solid #d9bf7c!important;background:linear-gradient(110deg,#526b45,#304b37)!important;color:#ffefc5!important}
+#app #game.portal-mode .pending-loot .hero-art{width:40px!important;height:40px!important;flex-shrink:0!important}
+.pending-loot>span{flex:1}.pending-loot em{font-style:normal;color:#edd28c;font-size:10px;margin-left:5px}.pending-loot strong{font-size:12px}.pending-loot small{color:#dad8b7!important;font-size:9px!important}
+.portal-reveal{text-align:center;position:relative;border-radius:16px;background:radial-gradient(ellipse at 50% 35%,#fff6d5,#e6dbb9);border:1px solid #c5b078;padding:10px 12px;color:#344a35;overflow:hidden}
+.reveal-rarity{font-size:11px;color:#74694b}.reveal-art{width:100px;height:100px;margin:0 auto;background:radial-gradient(ellipse,#fff8d1 15%,#e5cd8740 55%,transparent 70%)}
+#app #game.portal-mode .reveal-art .hero-art{width:100px!important;height:100px!important;filter:drop-shadow(0 5px 4px #59442440)}
+.portal-reveal h2{font-size:23px;margin:0 0 5px}.reveal-trait{display:inline-block;border-radius:20px;background:#4c6546;color:#fff0c4;padding:3px 14px;font-size:11px}.portal-reveal p{font-size:11px;margin:6px 0 10px}.reveal-stats{display:flex;justify-content:space-around;font-size:10px;border-top:1px solid #c7b583;padding-top:8px}.reveal-stats b{display:block;font-size:13px;margin-top:3px}
+.placement-title{text-align:center;font-size:13px;margin:12px 0 7px}
+#app #game.portal-mode .portal-placement{display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:5px!important;margin:0!important}
+#app #game.portal-mode .portal-placement{grid-template-columns:repeat(5,minmax(0,1fr))!important}
+#app #game.portal-mode .portal-placement button{display:flex!important;flex-direction:column!important;align-items:center!important;padding:5px 1px!important;min-width:0!important;font-size:10px!important}
+#app #game.portal-mode .portal-placement .hero-art{width:43px!important;height:43px!important}.portal-placement b{font-size:10px;white-space:nowrap}.portal-placement small{font-size:9px;margin-top:3px}.placement-empty{height:43px;font-size:30px}.replacement-note{text-align:center;font-size:10px;color:#776d51;margin:9px 0}
+#app #game.portal-mode .portal-sell{display:flex!important;justify-content:space-between!important;padding:9px 15px!important;margin:4px 0!important;background:#e4d8b6!important}
+@media(max-height:700px){.reveal-art,#app #game.portal-mode .reveal-art .hero-art{width:76px!important;height:76px!important}.portal-reveal{padding:8px}.portal-reveal h2{font-size:20px}}
+#app #game.portal-mode #portal-orders .pending-loot .hero-art{flex:0 0 40px!important}
+#app #game.portal-mode #portal-orders .pending-loot>span:not(.hero-art){text-align:left!important;flex:1!important}
+#app #game.portal-mode #portal-orders .pending-loot small{display:block!important;line-height:12px!important;margin:0 0 3px!important}
+#app #game.portal-mode .portal-reveal .reveal-trait{display:inline-block!important}
+#app #game.portal-mode .portal-reveal p{display:block!important;font-size:11px!important;line-height:16px!important;margin:6px 0!important}
+#app #game.portal-mode .portal-reveal .reveal-stats{display:flex!important}
+#app #game.portal-mode #panel:has(.portal-reveal){display:block!important;padding:10px 14px!important}
+#app #game.portal-mode .portal-reveal{height:auto!important;min-height:0!important;flex:none!important;padding:8px 10px!important;overflow:visible!important}
+#app #game.portal-mode .portal-reveal .reveal-art,#app #game.portal-mode .portal-reveal .reveal-art .hero-art{width:70px!important;height:70px!important}
+#app #game.portal-mode .portal-reveal h2{font-size:20px!important;line-height:24px!important;margin:0 0 3px!important}
+#app #game.portal-mode .portal-reveal .reveal-stats{padding-top:5px!important;line-height:12px!important}
+#app #game.portal-mode .portal-reveal .reveal-stats b{line-height:15px!important;margin-top:2px!important}
+#app #game.portal-mode .portal-reveal .reveal-trait{line-height:14px!important;padding:2px 12px!important}
+#app #game.portal-mode .portal-reveal .reveal-art,#app #game.portal-mode .portal-reveal .reveal-art .hero-art{width:56px!important;height:56px!important}
+#app #game.portal-mode .placement-title{margin:8px 0 5px!important;line-height:18px!important}
+#app #game.portal-mode .replacement-note{margin:7px 0!important;line-height:14px!important}
+/* The battlefield has its own space; exchange controls never float over it. */
+#app #game.portal-mode #field{top:58px!important;bottom:270px!important;height:auto!important}
+#app #game.portal-mode #deployment-panel{height:192px!important;box-sizing:border-box!important;gap:5px!important;padding:7px!important}
+#app #game.portal-mode #deployment{flex:none!important}
+#app #game.portal-mode .portal-socket{height:74px!important;border:2px solid var(--portal-rarity)!important;border-radius:14px!important;padding:3px 2px!important;gap:0!important}
+#app #game.portal-mode .portal-socket .deploy-orb{width:45px!important;height:45px!important}
+#app #game.portal-mode .portal-socket .portal-tier{height:11px!important;line-height:11px!important;font-size:10px!important;letter-spacing:1px!important}
+#app #game.portal-mode .portal-socket progress{height:3px!important;margin-top:3px!important}
+#app #game.portal-mode .portal-socket.placement-target{outline:1px dashed #ffe5a3!important;outline-offset:1px!important}
+#app #game.portal-mode #portal-orders{height:43px!important;min-height:43px!important;flex:none!important;gap:5px!important}
+#app #game.portal-mode #portal-orders .pending-loot{width:auto!important;flex:1!important;height:43px!important;min-width:0!important;padding:2px 5px!important;gap:5px!important}
+#app #game.portal-mode #portal-orders .pending-loot .hero-art{width:34px!important;height:34px!important;flex:0 0 34px!important}
+#app #game.portal-mode #portal-orders .pending-loot.placing{border-color:#ffe3a0!important;box-shadow:inset 0 0 0 1px #e6d28b!important}
+#app #game.portal-mode #portal-orders .pending-loot b{font-size:11px!important}
+#app #game.portal-mode #portal-orders .pending-loot small{font-size:9px!important;margin:3px 0 0!important}
+#app #game.portal-mode #portal-orders .inline-sell{height:39px!important;width:48px!important;padding:3px!important;flex:none!important;font-size:11px!important}
+#app #game.portal-mode .portal-socket .deploy-orb{height:34px!important;width:38px!important}
+#app #game.portal-mode .portal-charge-readout{font-size:10px!important;line-height:13px!important;font-weight:800!important;color:#fff0c7!important;font-variant-numeric:tabular-nums!important}
+#app #game.portal-mode #field{position:absolute!important;left:0!important;right:0!important;width:100%!important;flex:none!important;margin:0!important}
+#app #game.portal-mode #dice-hud.colored-dice{width:258px!important;padding:2px 5px!important;gap:8px!important;justify-content:center!important;background:none!important;border:0!important}
+.die-control{display:flex;align-items:center;gap:3px;border:1px solid #758467;border-radius:12px;padding:0 5px;background:#20372c;flex:1}
+.die-control.selected{border-color:#e3c887;box-shadow:0 0 0 1px #ddc18344}
+#app #game.portal-mode [data-colored-roll]{display:flex!important;align-items:center!important;gap:0!important;background:none!important;border:0!important;padding:0!important;color:#f1db9d!important;cursor:pointer!important}
+#app #game.portal-mode [data-colored-roll] .dice-charge-ring{position:relative!important;width:40px!important;height:40px!important;border:0!important;background:none!important;box-shadow:none!important}
+[data-colored-roll] em{font-size:11px;font-style:normal;font-weight:bold;margin-right:4px}
+#app #game.portal-mode .production .cube-side{background:linear-gradient(135deg,#fda98f,#ce5149 65%,#8e2e36)!important;border:1px solid #f4b498!important;box-shadow:inset 0 2px #ffe0ba66!important}
+#app #game.portal-mode .portal .cube-side{background:linear-gradient(135deg,#a6e1f7,#428ac5 65%,#275e94)!important;border:1px solid #b1dff0!important;box-shadow:inset 0 2px #def6ff88!important}
+#app #game.portal-mode .colored-dice .cube-side .pip{background:#fff3d2!important;box-shadow:0 1px 1px #142c3455!important}
+.die-auto{font-size:9px;font-weight:800;line-height:12px;border:1px solid #7d8e6a;background:#1b2c24;color:#b9c0a4;border-radius:7px;padding:3px 4px;cursor:pointer}.die-auto span{display:block;font-size:8px;color:#83947b}.die-auto.enabled{background:#d2b773;color:#293d2c;border-color:#f0d99b}.die-auto.enabled span{color:#314d32}
+/* One active die, one queued behind it, and an explicit swap control. */
+#app #game.portal-mode #dice-hud.colored-dice{width:184px!important;align-items:center!important;gap:9px!important;background:#20372c!important;border:1px solid #a99c69!important;padding:2px 10px!important}
+.die-stack{position:relative;width:49px;height:42px;flex:none}
+.die-back{position:absolute;right:0;top:0;width:29px;height:29px;border-radius:7px;border:1px solid #e1d4a2;display:flex;align-items:center;justify-content:center;font-size:23px;color:#fff1d2;transform:rotate(12deg);box-shadow:0 2px 3px #11271c88}
+.die-back.portal{background:#387bb5}.die-back.production{background:#bf4946}
+#app #game.portal-mode .die-front{position:absolute!important;left:0!important;bottom:0!important;width:40px!important;height:40px!important;background:none!important;border:0!important;padding:0!important;z-index:1!important}
+#app #game.portal-mode .die-front .dice-charge-ring{position:relative!important;display:block!important;width:40px!important;height:40px!important;background:none!important;border:0!important;box-shadow:none!important}
+.active-die-cost{font-size:12px;font-weight:800;color:#f6dda0;font-variant-numeric:tabular-nums}
+.die-switch{width:29px;height:29px;padding:0;border-radius:50%;border:1px solid #b2a16e;color:#f6e1aa;background:linear-gradient(#56704b,#304c37);font-size:22px;line-height:25px;cursor:pointer;box-shadow:0 2px #172d22}
+#app #game.portal-mode .die-back{left:0!important;right:auto!important;top:auto!important;bottom:0!important;width:40px!important;height:40px!important;background:none!important;border:0!important;box-shadow:none!important;transform:translate(12px,-7px) scale(.72);transform-origin:center;pointer-events:none}
+#app #game.portal-mode .die-back .dice-charge-ring{position:relative!important;display:block!important;width:40px!important;height:40px!important;background:none!important;border:0!important;box-shadow:none!important}
+#app #game.portal-mode .die-stack{isolation:isolate;overflow:visible!important}
+#app #game.portal-mode .die-front:disabled{opacity:1!important}
+#app #game.portal-mode .portal-socket{background:radial-gradient(ellipse at 50% 20%,#8b9b68,#3a5642 74%)!important;box-shadow:inset 0 1px 2px #fff1b780,0 3px 0 #162c21!important}
+#app #game.portal-mode .portal-socket .portal-tier{background:#1e352bdd!important;border:1px solid #b8a574!important;border-radius:5px!important;padding:0 5px!important;font-size:9px!important;letter-spacing:0!important;min-width:31px!important;color:#ffe6a4!important}
+#app #game.portal-mode .portal-socket .deploy-orb{width:44px!important;height:36px!important;filter:drop-shadow(0 3px 2px #17251b80)}
+#app #game.portal-mode .pending-loot{background:linear-gradient(110deg,#536f49,#243d30)!important;box-shadow:inset 0 1px #ebd99f55!important}
+#app #game.portal-mode #portal-orders .pending-loot .hero-art{width:39px!important;height:39px!important;flex-basis:39px!important;filter:drop-shadow(0 2px 2px #14291c)}
+#app #game.portal-mode .level-compare{position:absolute;right:3px;top:3px;font-size:9px;line-height:12px;background:#243e2ee8;color:#ffe5a0;padding:1px 3px;border-radius:4px}

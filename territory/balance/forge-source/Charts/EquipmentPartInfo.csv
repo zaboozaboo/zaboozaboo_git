@@ -1,0 +1,11 @@
+PartType,StatType
+weapon_melee,Attack
+weapon_ranged,Attack
+weapon_balance,Balance
+armor,MaxHealth
+helmet,MaxHealth
+gloves,Attack
+shoes,MaxHealth
+necklace,Attack
+ring,Attack
+belt,MaxHealth

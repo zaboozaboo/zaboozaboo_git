@@ -1,5 +1,6 @@
 const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
 const c=vm.createContext({assert,Math,console,window:{matchMedia:()=>({matches:false})},LANE_W:320,W:900,BattleCamera:{offset:100}});
+vm.runInContext(fs.readFileSync('territory/js/battle-art-set.js','utf8'),c);
 vm.runInContext(fs.readFileSync('territory/js/render.js','utf8'),c);
 vm.runInContext(`
 VIEW.height=400;

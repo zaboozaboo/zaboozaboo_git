@@ -13,9 +13,12 @@ console.log('PASS: background simulation paused, offline reward once, pagehide s
 const nodes={};const microtasks=[];
 function el(){const classes=new Set(['hidden']);return {classList:{toggle:(k,on)=>on?classes.add(k):classes.delete(k),contains:k=>classes.has(k),add:k=>classes.add(k),remove:k=>classes.delete(k)},innerHTML:'',inert:false,querySelector:()=>({focus(){}}),querySelectorAll:()=>[]};}
 for(const id of ['#modal','#modal-box','#game','#setup'])nodes[id]=el();
-const dialogs=vm.createContext({document:{querySelector:s=>nodes[s],activeElement:null,addEventListener(){}},window:{},polishIcons(){},queueMicrotask:f=>microtasks.push(f)});
+let removedParticles=0,cancelledParticles=0;
+const particle={getAnimations:()=>[{cancel(){cancelledParticles++;}}],remove(){removedParticles++;}};
+const dialogs=vm.createContext({document:{querySelector:s=>nodes[s],querySelectorAll:s=>s==='.production-token'?[particle]:[],activeElement:null,addEventListener(){}},window:{},polishIcons(){},queueMicrotask:f=>microtasks.push(f)});
 vm.runInContext(fs.readFileSync('territory/js/ui.js','utf8'),dialogs);
 vm.runInContext("UI.modal('first');UI.modal('second');",dialogs);assert.match(nodes['#modal-box'].innerHTML,/first/);assert.doesNotMatch(nodes['#modal-box'].innerHTML,/second/);
+assert.equal(removedParticles,1,'opening result clears airborne charge tokens');assert.equal(cancelledParticles,1,'token animation cancelled');
 vm.runInContext('UI.closeModal()',dialogs);microtasks.shift()();assert.match(nodes['#modal-box'].innerHTML,/second/);assert.equal(nodes['#game'].inert,true);
 vm.runInContext('UI.closeModal()',dialogs);microtasks.shift()();assert.equal(nodes['#game'].inert,false);
 console.log('PASS: overlapping result dialogs preserved in order and focus barrier restored.');

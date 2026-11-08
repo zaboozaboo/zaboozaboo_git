@@ -1,6 +1,6 @@
 const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
 const c=vm.createContext({console,Math,Date,URL,assert,document:{currentScript:{src:'http://localhost/js/militia-combat.js'}},window:{},localStorage:{setItem(){}}});
-for(const f of ['data','state','kingdom','dice','formation','battle','militia-combat'])vm.runInContext(fs.readFileSync(`territory/js/${f}.js`,'utf8'),c);
+for(const f of ['data','state','kingdom','dice','formation','battle','battle-art-set','militia-combat'])vm.runInContext(fs.readFileSync(`territory/js/${f}.js`,'utf8'),c);
 vm.runInContext(`
 newGame({name:'test',gender:'m',cls:'knight',nation:'aurum'});
 const u={heroId:'militia',kind:'melee',atkCd:1.5,id:0,moving:true};

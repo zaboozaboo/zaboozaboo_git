@@ -1,0 +1,143 @@
+/* Compact battlefield instruments: warm ivory, aged brass, forest enamel. */
+[data-ui-skin="sculpted"] #game.battle-mode #topbar{background:linear-gradient(#253d393d,transparent);text-shadow:0 1px 2px #263a30}
+[data-ui-skin="sculpted"] #game.battle-mode #topbar .tb-cur>div{border:1px solid #d4b67e;background:linear-gradient(#476757,#2b493e);box-shadow:inset 0 1px #c9d9ac70,inset 0 -2px #173c343d,0 2px 3px #283a3540;color:#fff2cf;border-radius:16px}
+[data-ui-skin="sculpted"] #game.battle-mode #tb-portrait{border-color:#d6b476;border-radius:9px;box-shadow:inset 0 1px #fff2ca,0 2px 0 #725e3c;background:linear-gradient(#708f7a,#355b49)}
+[data-ui-skin="sculpted"] #game.battle-mode #battle-top .stage-info{background:linear-gradient(105deg,#fbefd3ed,#efdcaaed);border:1px solid #b99b64;border-radius:8px;box-shadow:inset 0 1px #fffaf0,0 2px 0 #6d65414d;padding:1px 10px;}
+[data-ui-skin="sculpted"] #game.battle-mode #battle-top #ct-stage{color:#53492f;text-shadow:0 1px #fff6df;font-weight:800;font-size:12px}
+[data-ui-skin="sculpted"] #game.battle-mode #battle-top #ct-timer{color:#934b38;text-shadow:none;font-weight:800}
+[data-ui-skin="sculpted"] #game.battle-mode #battle-top #ct-power{color:#5b7155;text-shadow:none}
+[data-ui-skin="sculpted"] #game.battle-mode #battle-top .wave{border:1px solid #a79a71;background:#d3c5a2;box-shadow:inset 0 1px 2px #675a3944;border-radius:5px}
+[data-ui-skin="sculpted"] #game.battle-mode #battle-top .wave i{background:linear-gradient(#b7ce87,#739455);box-shadow:inset 0 1px #dce8ba}
+[data-ui-skin="sculpted"] #game.battle-mode #deployment-panel{background:linear-gradient(transparent,#466b4966 35%,#354e3bc9);border:0;box-shadow:none}
+[data-ui-skin="sculpted"] #game.battle-mode #deployment .deploy-orb{border-color:#b59458;background:linear-gradient(#e5c98f,#b8965e);box-shadow:inset 0 1px #fff1c3,0 2px 0 #5e5636,0 4px 5px #203a3044}
+[data-ui-skin="sculpted"] #game.battle-mode #deployment .orb-inner{background:radial-gradient(ellipse at 40% 20%,#9bb187,#496b50);box-shadow:inset 0 2px 4px #24443255}
+[data-ui-skin="sculpted"] #game.battle-mode #deployment .locked .deploy-orb{background:#b1aa86;border-color:#a2976d;box-shadow:inset 0 1px #e4d8af,0 2px #5f6548}
+[data-ui-skin="sculpted"] #game.battle-mode #deployment .locked .orb-inner{background:linear-gradient(#a3ad88,#788969);box-shadow:inset 0 2px 3px #4f604244}
+[data-ui-skin="sculpted"] #game.battle-mode #deployment .assigned-dice{color:#fff1cb;text-shadow:0 1px 2px #253e2e;font-weight:700}
+[data-ui-skin="sculpted"] #game.battle-mode #deployment .slot-lock{color:#e2dfc7;text-shadow:0 1px #526449}
+[data-ui-skin="sculpted"] #game.battle-mode #combat-actions #btn-skill{border:2px solid #dfc389;border-radius:13px;background:radial-gradient(ellipse at 35% 20%,#8baea0,#396a61);box-shadow:inset 0 2px #d3e3bd,0 3px 0 #6e6540,0 5px 6px #253a3a44}
+[data-ui-skin="sculpted"] #game.battle-mode #combat-actions #btn-skill.ready{box-shadow:inset 0 2px #e7edc5,0 3px #6e6540,0 0 12px #ffde8999}
+[data-ui-skin="sculpted"] #game.battle-mode #sk-cd{color:#fff5d8;text-shadow:0 1px 2px #253f36}
+[data-ui-skin="sculpted"] #game.battle-mode #field .combat-skill #btn-auto{border:1px solid #bba77a;border-radius:10px;background:linear-gradient(#dbd1ac,#b1b28a);color:#5c674c;box-shadow:inset 0 1px #f9edc9,0 2px #6a7151;text-shadow:none}
+[data-ui-skin="sculpted"] #game.battle-mode #field .combat-skill #btn-auto.on{background:linear-gradient(#9abc75,#618c53);border-color:#e7d49b;color:#fff6d9;box-shadow:inset 0 1px #c8df9e,0 2px #3d6040}
+[data-ui-skin="sculpted"] #game.battle-mode #camera-return{background:linear-gradient(#f5e7bd,#d8c28d);color:#4b593f;border:1px solid #a18a56;border-radius:14px;box-shadow:inset 0 1px #fff7dd,0 2px #6b6747;text-shadow:none}
+[data-ui-skin="sculpted"] #game.battle-mode #btn-boss{background:linear-gradient(#c97d58,#a75a42);color:#fff0cf;border:1px solid #e1bb7c;border-radius:9px;box-shadow:inset 0 1px #efb182,0 2px #6f4734}
+@media(max-width:360px){[data-ui-skin="sculpted"] #game.battle-mode #battle-top .stage-info{padding:1px 7px}[data-ui-skin="sculpted"] #game.battle-mode #battle-top #ct-stage{font-size:11px}}
+/* Meter artwork is a separate layer: surface gradients never hide progress. */
+.battle-charge-meter{position:absolute;inset:-3px;width:calc(100% + 6px);height:calc(100% + 6px);overflow:visible;pointer-events:none;z-index:3;fill:none}
+.battle-charge-meter .meter-rim{stroke:#d8ba7a;stroke-width:7;filter:drop-shadow(0 2px 0 #4c5137)}
+.battle-charge-meter .meter-track{stroke:#354e3e;stroke-width:4;}
+.battle-charge-meter .meter-fill{stroke:#f4d581;stroke-width:3;stroke-linecap:round;stroke-dasharray:100;stroke-dashoffset:calc(100 - var(--meter-value,0));filter:drop-shadow(0 -1px 0 #fff4c0);transition:stroke-dashoffset .22s linear}
+[data-ui-skin="sculpted"] #game.battle-mode #deployment .deploy-orb{border:0;padding:5px;border-radius:16px;background:linear-gradient(140deg,#e8d5a2,#a38a58);box-shadow:inset 0 2px #fff0c3,0 3px #4f5639,0 5px 7px #20372a55}
+[data-ui-skin="sculpted"] #game.battle-mode #deployment .orb-inner{border:1px solid #526c47;border-radius:12px;background:radial-gradient(ellipse at 35% 15%,#b7c593,#6a8b61 55%,#47674f);box-shadow:inset 0 2px 3px #253f3b55,inset 0 -2px #d3dc9d44}
+[data-ui-skin="sculpted"] #game.battle-mode #deployment .hero-art{filter:drop-shadow(0 2px 1px #203a3355)}
+#game.battle-mode #deployment .locked .battle-charge-meter,#game.battle-mode #deployment .slot-empty .battle-charge-meter{display:none}
+[data-ui-skin="sculpted"] #game.battle-mode #deployment .locked .deploy-orb{background:linear-gradient(#b3b89a,#89977a);box-shadow:inset 0 1px #d9ddbf,0 2px #576449;border:1px solid #798c68;padding:4px}
+[data-ui-skin="sculpted"] #game.battle-mode #deployment .locked .orb-inner{background:linear-gradient(#87997a,#9eab89);border:1px solid #77896b;box-shadow:inset 0 2px 4px #43594233}
+#game.battle-mode #deployment .charge-full .meter-fill{stroke:#b7e28b}
+#game.battle-mode #deployment .charge-produced .orb-inner{animation:field-charge-pop .5s ease-out}
+[data-ui-skin="sculpted"] #game.battle-mode #deployment .assigned-dice{width:max-content;min-width:32px;margin:5px auto 0;padding:2px 5px;border-radius:6px;background:#294c3dda;box-shadow:inset 0 1px #b9c49b44;color:#fff1cb;font-size:9px;line-height:1.2;text-shadow:0 1px #1d3429}
+[data-ui-skin="sculpted"] #game.battle-mode #deployment .locked .assigned-dice{background:none;box-shadow:none;color:#e1e3cb}
+[data-ui-skin="sculpted"] #game.battle-mode #deployment-panel #dice-hud.charge-dice .dice-charge-ring{position:relative;width:54px;height:54px;padding:5px;border-radius:17px;background:radial-gradient(ellipse at 30% 10%,#9cae7e,#56744e 70%);box-shadow:inset 0 2px 4px #2c453766,0 4px 0 #525c3b,0 7px 10px #24433255}
+#game.battle-mode #dice-hud .dice-perspective{transform:scale(.63);z-index:4}
+[data-ui-skin="sculpted"] #game.battle-mode #deployment-panel #dice-hud.charge-dice .cube-side{border:1px solid #bb9b60;border-radius:12px;background:radial-gradient(ellipse at 30% 12%,#fffef2,#f8e6b8 65%,#d9bb80);box-shadow:inset 0 2px 1px #fffdf0,inset 2px 0 2px #fff8dc,inset -2px -4px 5px #a2824240}
+[data-ui-skin="sculpted"] #game.battle-mode #deployment-panel #dice-hud .pip{background:#415a45;box-shadow:inset 0 2px 1px #1c3d2c,0 1px #fff8da}
+#game.battle-mode #dice-hud .dice-live-readout{color:#fff1cd;background:linear-gradient(#557750,#385640);border:1px solid #b4ad77;border-radius:7px;padding:3px 7px;box-shadow:inset 0 1px #b8c39366,0 2px #3d5035;text-shadow:0 1px #2d452f;white-space:nowrap;font-size:9px}
+#game.battle-mode #dice-hud.charge-near .meter-fill{stroke:#ffe6a0;filter:drop-shadow(0 0 2px #f5d371)}
+[data-ui-skin="sculpted"] #game.battle-mode #combat-actions #btn-skill{overflow:visible;border:0;padding:4px;border-radius:15px;background:radial-gradient(ellipse at 30% 15%,#a8c5a5,#527e6b 65%,#315c51);box-shadow:inset 0 2px #e4edc5,inset 0 -4px #264d3c44,0 4px #51583b}
+#game.battle-mode #combat-actions #btn-skill::after{display:none}
+#game.battle-mode #combat-actions #btn-skill:not(.ready) #sk-icon{filter:saturate(.5) brightness(.85)}
+#game.battle-mode #combat-actions #btn-skill .meter-fill{stroke:#9ad9bc}
+#game.battle-mode #combat-actions #btn-skill.ready .meter-fill{stroke:#ffe19b}
+[data-ui-skin="sculpted"] #game.battle-mode #sk-cd{inset:auto -3px -5px;border:1px solid #b9b780;background:linear-gradient(#648365,#3b604c);border-radius:5px;font-size:9px;line-height:13px;color:#fff5d8;box-shadow:0 1px #344e39;z-index:5}
+@keyframes field-charge-pop{40%{transform:scale(1.13);filter:brightness(1.2)}100%{transform:none;filter:none}}
+@media(prefers-reduced-motion:reduce){.battle-charge-meter .meter-fill{transition:none}#game.battle-mode #deployment .charge-produced .orb-inner{animation:none}}
+#game.battle-mode #dice-hud .dice-live-readout{width:max-content;max-width:128px;min-width:0;left:50%;transform:translateX(-50%);top:calc(100% + 6px);text-align:center}
+/* D8/D10/D12 use their full numeric faces within the same charging cradle. */
+#game.battle-mode #dice-hud .dice-perspective:has(.poly-die){transform:scale(.92);transform-origin:center}
+#game.battle-mode #dice-hud .poly-die{width:52px;height:52px;filter:drop-shadow(0 2px 1px #324d3766)}
+#game.battle-mode #dice-hud .dice-live-readout{max-width:none;font-size:9px;letter-spacing:-.15px}
+/* Reserve the readout and the rotating die's full envelope above the roster. */
+[data-ui-skin="sculpted"] #game.battle-mode #deployment-panel #dice-hud.charge-dice{top:auto;bottom:calc(100% + 32px);height:54px;width:54px}
+#game.battle-mode #dice-hud .dice-perspective{transform:scale(.56);transform-origin:center}
+#game.battle-mode #dice-hud .dice-perspective:has(.poly-die){transform:scale(.82)}
+#game.battle-mode #dice-hud .dice-live-readout{top:calc(100% + 5px);line-height:12px;padding:2px 6px;max-width:132px;box-sizing:border-box}
+/* Center the unscaled 52px rotation stage, independently of cradle padding. */
+#game.battle-mode #dice-hud .dice-perspective{position:absolute;left:50%;top:50%;margin:0;transform:translate(-50%,-50%) scale(.56);transform-origin:50% 50%}
+#game.battle-mode #dice-hud .dice-perspective:has(.poly-die){transform:translate(-50%,-50%) scale(.82)}
+/* The die communicates its result; its rim communicates time. Avoid a second HUD caption. */
+#game.battle-mode #dice-hud .dice-live-readout{position:absolute;width:1px;height:1px;padding:0;border:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;background:none;box-shadow:none}
+[data-ui-skin="sculpted"] #game.battle-mode #deployment .assigned-dice{background:none;box-shadow:none;border:0;border-radius:0;min-width:0;padding:0;margin:6px auto 0;font-size:10px;line-height:13px;font-variant-numeric:tabular-nums;color:#fff4d8;text-shadow:0 1px 2px #213c2e,0 0 3px #213c2e;font-weight:600}
+[data-ui-skin="sculpted"] #game.battle-mode #deployment .locked .assigned-dice{font-size:9px;color:#d5ddc4;font-weight:500}
+/* Lighter rims frame the art without drawing a second competing outline. */
+#game.battle-mode .battle-charge-meter .meter-rim{stroke:#c4ae79;stroke-width:6;filter:drop-shadow(0 1px 0 #45513a)}
+#game.battle-mode .battle-charge-meter .meter-track{stroke:#3d5b46;stroke-width:3.5}
+#game.battle-mode .battle-charge-meter .meter-fill{stroke-width:2.5;filter:none}
+/* Equal slot geometry and pictograms; requirements belong to the detail view. */
+#game.battle-mode #deployment{grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;align-items:start}
+#game.battle-mode #deployment .deploy-card{justify-content:flex-start;min-height:68px;margin:0;padding:3px 0;gap:0}
+[data-ui-skin="sculpted"] #game.battle-mode #deployment .deploy-orb{width:44px;height:44px;flex:none;box-sizing:border-box}
+#game.battle-mode #deployment .assigned-dice:empty{visibility:hidden;display:block;height:13px}
+#game.battle-mode #deployment .slot-lock-icon{width:20px;height:20px;fill:#c8d1b2;stroke:#596e4c;stroke-width:1.8;stroke-linecap:round}
+#game.battle-mode #deployment .empty-slot{font-size:24px;line-height:1;color:#d6e1bb;text-shadow:0 1px #3e5e45}
+[data-ui-skin="sculpted"] #game.battle-mode #deployment-panel #dice-hud .cube-side .pip{width:9px;height:9px;background:#263e2d;box-shadow:inset 0 1px #142a1c,0 1px #fffbea}
+#game.battle-mode #dice-hud .dice-tilt{transform:rotateX(-10deg) rotateY(-12deg)}
+#game.battle-mode #field>#combat-actions{bottom:122px;right:12px;padding:0}
+@media(max-height:650px){#game.battle-mode #field>#combat-actions{bottom:117px}}
+/* Fixed inset replaces inherited fixed inner sizes that overflowed the padding box. */
+[data-ui-skin="sculpted"] #game.battle-mode #deployment .deploy-orb>.orb-inner{position:absolute;inset:4px;width:auto;height:auto;min-width:0;min-height:0;margin:0;display:grid;place-items:center;box-sizing:border-box}
+#game.battle-mode #deployment .orb-inner>.slot-plus-icon{width:21px;height:21px;min-width:0;min-height:0;margin:0;padding:0;display:block;fill:none;stroke:#d6e1bb;stroke-width:2.6;stroke-linecap:round;filter:drop-shadow(0 1px #3e5e45)}
+/* The removed caption no longer needs its reserved vertical row. */
+[data-ui-skin="sculpted"] #game.battle-mode #deployment-panel #dice-hud.charge-dice{bottom:calc(100% + 10px)}
+#game.battle-mode #field>#combat-actions{bottom:100px}
+@media(max-height:650px){#game.battle-mode #field>#combat-actions{bottom:95px}}
+/* Cooldown is carried by the rim; do not repeat it as a caption under the skill. */
+[data-ui-skin="sculpted"] #game.battle-mode #combat-actions #sk-cd{display:none}
+/* One geometry owns both the die surface and its rim, eliminating mismatched corners. */
+.battle-charge-meter .meter-surface{display:none}
+#game.battle-mode #dice-hud .battle-charge-meter .meter-surface{display:block;fill:#66835a}
+[data-ui-skin="sculpted"] #game.battle-mode #deployment-panel #dice-hud.charge-dice .dice-charge-ring{background:none;box-shadow:none;border:0}
+#game.battle-mode #dice-hud .battle-charge-meter{inset:0;width:100%;height:100%;filter:drop-shadow(0 2px 1px #334a3655)}
+#game.battle-mode #dice-hud .battle-charge-meter .meter-rim{stroke:#c4ae79;stroke-width:2;filter:none}
+#game.battle-mode #dice-hud .battle-charge-meter .meter-track{stroke:#3d5b46;stroke-width:2.5}
+#game.battle-mode #dice-hud .battle-charge-meter .meter-fill{stroke-width:2.5;filter:none}
+/* Skill collection uses the same parchment and green enamel as the battlefield. */
+.skill-banner{text-align:center;padding:20px 12px;background:radial-gradient(ellipse at top,#b8c49b66,transparent);border-bottom:1px solid #b8a47755;margin-bottom:16px}
+.skill-banner>span{display:block;font-size:42px;margin-bottom:8px}.skill-banner h2{margin:5px 0;color:#365646}.skill-banner p{margin:6px 0;font-size:12px}.skill-banner>small{color:#7c704e}
+.skill-recruitment>.hint{text-align:center;font-size:11px;line-height:1.7;margin:12px 0 20px}
+.skill-collection{display:grid;gap:10px}.skill-card{display:grid;grid-template-columns:40px minmax(0,1fr) auto;align-items:center;gap:10px;padding:12px;border:1px solid #b6a477;border-radius:12px;background:#fff4d9}.skill-card.equipped{border-color:#638464;background:#e4ebd2}.skill-card h3{margin:0;font-size:14px}.skill-card p{font-size:11px;line-height:1.5;margin:6px 0}.skill-card small{font-size:10px;color:#697451}.skill-emblem{font-size:28px;text-align:center}.skill-card .btn{min-width:52px;padding:8px 6px}.skill-results{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.skill-result{display:grid;gap:6px;text-align:center;padding:14px 8px;border:1px solid #bca77a;border-radius:10px;background:#e6ebd5}.skill-result:only-child{grid-column:1/-1}.skill-result>span{font-size:32px}.skill-result small{font-size:11px;color:#586e51}
+[data-ui-skin="sculpted"] #panel .skill-recruitment{background:#f5e9c9;color:#3d5343;border:1px solid #b9a574;border-radius:14px;padding:14px;margin:0}
+[data-ui-skin="sculpted"] #panel .skill-recruitment .hint{color:#72664a}
+[data-ui-skin="sculpted"] #panel .skill-banner{padding:12px 8px;background:radial-gradient(ellipse at top,#bbceaa88,transparent)}
+[data-ui-skin="sculpted"] #panel .skill-banner h2{color:#365646;font-size:22px}
+[data-ui-skin="sculpted"] #panel .skill-banner>small{color:#72664a}
+[data-ui-skin="sculpted"] #panel .skill-banner>span .game-icon{width:48px;height:48px}
+.skill-loadout{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px;margin:12px 0 18px}.skill-loadout-slot{min-width:0;border:1px solid #b8a67c;background:#e4e6cd;color:#405a44;border-radius:10px;padding:8px 3px;display:grid;gap:6px;justify-items:center}.skill-loadout-slot.selected{outline:2px solid #567954;outline-offset:1px;background:#cfdfbc}.skill-loadout-slot small{font-size:9px}.skill-loadout-slot b{font-size:9px;line-height:1.4;overflow-wrap:anywhere}.skill-loadout-slot>span{height:28px;font-size:24px}.skill-loadout-slot .game-icon{width:28px;height:28px}.skill-rules{font-size:11px;line-height:1.6;margin:14px 0;color:#665f49}.skill-rules summary{cursor:pointer}.skill-list-title{font-size:14px;margin:18px 0 10px}.skill-list-title>small{display:block;font-size:10px;font-weight:400;margin-top:5px}.skill-card{border-left:4px solid var(--skill-rarity,#b6a477)}.skill-card .skill-rarity{color:var(--skill-rarity);font-weight:700}.skill-locked{opacity:.6}
+button.skill-card{width:100%;text-align:left;font:inherit;color:#3d5343;cursor:pointer}.skill-card-status{font-size:10px;white-space:nowrap}.skill-detail{text-align:center}.skill-detail>.skill-emblem{display:block;margin:12px auto}.skill-detail>small{display:block;color:#79694d}.skill-summon .skill-rules{color:#e4d6b3;margin:12px 0}.skill-summon .skill-rules p{font-size:11px}
+[data-ui-skin="sculpted"] #panel .skill-summon .summon-stage{background-image:url('assets/skill-sanctum.svg')}
+#panel .skill-summon .ux-summon-sigil{font-size:28px;top:40%;color:#f1df9e;text-shadow:0 0 16px #dfcc88}
+#modal .skill-results-shared .skill-result{background:linear-gradient(#304f49,#203c38);border-color:var(--r);color:#fff0cb;display:grid;gap:6px;min-width:0;padding:12px 6px}
+#modal .skill-results-shared .skill-result small{color:#e2d8b6}#modal .skill-results-shared .skill-result:only-child{grid-column:1/-1;max-width:150px;justify-self:center;width:100%}
+.skill-detail-art{display:grid;place-items:center;font-size:46px;background:radial-gradient(#e8e5bf,#799476);border:2px solid var(--r);border-radius:16px;margin:0 auto 10px;width:80px;height:80px}.skill-detail-art .game-icon{width:56px;height:56px}.skill-slot-picker{margin-top:16px}.skill-slot-picker h3{text-align:left;font-size:13px;margin:0 0 8px}.skill-slot-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}.skill-slot-grid button{display:grid;justify-items:center;gap:7px;min-width:0;padding:10px 3px;border:1px solid #aa9970;border-radius:10px;background:#e6e3c7;color:#385747}.skill-slot-grid button[aria-pressed=true]{outline:2px solid #527451;background:#c7d7ad}.skill-slot-grid small,.skill-slot-grid b{font-size:10px;line-height:1.4}.skill-slot-grid span{font-size:23px;min-height:28px}.skill-slot-grid .game-icon{width:28px;height:28px}.skill-replace-hint{font-size:11px;min-height:16px;color:#526a4b}.skill-hero-detail .statgrid{text-align:left}
+.skill-formation .skill-loadout{padding:10px 4px;margin:0}.skill-formation .roster-dock>p{font-size:11px;text-align:center;margin:8px 0;color:#dbe4cb}.skill-formation .skill-target{outline:2px solid #f2d181;background:#d8e4bd}.skill-formation .skill-card-art{display:grid;place-items:center;height:78px;font-size:40px}.skill-formation .skill-card-art .game-icon{width:58px;height:58px}.skill-formation .reserve-select{width:100%}.skill-formation .reserve-section{margin-top:14px}.skill-formation .skill-loadout-slot b{font-size:10px}.skill-formation .skill-loadout-slot>span{height:30px}.skill-formation .skill-loadout-slot{min-height:100px}.skill-formation .reserve-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.skill-formation .reserve-unit{min-width:0}.skill-formation .reserve-select>b{font-size:12px}.skill-formation .reserve-select>small{font-size:10px}
+[data-ui-skin="sculpted"] #panel .skill-formation .roster-dock>p{color:#657153;text-shadow:none}
+[data-ui-skin="sculpted"] #panel .skill-formation .reserve-unit{background:linear-gradient(#f5ecd0,#dce3c5);border:2px solid var(--r);border-radius:12px;padding:8px 4px;box-shadow:0 2px 0 #8b94744d;position:relative}
+[data-ui-skin="sculpted"] #panel .skill-formation .reserve-unit.selected{outline:3px solid #c4a24e;outline-offset:2px}
+[data-ui-skin="sculpted"] #panel .skill-formation .unit-rarity{background:#edf0da;color:#496249;text-shadow:none;font-size:9px}
+.skill-equip-groups{display:grid;gap:16px;margin-top:12px}.skill-equip-groups>section{padding:12px;border:1px solid #b3a078;border-radius:12px}.skill-active-group{background:#ece0b9}.skill-passive-group{background:#dce6d0}.skill-equip-groups h3{font-size:13px;margin:0 0 8px;color:#43583f}.skill-equip-groups h3 small{font-weight:400;font-size:10px;margin-left:8px}.skill-formation .skill-active-group .skill-loadout{grid-template-columns:minmax(0,100px);justify-content:center}.skill-formation .skill-passive-group .skill-loadout{grid-template-columns:repeat(4,minmax(0,1fr))}.skill-formation .skill-equip-groups .skill-loadout{padding:0}.skill-formation .skill-equip-groups .skill-loadout-slot{min-height:84px}.skill-empty{grid-column:1/-1;font-size:12px;color:#68755b;padding:14px 0}.skill-tutorial{padding:12px;margin-bottom:12px;border:1px solid #b99c5d;border-radius:10px;background:#f1e2b8;color:#43543c}.skill-tutorial p{font-size:12px;line-height:1.6;margin:7px 0}.skill-tutorial .btn{width:100%}
+/* The equipment stays in reach while the entire owned collection scrolls. */
+#panel .skill-formation{display:flex;flex:1;flex-direction:column;min-height:0;overflow:hidden;height:100%}
+#panel .skill-formation>.roster-dock{flex:none;padding:10px;margin:0 0 10px;border-radius:14px;background:radial-gradient(ellipse at 50% 25%,#718c68,#385447);border:1px solid #bda56e;box-shadow:inset 0 1px #efdfaa66,0 3px 0 #283f35}
+#panel .skill-formation .roster-dock-title{color:#f4e5b7}
+#panel .skill-formation .skill-equip-groups{grid-template-columns:92px minmax(0,1fr);gap:12px;margin-top:8px;align-items:start}
+#panel .skill-formation .skill-equip-groups>section{padding:0;border:0;background:none}
+#panel .skill-formation .skill-equip-groups h3{text-align:center;color:#e9d7a3;font-size:11px;margin-bottom:8px}
+#panel .skill-formation .skill-active-group{border-right:1px solid #d1b77866;padding-right:12px}
+#panel .skill-formation .skill-loadout-slot{min-height:78px;padding:6px 2px;border-radius:12px;background:linear-gradient(#9eb18a,#597853);border:1px solid #d6ba78;color:#fff0c7;box-shadow:inset 0 1px #f0e3b277,0 3px 0 #273e30}
+#panel .skill-formation .skill-active-group .skill-loadout-slot{border:2px solid #f2d794;box-shadow:inset 0 0 12px #e8d89555,0 3px 0 #273e30}
+#panel .skill-formation .skill-loadout-slot>small:first-child{display:none}
+[data-ui-skin="sculpted"] #panel .skill-formation .roster-dock>p{color:#e2ddbb;font-size:10px;margin:10px 0 0}
+#panel .skill-inventory{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;touch-action:pan-y;padding:0 4px 18px;scrollbar-width:thin;scrollbar-color:#9c895d #dcd7bb}
+#panel .skill-inventory .reserve-section{margin:0 0 18px;flex:none}
+#panel .skill-inventory .reserve-grid{overflow:visible;flex:none}
+#panel .skill-formation>.skill-tutorial{flex:none;margin-bottom:8px;padding:8px;font-size:12px}

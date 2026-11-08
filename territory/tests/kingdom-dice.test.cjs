@@ -5,10 +5,10 @@ vm.runInContext(`
 newGame({name:'검증',gender:'m',cls:'knight',nation:'aurum'});ensureKingdom();ensureDice();
 assert.equal(ownedLands(),0);S.gold=1000;assert.equal(claimLand('grove','training'),false);
 S.maxStage=6;S.gold=349;assert.equal(claimLand('grove','training'),false);S.gold=1000;
-const before=diceCooldown();assert.equal(claimLand('grove','training'),true);assert.equal(S.gold,650);assert.equal(ownedLands(),1);assert.equal(diceCooldown(),before*.9);
-assert.equal(claimLand('grove','mine'),false);assert.equal(S.gold,650);assert.equal(claimLand('bad','mine'),false);
-loadGame();assert.equal(S.kingdom.lands.grove,'training');assert.equal(S.gold,650);
-S.maxStage=11;S.gold=2000;const gold=goldMult();assert.equal(claimLand('brook','mine'),true);assert.equal(goldMult(),gold*1.15);
+const before=diceCooldown();assert.equal(claimLand('grove','training',()=>.99),true);assert.equal(S.gold,650);assert.equal(ownedLands(),1);assert.equal(diceCooldown(),before*.9);
+assert.equal(claimLand('grove','mine',()=>.99),true);assert.equal(S.gold,300);assert.equal(claimLand('bad','mine'),false);
+loadGame();assert.equal(facilityLevel('grove','training'),1);assert.equal(facilityLevel('grove','mine'),1);assert.equal(S.gold,300);
+S.maxStage=11;S.gold=2000;assert.equal(claimLand('brook','mine',()=>.99),true);assert.equal(facilityCount('mine'),2);
 delete S.kingdom;ensureKingdom();assert.equal(ownedLands(),2);assert.equal(availableLand().id,'grove','cleared legacy castles grant ownership');
 startStage(1);B.units=[];
 let r=rollOpeningProduction(()=>.99);assert.equal(r.face,6);assert.equal(r.count,2);assert.equal(S.dice.charge.militia,2);assert.equal(S.dice.charge.archer,0);

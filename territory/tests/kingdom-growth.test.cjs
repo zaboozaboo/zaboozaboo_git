@@ -10,7 +10,7 @@ assert.equal(advanceKingdomGrowth(0),null,'stale button cannot purchase a differ
 assert.equal(kingdomGrowth().id,'hp');
 for(let n=1;n<10;n++)assert.ok(advanceKingdomGrowth(n));
 assert.equal(kingdomGrowth().locked,true);const gateGold=S.gold;assert.equal(advanceKingdomGrowth(10),null);assert.equal(S.gold,gateGold);
-S.maxStage=6;assert.ok(claimLand('grove','mine'));assert.equal(kingdomGrowth().locked,false);assert.ok(advanceKingdomGrowth(10));
+S.maxStage=6;assert.ok(claimLand('grove','mine',()=>.99));assert.equal(kingdomGrowth().locked,false);assert.ok(advanceKingdomGrowth(10));
 saveGame();loadGame();assert.equal(kingdomGrowth().step,11);assert.equal(ownedLands(),1);
 // Legacy benefits are never removed or applied twice by migration.
 delete S.kingdom.growth;S.upgrades.atk=37;S.upgrades.cap=10;S.upgrades.spawn=50;const snapshot=JSON.stringify(S.upgrades);ensureKingdomGrowth();ensureKingdomGrowth();assert.equal(JSON.stringify(S.upgrades),snapshot);assert.equal(kingdomGrowth().step,0);

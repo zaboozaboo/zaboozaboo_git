@@ -19,7 +19,7 @@ assert.equal(learnFeature('hero'),true);UI.act('hlv',{id:'militia'},true);assert
 assert.equal(learnFeature('recruit'),true);UI.act('summon',{n:'1'},true);assert.equal(S.stats.summons,2);
 assert.equal(featureAccess('land').ready,false);S.maxStage=6;conquerLand(5);S.territoryTutorial='done';
 assert.equal(featureAccess('land').ready,true);
-assert.equal(learnFeature('land'),true);assert.equal(claimLand('grove','training'),true);
+assert.equal(learnFeature('land'),true);assert.equal(claimLand('grove','training',()=>.99),true);
 assert.equal(learnFeature('promo'),true);assert.equal(expeditionAccess('duel').ready,false,'first promotion still required');
 S.lord.promo=1;S.maxStage=7;assert.equal(expeditionAccess('duel').ready,true);
 S.heroes.militia.shards=shardsForStar(1);assert.equal(learnFeature('star'),true);UI.act('hstar',{id:'militia'},true);assert.equal(S.heroes.militia.stars,2);

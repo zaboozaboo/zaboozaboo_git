@@ -38,3 +38,11 @@
 .realm-land.locked.next .estate-building{opacity:.7}
 .realm-land.locked.next em{background:#b9822c}
 .realm-land .realm-lock{position:absolute;top:8px;right:8px;width:22px;height:22px;background:url('assets/casual-icons.png') 40% 75%/600% 500% no-repeat;opacity:.75;clip-path:inset(12% 10% 6% 10%)}
+/* Owned land and the single next conquest have separate roles. */
+#lobby.kingdom-home .realm-holdings{flex:0 1 auto;min-height:0;max-height:55%}
+#lobby.kingdom-home #kingdom-map-host{flex:initial;max-height:100%;min-height:0}
+#lobby.kingdom-home .realm-goal{margin-top:0}
+#lobby.kingdom-home #realm-target progress{margin-bottom:0}
+#game.first-camp-mode #field>#first-camp{position:absolute;left:16px;right:16px;top:22%;height:auto;z-index:7;padding:16px;gap:8px;border:1px solid #bca573;border-radius:16px;background:linear-gradient(#355e58ed,#244a43ed);box-shadow:inset 0 1px #fff3,0 5px 15px #142b3344;pointer-events:none}
+#field>#first-camp small{color:#ebcd8c;font-size:11px}#field>#first-camp>b{font-size:18px}#field>#first-camp>span{font-size:12px}#field>#first-camp button{pointer-events:auto;min-height:44px}
+#game.first-camp-mode.panel-open #first-camp{visibility:hidden}

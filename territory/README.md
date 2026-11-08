@@ -159,6 +159,16 @@ territory/
 
 ## 진행 속도 검증과 배포
 
+공유용 고정 플레이 주소: https://territory-go.pages.dev/ (Cloudflare Pages 프로젝트 `territory-go`, 프로덕션 브랜치 `main`). 로컬 컴퓨터나 임시 터널을 켜 둘 필요가 없습니다.
+
+현재 작업 내용을 업데이트하려면 게임 파일만 새 임시 폴더로 패키징한 뒤 배포합니다.
+
+```bash
+release_dir="$(mktemp -d)/public"
+node territory/tools/package-game.cjs "$release_dir"
+npx --yes wrangler pages deploy "$release_dir" --project-name territory-go --branch main --commit-dirty=true
+```
+
 [진행 속도 검토](../docs/progression-review.md)에 시뮬레이션 조건과 측정 결과를 기록했습니다. 첫 전직 비용은 500골드입니다.
 
 ```bash
@@ -167,3 +177,75 @@ node territory/tools/package-game.cjs /tmp/crownward-release
 ```
 
 위 명령은 저장소 루트에서 실행합니다. 배포 출력 폴더는 아직 존재하지 않는 경로여야 합니다. 생성한 폴더만 배포하면 `versions/`, `reclaim/`, 테스트 파일은 포함되지 않습니다. 아트 폴더 전체는 포함됩니다.
+
+### 영토 시설 주사위 강화
+
+훈련장과 금광을 한 영지에서 모두 올릴 수 있으며 각각 최대 2단계입니다. 1단계는 주사위 3 이상(4/6), 2단계는 4 이상(3/6)이면 성공합니다. 시도 비용은 1단계가 영지의 기존 건설비, 2단계가 그 두 배입니다. 실패해도 기존 단계는 유지되며 시도 비용은 소모됩니다.
+
+훈련장은 단계마다 자동 주사위 쿨타임 ×0.9, 금광은 단계마다 골드 수입 +15%p입니다. 기존 선택형 시설 저장은 해당 시설 1단계로 자동 이전하며, 다른 시설은 0단계에서 시작합니다. 주사위 눈금과 성공·실패 결과는 시설 관리 화면에 표시합니다.
+
+검증: `node territory/tests/facility-dice.test.cjs` — 모든 눈금의 두 단계 판정, 비용·독립 강화·최대 단계·오래된 버튼 재실행 방지·골드 부족·저장 이전과 재로드.
+
+
+## 포탈마스터 (master-119)
+
+`js/portal.js`가 현재 3역할 포탈 게임의 상태와 UI를 소유합니다. 전위·화력·지원 각 1슬롯, 역할당 2종 × 10시대의 60종 유닛입니다. 유닛 교체는 같은 역할에만 가능하며 이미 출격한 병력의 수치와 생존 상태는 변경하지 않습니다. 머지·철수·시간에 따른 생산 충전은 없습니다. 빨간 주사위만 생산 눈금을 공급하고 파란 주사위는 유닛을 소환합니다.
+
+### 참고 레벨 디자인과 적용 범위
+
+`tools/import-forge-balance.py`는 로컬 `forge-clone-2/Assets/_Project/Data/Charts/`의 실행 차트를 읽습니다. `js/forge-balance.js`에 원천 SHA-256과 행 수를 기록합니다. 35레벨 시대 확률, 34개 강화 비용·분할 납부·시간, 29개 유닛 레벨 구간, 시대별 판매 골드·옵션 수, 920개 대장 경험치, 630개 전선과 2,154개 웨이브를 가져옵니다.
+
+동일 역할·시대 소환마다 레벨 구간을 한 단계 전진하며 같은 유닛의 연속 추첨을 피합니다. 8회 소환 후 포탈 강화가 열리고 첫 세 번의 강화는 무료 즉시 완료할 수 있습니다. 나머지는 저장된 종료 시각에 자동 완료됩니다. 유닛 판매는 원천 시대별 골드와 경험치 20을 지급합니다.
+
+장비 8부위는 유닛 3역할로 변환했습니다. 포탈 생산 비용(12), 소환 비용(24), 보급 수급, 유닛 기본 스탯·역할 능력, 군대 전투·성 공략은 포탈마스터용 수치입니다. 시대별 유닛 공격력·체력은 원천 적 시대 배율과 1% 레벨 복리 성장으로 투영합니다. 난이도 배율은 군대 전투에 맞춰 6배씩 적용합니다. 원본과 전투 결과까지 동일하다고 가정하지 않습니다. 대장 레벨의 원천 고정 공격력·체력을 3역할로 나누어 이후 출격 병력에 더합니다. 캐릭터 외형은 현재 로컬 병종 스프라이트를 재사용합니다.
+
+기존 포탈 저장은 `S.portal.legacy`에 원본을 보존하고 3역할로 변환합니다. 넘치는 유닛은 판매·교체 대기열에 남으며 골드·영웅 보유 기록은 삭제하지 않습니다. 새 전선은 1부터 시작합니다.
+
+검증: `node territory/tests/portal-master.test.cjs`. 확률표·역할별 2종·레벨 구간·강화 납부·무료 즉시 완료·타이머·판매·병력 유지·스탯 적용·유료 주사위 생산·저장 이관·10분 플레이를 확인합니다.
+
+### master-130 navigation and automatic portal
+
+- Main HUD retains three unit slots and a free automatic production die. Portal level and automatic summon settings are adjacent to the central portal, not separate bottom tabs.
+- Bottom navigation follows the current `forge-clone-2` UXML: arena, dungeon, growth, guild, shop. Only growth is connected; the others are visibly locked as requested. The independently invented codex tab is removed.
+- Growth follows the source feature-page/back-navigation/subtab hierarchy. Mount and skill tabs are locked. Research has working unit attack/HP and supply upgrades (Portal Master adaptation, not claimed to be source research balance).
+- Automatic portal rolls spend 24 supply each, sell non-selected eras, retain and stop on selected eras, and wait for unresolved results or insufficient supply. Production is independent. Automatic spending does not resume on reload.
+- Source reference: current `GameHud.uxml`, `GameHud.Features.cs`, `GameHud.AutoForge.cs`, `_reference-hud.uss`; source project remains unmodified by this implementation.
+
+### 수치 원천과 변환 계약
+
+기준 문서: [포탈마스터 수치 원천과 변환 계약](balance/index.html). 현재 포지클론 계약 5개와 최상위 CSV 62개를 `balance/forge-source`에 원문 보존하고 SHA256으로 추적한다. 활성 실행표와 참고표는 원천 계약의 분류를 따른다. `balance/adaptation-contract.json` 및 CSV는 20개 시스템의 실제 연결 상태, 임시값, 변환 원칙을 기록한다. 임시 연구/적 배율은 원천 수치로 간주하지 않으며 해당 계약에서 교체 대상으로 표시한다. 이 문서화 작업 자체가 미완료 수치 이관을 완료한 것은 아니다.
+
+`python3 territory/tools/import-forge-balance.py --check`는 보존본 전체 해시와 현재 8개 실행 투영표를 검증한다. 생성기는 외부 프로젝트를 자동 추적하지 않고 저장소 안의 고정 원천을 읽는다. 원천 갱신은 문서·표·manifest와 적용 차이를 함께 검토한다.
+
+### master-132: 같은 슬롯의 두 병종 밸런스
+
+60종 유지. 포지의 시대별 장비 예산·레벨 성장·연구·대장 보너스를 공유하고, 병종별 정원으로 나눈다. 공격 주기가 길면 1회 피해도 비례해서 증가하도록 변경했다. 개별 병력의 정수 올림으로 물량형 총합이 늘어나는 현상을 없애고 표시만 반올림한다.
+
+- 생산: 모두 6눈금. 전위는 3명/정원18 대 1명/정원6, 화력은 각각 1명/정원10, 지원은 각각 1명/정원5. 같은 슬롯의 충원 비율과 정원 총체력은 같다. 이전 비용 4 대 7, 6 대 8의 생산 편향 제거.
+- 전위: 물량형 한 명의 체력·시간당 공격은 중장형의 1/3. 이동속도·피격 분산·과잉 피해 차이는 남는다. 방어력은 양쪽 0이며 중장형 설명도 실제 체력 차이로 수정.
+- 화력: 광역형 단일 피해는 집중형 총 DPS의 62.5%. 기존 60% 주변 피해를 포함해 2명 타격 시 동일, 1명일 때 집중형 우세, 3명 이상이면 광역형 우세. 사거리·투사체 도달시간은 전장에 따른 차이로 유지.
+- 지원: 치유사의 공격/회복은 같은 쿨타임을 사용한다. 기수 직접 공격은 공통 예산의 75%; 140 범위 내 기수 1명당 +3%, 총 +15%. 사망/범위 밖 기수 제외, 교체 전후 병력이 섞여도 상한 유지. 두 다른 슬롯이 완전히 찬 조건에서는 기수의 추가 공격 기여가 치유 최대 기여보다 16.25% 높다. 회복이 필요 없거나 아군이 범위 밖이면 가치가 달라진다.
+
+검증: `node territory/tests/slot-balance.test.cjs`
+- 10시대 × 150레벨 × 3슬롯 = 4,500쌍 비교.
+- 실제 `Portal.produce` 실행: 레벨 1/25/75/150, 동일한 시드 3개, 120초, 병력 수명 12/30/120초, 총 2,160회. 초당 누적 체력과 출력, 주사위 잔여 눈금, 정원 제한 검증.
+- 전위 및 2대상 화력의 생산/사망 포함 기여 차이는 부동소수점 오차 수준. 지원의 생산/보충 중 기여 차이는 9개 기준 시나리오에서 최대 12.7321%. 실제 전투의 버프 상한·범위·사망, 광역 피격, 회복 상한도 검증.
+- `portal-master.test.cjs`의 교체 후 기존 병력 보존, 무료 생산, 소환/연구/던전 및 10분 전투 회귀 테스트 통과.
+
+이 검증은 동등한 피격·생존 조건에서 생산을 포함한 기준 예산을 맞춘 것이다. 회복 1과 피해 1을 같은 기여로 보는 지원 비교이며, 실제 적 배치·오버킬·회복 낭비·이동·버프 범위에 따른 승률까지 동일하다는 의미는 아니다. 고정 사망 주기를 자유 전투 승률로 보고하지 않는다. 새로운 이미지는 이 변경에 포함하지 않는다.
+
+### master-133: 시대별 캐릭터 이미지
+
+`assets/portal-units-v1/pm_{시대}_{병종}.png`는 각 캐릭터의 앞/뒤 두 방향 원본이다. 10시대 × 6병종, 각 파일은 왼쪽 아래 방향/오른쪽 위 방향의 같은 캐릭터다. 내장 image_gen으로 제작하며 정확한 프롬프트는 해당 폴더의 manifest에 보관한다. 이전 측면 석기 시안은 사용하지 않는다.
+
+`portal-unit-art.js`는 원본 알파를 유지하고 두 방향을 같은 배율·발 기준선으로 정렬한다. 슬롯은 앞모습, 전장은 전후 이동 및 목표 방향에 따라 앞/뒤를 사용한다. 기존 좌우 반전은 새 이미지에 적용하지 않는다. 필요한 캐릭터만 지연 로드하며 전투 수치나 충돌 크기를 바꾸지 않는다. 이번 원본은 두 방향 정지 이미지이며 별도 보행·공격 프레임을 제작했다는 의미는 아니다. 기존 미세 이동·공격 연출을 사용한다.
+
+검수 화면: `tests/portal-unit-art.html`. 같은 슬롯의 두 병종을 나란히 놓고 양방향, 전장 32px, 슬롯 60px 크기를 비교한다. 이 화면은 제작 검수용이며 인게임에 도감 메뉴를 추가하지 않는다. 파일 완전성 확인: `python3 territory/tools/check-portal-unit-art.py`.
+
+### master-136: 기능 화면과 복귀 동선
+
+- 원천 `GameHud.Features.cs` / `GameHud.uxml`의 기능 화면 → 고정 헤더 → 스크롤 본문 → 성장 하위 탭 구조를 적용. 던전·성장에 같은 고정 복귀 버튼을 사용하고, 연구 분야에서는 상위 분야 선택으로 먼저 돌아간다. Escape는 상세 → 목록 → 전장 순서로 닫는다.
+- 던전은 원천 배너 4종으로 목록 구성, 열기 → 단계/보상/입장권 상세 → 입장. 상세를 열거나 닫는 것만으로 입장권을 소비하지 않는다. 입장 조건은 실행 시 재검사한다. 화면 뒤의 전장 컨트롤은 키보드 탐색에서 제외한다.
+- 던전 아이콘/제목을 수정. 성장에는 용병/스킬/연구 하위 탭을 표시하며 미구현 용병·스킬, 기존 미구현 아레나·길드·상점은 잠금 유지. 미구현 기능을 동작하는 기능으로 표시하지 않는다.
+- 연구는 포탈/부대 분야로 구분. 시간 갱신은 DOM을 전체 재생성하지 않으며, 완료 후 수령 버튼 자동 활성화. 실제 연구 상태 변경 시 스크롤 위치를 보존한다. 포탈 시간/비용 연구를 원천 효과에 연결하고 길드 전용 연구를 일반 연구 목록에서 제외했다.
+- 실제 클릭 검증은 `tests/feature-flow.html`에서 진행. 별도의 loadGame/saveGame 대체로 사용자 저장을 읽거나 쓰지 않으며, 연구 완료 경계만 4초로 단축하는 명시적 검증 버튼 제공. 던전 상세 열기/닫기/입장/입장권 차감/복귀, 잠금, 연구 시작/자동 완료 표시/수령, 스크롤 중 복귀를 확인했다. 실제 플레이 페이지에서도 성장 ↔ 던전 전환과 상세 표시를 확인했다.

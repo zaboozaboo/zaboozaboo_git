@@ -221,3 +221,29 @@
 [data-ui-skin="sculpted"] #setup .showcase-copy strong {color:#ffe7a8;text-shadow:0 2px 0 #0b1720;}
 [data-ui-skin="sculpted"] #modal .result-grid .rcard>div:last-child {color:#fff3cf;font-weight:800;text-shadow:0 1px 2px #000a;}
 @media(prefers-reduced-motion:reduce){[data-ui-skin="sculpted"] #journey-hint.on-tab i{animation:none;}}
+/* Battle particles belong behind menus, never above recruitment results. */
+body:has(#modal:not(.hidden)) .production-token,
+body:has(#modal:not(.hidden)) .spawn-burst,
+body:has(#sheet:not(.hidden)) .production-token{display:none!important}
+/* Central production die: six faces in perspective, close to its charge slots. */
+[data-ui-skin="sculpted"] #game.battle-mode #deployment-panel #dice-hud.charge-dice{left:50%;right:auto;transform:translateX(-50%);width:72px;height:72px;bottom:calc(100% + 14px)}
+[data-ui-skin="sculpted"] #deployment-panel #dice-hud.charge-dice .dice-charge-ring{width:72px;height:72px;min-width:72px;padding:8px;background:radial-gradient(ellipse,#e8d9a755,#203d3910 70%);box-shadow:none;border:0;overflow:visible}
+.dice-perspective{display:block;width:52px;height:52px;perspective:450px;overflow:visible}
+.dice-tilt{display:block;width:100%;height:100%;transform-style:preserve-3d;transform:rotateX(-16deg) rotateY(-22deg)}
+.dice-cube{display:block;position:relative;width:52px;height:52px;transform-style:preserve-3d;transform:var(--result-rotation)}
+[data-ui-skin="sculpted"] #deployment-panel #dice-hud.charge-dice .cube-side{position:absolute;inset:0;display:block;width:52px;height:52px;box-sizing:border-box;border:2px solid #ad8b48;border-radius:9px;background:linear-gradient(140deg,#fffbea,#ecd494);box-shadow:inset 0 0 0 2px #fff4ca,inset 0 -5px 8px #b5914933;backface-visibility:hidden;animation:none;margin:0}
+#dice-hud .side-1{transform:translateZ(26px)}#dice-hud .side-6{transform:rotateY(180deg) translateZ(26px)}#dice-hud .side-2{transform:rotateY(90deg) translateZ(26px)}#dice-hud .side-5{transform:rotateY(-90deg) translateZ(26px)}#dice-hud .side-3{transform:rotateX(90deg) translateZ(26px)}#dice-hud .side-4{transform:rotateX(-90deg) translateZ(26px)}
+#dice-hud .dice-cube.is-rolling{animation:crown-dice-tumble .72s linear infinite}
+#dice-hud .dice-cube.is-settled{animation:crown-dice-settle .28s ease-out}
+@keyframes crown-dice-tumble{0%{transform:translateY(0) rotateX(0deg) rotateY(0deg) rotateZ(0deg)}50%{transform:translateY(-10px) rotateX(180deg) rotateY(270deg) rotateZ(20deg)}100%{transform:translateY(0) rotateX(360deg) rotateY(540deg) rotateZ(0deg)}}
+@keyframes crown-dice-settle{0%{transform:translateY(-7px) var(--result-rotation) scale(1.08)}65%{transform:translateY(2px) var(--result-rotation) scale(.96)}100%{transform:var(--result-rotation)}}
+@media(prefers-reduced-motion:reduce){#dice-hud .dice-cube.is-rolling,#dice-hud .dice-cube.is-settled{animation:none}}
+/* Step guidance remains above the sheet and points at the actual next control. */
+#game.panel-open #journey-hint{z-index:40;pointer-events:none;max-width:calc(100% - 24px)}
+#game #journey-hint button{pointer-events:auto}
+[data-ui-skin="sculpted"] #game.battle-mode #deployment-panel #dice-hud.charge-dice{width:54px;height:54px;bottom:calc(100% + 10px)}
+[data-ui-skin="sculpted"] #deployment-panel #dice-hud.charge-dice .dice-charge-ring{width:54px;height:54px;min-width:54px;padding:1px}
+#dice-hud .dice-perspective{transform:scale(.72);transform-origin:center}
+[data-ui-skin="sculpted"] #deployment-panel #dice-hud.charge-dice .cube-side{border-color:#c8a96b;border-radius:11px;background:linear-gradient(145deg,#fffdf1,#f5dfa2);box-shadow:inset 0 0 0 2px #fff9de,inset 0 -3px 6px #d3ae5c33}
+#dice-hud .poly-die{display:block;width:52px;height:52px;filter:drop-shadow(0 3px 2px #183e3944)}
+#dice-hud .dice-perspective:has(.poly-die){transform:none}

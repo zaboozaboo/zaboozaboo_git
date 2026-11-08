@@ -17,7 +17,7 @@ S.stage=5;S.maxStage=5;S.gold=0;startStage(5);assert.equal(B.fortress,true);
 B.result='win';finishBattle();assert.equal(S.kingdom.lands.grove,'outpost');assert.equal(ownedLands(),1);assert.equal(S.gold,0);
 assert.equal(armyCount(),0);assert.equal(B.stage,6);assert.equal(B.fortress,false);
 const gems=S.gems;startStage(5);B.result='win';finishBattle();assert.equal(S.gems,gems);assert.equal(ownedLands(),1);
-assert.equal(claimLand('grove','training'),false);S.gold=350;assert.equal(claimLand('grove','training'),true);assert.equal(S.gold,0);
+assert.equal(claimLand('grove','training',()=>.99),false);S.gold=350;assert.equal(claimLand('grove','training',()=>.99),true);assert.equal(S.gold,0);
 startStage(10);assert.equal(B.fortress,true);startStage(15);assert.equal(B.fortress,false,'existing land milestones define castles');
 // Resetting a loaded current stage never recreates its saved rolling hand.
 S.dice.history=[1,1,1,1,1];S.dice.progress=.9;startStage(S.stage);assert.equal(S.dice.history.length,0);

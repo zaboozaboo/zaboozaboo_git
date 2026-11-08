@@ -513,7 +513,7 @@
 #panel .ux-summon-caption small{display:block;font-size:11px;margin-top:4px;color:#c7e6e8;font-weight:500;}
 #panel .ux-summon-rays{position:absolute;inset:0;background:conic-gradient(from 165deg at 50% 15%,transparent 0deg,#b6f0ff22 6deg,transparent 13deg,#b6f0ff22 22deg,transparent 30deg);animation:sanctum-glow 4s ease-in-out infinite alternate;pointer-events:none;}
 #panel .ux-summon-sigil{position:absolute;left:50%;top:54%;transform:translate(-50%,-50%);font-size:64px;color:#f1ffff;text-shadow:0 0 16px #8ceeff,0 0 40px #72d4ff;animation:sanctum-glow 2.5s ease-in-out infinite alternate;}
-#panel .ux-summon-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;padding:23px 5px 5px;margin:0;flex-shrink:0;background:linear-gradient(#1c344d,#111e33);}
+#panel .ux-summon-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;padding:23px 5px 5px;margin:0;flex-shrink:0;background:linear-gradient(#1c344d,#111e33);}
 #panel .ux-summon-actions>.btn{position:relative;display:flex;justify-content:center;align-items:center;min-height:54px;padding:12px 2px 3px;border:2px solid #e4c678;border-bottom:5px solid #725530;border-radius:9px;background:linear-gradient(#7459be,#453381);color:white;box-shadow:inset 0 2px #ffffff44,0 2px #06111e;font-size:15px;text-shadow:0 2px #172030;}
 #panel .ux-summon-actions>.btn[data-free]{background:linear-gradient(#f6d578,#bd8c3b);color:#302517;text-shadow:none;}
 #panel .ux-summon-actions>.btn:disabled{background:#465267!important;color:#aeb9c5!important;border-color:#7d8792!important;opacity:1;box-shadow:none!important;}
@@ -603,3 +603,24 @@
  #game #panel .kingdom-growth .growth-current p{font-size:18px;line-height:1.35;}
  #game #panel .kingdom-growth .growth-current p>b{font-size:22px;}
 }
+/* Roll in the facility card, with the threshold visible before spending. */
+.ux-facility-item{position:relative}.ux-facility-item>div{min-width:0}
+.ux-facility-item small{display:block;line-height:1.5;font-size:11px;color:#786a51}
+.ux-facility-item .btn{flex:none;min-width:94px;font-size:12px}.ux-facility-item h3{white-space:normal}
+.facility-threshold{display:inline-block!important;margin-top:6px;padding:3px 7px;border-radius:5px;background:#e4dbc0;color:#51472e;font-size:14px!important}
+.facility-inline-roll{position:absolute;right:12px;top:50%;translate:0 -50%;width:94px;pointer-events:none}
+.facility-dice-arena{height:78px;position:relative;display:grid;place-items:center;perspective:450px}
+.facility-dice-cube{width:44px;height:44px;position:relative;transform-style:preserve-3d;transition:transform 160ms linear;z-index:2}
+.facility-cube-face{position:absolute;inset:0;display:grid;grid-template:repeat(3,1fr)/repeat(3,1fr);gap:3px;padding:7px;border:1px solid #bfa575;border-radius:7px;background:linear-gradient(135deg,#fffdf6,#f1dcae);backface-visibility:hidden;box-shadow:inset 0 0 5px #b89a5c44}
+.facility-cube-face i.facility-pip{border-radius:50%;background:#4a4138}
+.face-1{transform:translateZ(22px)}.face-2{transform:rotateY(90deg) translateZ(22px)}.face-3{transform:rotateX(90deg) translateZ(22px)}.face-4{transform:rotateX(-90deg) translateZ(22px)}.face-5{transform:rotateY(-90deg) translateZ(22px)}.face-6{transform:rotateX(180deg) translateZ(22px)}
+.facility-roll-announcement{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+.facility-success{animation:facility-card-win .7s ease-out}.facility-failure{animation:facility-card-miss .5s ease-out}
+[data-phase=success] .facility-dice-arena{background:radial-gradient(ellipse,#ffe798dd,transparent 70%)}
+[data-phase=failure] .facility-cube-face{border-color:#b87361;background:linear-gradient(135deg,#fff2e6,#edc4b4)}
+.facility-roll-burst{position:absolute;inset:50% auto auto 50%}.facility-roll-burst i{position:absolute;width:4px;height:7px;background:#e6b33c;border-radius:2px;opacity:0;transform:rotate(var(--angle)) translateY(-24px)}
+[data-phase=success] .facility-roll-burst i{animation:facility-spark .65s ease-out forwards}
+@keyframes facility-card-win{35%{box-shadow:inset 0 0 0 2px #dfb63d,0 0 18px #efc95688;background:#f6ebc4}100%{box-shadow:none}}
+@keyframes facility-card-miss{20%{translate:-4px;box-shadow:inset 0 0 0 2px #bd786a}40%{translate:4px}60%{translate:-2px}80%{translate:2px}100%{translate:0}}
+@keyframes facility-spark{20%{opacity:1}100%{opacity:0;transform:rotate(var(--angle)) translateY(-45px) rotate(90deg)}}
+@media(prefers-reduced-motion:reduce){.facility-dice-cube{transition:none!important}.facility-inline-roll *,.facility-success,.facility-failure{animation:none!important}.facility-success{box-shadow:inset 0 0 0 2px #dfb63d}.facility-failure{box-shadow:inset 0 0 0 2px #bd786a}}

@@ -1,0 +1,10 @@
+SourceFile,Path,Value
+PetBalancingLibrary.json,Balanced.Type,Balanced
+PetBalancingLibrary.json,Balanced.DamageMultiplier,1
+PetBalancingLibrary.json,Balanced.HealthMultiplier,1
+PetBalancingLibrary.json,Damage.Type,Damage
+PetBalancingLibrary.json,Damage.DamageMultiplier,1.25
+PetBalancingLibrary.json,Damage.HealthMultiplier,0.75
+PetBalancingLibrary.json,Health.Type,Health
+PetBalancingLibrary.json,Health.DamageMultiplier,0.75
+PetBalancingLibrary.json,Health.HealthMultiplier,1.25

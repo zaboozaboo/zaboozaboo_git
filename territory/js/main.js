@@ -6,13 +6,14 @@ let lastFrame = 0, uiTimer = 0, saveTimer = 0, hiddenAt = 0, mainStarted = false
 function startMain() {
   if (mainStarted) return;
   mainStarted = true;
+  Portal.ensure();
   checkDaily();
   $('#game').classList.remove('hidden');
   initRender($('#cv'));
   UI.initMain();
   B.mode = 'stage';
   if(preparingFirstExpedition()){resetField(false);B.stage=1;B.pCastle={hp:castleMaxHp(),max:castleMaxHp()};B.eCastle=null;B.queue=[];}
-  else {startStage(S.stage);beginFirstBattleGuide();if(territoryGuidePaused())MobileShell.show(S.territoryTutorial==='map'?'lobby':'battle');}
+  else {startStage(S.stage);if(!S.portal)beginFirstBattleGuide();if(!S.portal&&territoryGuidePaused())MobileShell.show(S.territoryTutorial==='map'?'lobby':'battle');}
   lastFrame = performance.now();
   requestAnimationFrame(frame);
 }
@@ -21,7 +22,7 @@ function frame(now) {
   if (document.hidden) { lastFrame = now; requestAnimationFrame(frame); return; }
   const elapsed = Math.max(0, (now - lastFrame) / 1000);
   const dt = Math.min(0.05, elapsed);
-  if(S.firstExpedition!==false&&!(typeof firstBattlePaused==='function'&&firstBattlePaused()))accrueLordMerit(elapsed);
+  if(!S.portal&&S.firstExpedition!==false&&!(typeof firstBattlePaused==='function'&&firstBattlePaused()))accrueLordMerit(elapsed);
   lastFrame = now;
   for (let i = 0; S.firstExpedition!==false && !(typeof firstBattlePaused==='function'&&firstBattlePaused()) && i < S.settings.speed; i++) updateBattle(dt);
   if(MobileShell.mode==='battle') render();
@@ -32,6 +33,7 @@ function frame(now) {
 }
 
 function showOffline() {
+  if(S.portal){Portal.offline();return;}
   const r = offlineReward();
   if (!r) return;
   ensureLordMerit();

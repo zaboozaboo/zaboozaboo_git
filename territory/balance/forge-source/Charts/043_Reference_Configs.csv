@@ -1,0 +1,186 @@
+SourceFile,ConfigKey,ColorId,ColorType,HexCode,LevelKey.AscensionLevel,LevelKey.ForgeLevel,DungeonLevel,SegmentId,Description,DisplayName,PlayerCondition.PropertyRequirements,PlayerCondition.RequireAnySegment,PlayerCondition.RequireAllSegments,PlayerCondition.$type
+GuildEmblemColors.json,0,0,Background,#FC672A,,,,,,,,,,
+GuildEmblemColors.json,1,1,Background,#FC3F2A,,,,,,,,,,
+GuildEmblemColors.json,2,2,Background,#FC2A76,,,,,,,,,,
+GuildEmblemColors.json,3,3,Background,#A646FF,,,,,,,,,,
+GuildEmblemColors.json,4,4,Background,#327DF3,,,,,,,,,,
+GuildEmblemColors.json,5,5,Background,#469EFF,,,,,,,,,,
+GuildEmblemColors.json,6,6,Background,#5A5A5A,,,,,,,,,,
+GuildEmblemColors.json,7,7,Foreground,#FFD700,,,,,,,,,,
+GuildEmblemColors.json,8,8,Foreground,#FFFFFF,,,,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 0, 'ForgeLevel': 0}",,,,0,0,0,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 0, 'ForgeLevel': 1}",,,,0,1,0,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 0, 'ForgeLevel': 2}",,,,0,2,0,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 0, 'ForgeLevel': 3}",,,,0,3,0,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 0, 'ForgeLevel': 4}",,,,0,4,0,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 0, 'ForgeLevel': 5}",,,,0,5,0,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 0, 'ForgeLevel': 6}",,,,0,6,0,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 0, 'ForgeLevel': 7}",,,,0,7,0,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 0, 'ForgeLevel': 8}",,,,0,8,0,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 0, 'ForgeLevel': 9}",,,,0,9,0,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 0, 'ForgeLevel': 10}",,,,0,10,47,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 0, 'ForgeLevel': 11}",,,,0,11,53,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 0, 'ForgeLevel': 12}",,,,0,12,59,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 0, 'ForgeLevel': 13}",,,,0,13,65,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 0, 'ForgeLevel': 14}",,,,0,14,71,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 0, 'ForgeLevel': 15}",,,,0,15,77,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 0, 'ForgeLevel': 16}",,,,0,16,83,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 0, 'ForgeLevel': 17}",,,,0,17,89,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 0, 'ForgeLevel': 18}",,,,0,18,95,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 0, 'ForgeLevel': 19}",,,,0,19,101,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 0, 'ForgeLevel': 20}",,,,0,20,107,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 0, 'ForgeLevel': 21}",,,,0,21,113,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 0, 'ForgeLevel': 22}",,,,0,22,119,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 0, 'ForgeLevel': 23}",,,,0,23,125,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 0, 'ForgeLevel': 24}",,,,0,24,131,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 0, 'ForgeLevel': 25}",,,,0,25,137,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 0, 'ForgeLevel': 26}",,,,0,26,143,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 0, 'ForgeLevel': 27}",,,,0,27,149,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 0, 'ForgeLevel': 28}",,,,0,28,155,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 0, 'ForgeLevel': 29}",,,,0,29,161,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 0, 'ForgeLevel': 30}",,,,0,30,167,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 0, 'ForgeLevel': 31}",,,,0,31,173,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 0, 'ForgeLevel': 32}",,,,0,32,179,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 0, 'ForgeLevel': 33}",,,,0,33,185,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 0, 'ForgeLevel': 34}",,,,0,34,191,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 1, 'ForgeLevel': 0}",,,,1,0,192,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 1, 'ForgeLevel': 1}",,,,1,1,194,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 1, 'ForgeLevel': 2}",,,,1,2,195,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 1, 'ForgeLevel': 3}",,,,1,3,197,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 1, 'ForgeLevel': 4}",,,,1,4,198,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 1, 'ForgeLevel': 5}",,,,1,5,200,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 1, 'ForgeLevel': 6}",,,,1,6,201,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 1, 'ForgeLevel': 7}",,,,1,7,203,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 1, 'ForgeLevel': 8}",,,,1,8,204,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 1, 'ForgeLevel': 9}",,,,1,9,206,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 1, 'ForgeLevel': 10}",,,,1,10,207,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 1, 'ForgeLevel': 11}",,,,1,11,208,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 1, 'ForgeLevel': 12}",,,,1,12,210,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 1, 'ForgeLevel': 13}",,,,1,13,211,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 1, 'ForgeLevel': 14}",,,,1,14,213,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 1, 'ForgeLevel': 15}",,,,1,15,214,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 1, 'ForgeLevel': 16}",,,,1,16,216,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 1, 'ForgeLevel': 17}",,,,1,17,217,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 1, 'ForgeLevel': 18}",,,,1,18,219,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 1, 'ForgeLevel': 19}",,,,1,19,220,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 1, 'ForgeLevel': 20}",,,,1,20,221,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 1, 'ForgeLevel': 21}",,,,1,21,223,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 1, 'ForgeLevel': 22}",,,,1,22,224,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 1, 'ForgeLevel': 23}",,,,1,23,226,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 1, 'ForgeLevel': 24}",,,,1,24,227,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 1, 'ForgeLevel': 25}",,,,1,25,229,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 1, 'ForgeLevel': 26}",,,,1,26,230,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 1, 'ForgeLevel': 27}",,,,1,27,232,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 1, 'ForgeLevel': 28}",,,,1,28,233,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 1, 'ForgeLevel': 29}",,,,1,29,235,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 1, 'ForgeLevel': 30}",,,,1,30,236,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 1, 'ForgeLevel': 31}",,,,1,31,237,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 1, 'ForgeLevel': 32}",,,,1,32,239,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 1, 'ForgeLevel': 33}",,,,1,33,240,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 1, 'ForgeLevel': 34}",,,,1,34,242,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 2, 'ForgeLevel': 0}",,,,2,0,243,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 2, 'ForgeLevel': 1}",,,,2,1,245,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 2, 'ForgeLevel': 2}",,,,2,2,246,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 2, 'ForgeLevel': 3}",,,,2,3,248,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 2, 'ForgeLevel': 4}",,,,2,4,249,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 2, 'ForgeLevel': 5}",,,,2,5,250,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 2, 'ForgeLevel': 6}",,,,2,6,252,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 2, 'ForgeLevel': 7}",,,,2,7,253,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 2, 'ForgeLevel': 8}",,,,2,8,255,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 2, 'ForgeLevel': 9}",,,,2,9,256,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 2, 'ForgeLevel': 10}",,,,2,10,258,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 2, 'ForgeLevel': 11}",,,,2,11,259,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 2, 'ForgeLevel': 12}",,,,2,12,261,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 2, 'ForgeLevel': 13}",,,,2,13,262,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 2, 'ForgeLevel': 14}",,,,2,14,263,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 2, 'ForgeLevel': 15}",,,,2,15,265,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 2, 'ForgeLevel': 16}",,,,2,16,266,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 2, 'ForgeLevel': 17}",,,,2,17,268,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 2, 'ForgeLevel': 18}",,,,2,18,269,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 2, 'ForgeLevel': 19}",,,,2,19,271,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 2, 'ForgeLevel': 20}",,,,2,20,272,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 2, 'ForgeLevel': 21}",,,,2,21,274,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 2, 'ForgeLevel': 22}",,,,2,22,275,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 2, 'ForgeLevel': 23}",,,,2,23,277,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 2, 'ForgeLevel': 24}",,,,2,24,278,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 2, 'ForgeLevel': 25}",,,,2,25,279,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 2, 'ForgeLevel': 26}",,,,2,26,281,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 2, 'ForgeLevel': 27}",,,,2,27,282,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 2, 'ForgeLevel': 28}",,,,2,28,284,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 2, 'ForgeLevel': 29}",,,,2,29,285,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 2, 'ForgeLevel': 30}",,,,2,30,287,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 2, 'ForgeLevel': 31}",,,,2,31,288,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 2, 'ForgeLevel': 32}",,,,2,32,290,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 2, 'ForgeLevel': 33}",,,,2,33,291,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 2, 'ForgeLevel': 34}",,,,2,34,292,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 3, 'ForgeLevel': 0}",,,,3,0,294,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 3, 'ForgeLevel': 1}",,,,3,1,295,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 3, 'ForgeLevel': 2}",,,,3,2,297,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 3, 'ForgeLevel': 3}",,,,3,3,298,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 3, 'ForgeLevel': 4}",,,,3,4,300,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 3, 'ForgeLevel': 5}",,,,3,5,301,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 3, 'ForgeLevel': 6}",,,,3,6,303,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 3, 'ForgeLevel': 7}",,,,3,7,304,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 3, 'ForgeLevel': 8}",,,,3,8,306,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 3, 'ForgeLevel': 9}",,,,3,9,307,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 3, 'ForgeLevel': 10}",,,,3,10,308,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 3, 'ForgeLevel': 11}",,,,3,11,310,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 3, 'ForgeLevel': 12}",,,,3,12,311,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 3, 'ForgeLevel': 13}",,,,3,13,313,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 3, 'ForgeLevel': 14}",,,,3,14,314,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 3, 'ForgeLevel': 15}",,,,3,15,316,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 3, 'ForgeLevel': 16}",,,,3,16,317,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 3, 'ForgeLevel': 17}",,,,3,17,319,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 3, 'ForgeLevel': 18}",,,,3,18,320,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 3, 'ForgeLevel': 19}",,,,3,19,321,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 3, 'ForgeLevel': 20}",,,,3,20,323,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 3, 'ForgeLevel': 21}",,,,3,21,324,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 3, 'ForgeLevel': 22}",,,,3,22,326,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 3, 'ForgeLevel': 23}",,,,3,23,327,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 3, 'ForgeLevel': 24}",,,,3,24,329,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 3, 'ForgeLevel': 25}",,,,3,25,330,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 3, 'ForgeLevel': 26}",,,,3,26,332,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 3, 'ForgeLevel': 27}",,,,3,27,333,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 3, 'ForgeLevel': 28}",,,,3,28,335,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 3, 'ForgeLevel': 29}",,,,3,29,336,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 3, 'ForgeLevel': 30}",,,,3,30,337,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 3, 'ForgeLevel': 31}",,,,3,31,339,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 3, 'ForgeLevel': 32}",,,,3,32,340,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 3, 'ForgeLevel': 33}",,,,3,33,342,,,,,,,
+LegacyDungeonsMigration.json,"{'AscensionLevel': 3, 'ForgeLevel': 34}",,,,3,34,343,,,,,,,
+PlayerSegments.json,AndroidNativeRateUs,,,,,,,AndroidNativeRateUs,For rating use the android native popup instead of redirecting to the store. This is here temporarliy because we need to be able to switch it on and off until android fixes it,Android Native Popup (temporary),"[{""Id"":{""$type"":""PlayerPropertyIdFeatureForceLock""},""Min"":{""_value"":true,""$type"":""BoolConstant""},""Max"":null}]",,,PlayerSegmentBasicCondition
+PlayerSegments.json,IdleCash,,,,,,,IdleCash,Can earn idle currency,Idle Cash,"[{""Id"":{""$type"":""PlayerPropertyIdMainBattleProgress""},""Min"":{""_value"":{""DifficultyIdx"":0,""AgeIdx"":0,""BattleIdx"":8,""$type"":""MainBattleId""},""$type"":""CustomComparableConstant""},""Max"":null}]",,,PlayerSegmentBasicCondition
+PlayerSegments.json,Shop,,,,,,,Shop,Player can buy IAPs and resources,Ingame-Shop,"[{""Id"":{""$type"":""PlayerPropertyIdMainBattleProgress""},""Min"":{""_value"":{""DifficultyIdx"":0,""AgeIdx"":1,""BattleIdx"":0,""$type"":""MainBattleId""},""$type"":""CustomComparableConstant""},""Max"":null}]",,,PlayerSegmentBasicCondition
+PlayerSegments.json,StarterPackage,,,,,,,StarterPackage,Player gets starter offers,Starter Packages,"[{""Id"":{""$type"":""PlayerPropertyIdMainBattleProgress""},""Min"":{""_value"":{""DifficultyIdx"":0,""AgeIdx"":1,""BattleIdx"":0,""$type"":""MainBattleId""},""$type"":""CustomComparableConstant""},""Max"":null}]",,,PlayerSegmentBasicCondition
+PlayerSegments.json,AutoForge,,,,,,,AutoForge,Auto Forge unlocked,Auto Forge,"[{""Id"":{""$type"":""PlayerPropertyIdMainBattleProgress""},""Min"":{""_value"":{""DifficultyIdx"":0,""AgeIdx"":1,""BattleIdx"":9,""$type"":""MainBattleId""},""$type"":""CustomComparableConstant""},""Max"":null}]",,,PlayerSegmentBasicCondition
+PlayerSegments.json,Dungeons,,,,,,,Dungeons,Dungeons tab is unlocked,Dungeons Feature unlocked,"[{""Id"":{""$type"":""PlayerPropertyIdMainBattleProgress""},""Min"":{""_value"":{""DifficultyIdx"":0,""AgeIdx"":1,""BattleIdx"":9,""$type"":""MainBattleId""},""$type"":""CustomComparableConstant""},""Max"":null}]",,,PlayerSegmentBasicCondition
+PlayerSegments.json,HammerDungeon,,,,,,,HammerDungeon,Hammer Dungeon unlocked,Hammer Dungeon,"[{""Id"":{""$type"":""PlayerPropertyIdMainBattleProgress""},""Min"":{""_value"":{""DifficultyIdx"":0,""AgeIdx"":1,""BattleIdx"":9,""$type"":""MainBattleId""},""$type"":""CustomComparableConstant""},""Max"":null}]",,,PlayerSegmentBasicCondition
+PlayerSegments.json,SkillCollection,,,,,,,SkillCollection,Skill collection unlocked,Skills,"[{""Id"":{""$type"":""PlayerPropertyIdMainBattleProgress""},""Min"":{""_value"":{""DifficultyIdx"":0,""AgeIdx"":1,""BattleIdx"":14,""$type"":""MainBattleId""},""$type"":""CustomComparableConstant""},""Max"":null}]",,,PlayerSegmentBasicCondition
+PlayerSegments.json,SkillSlot0,,,,,,,SkillSlot0,First skill slot,First skill slot,"[{""Id"":{""$type"":""PlayerPropertyIdMainBattleProgress""},""Min"":{""_value"":{""DifficultyIdx"":0,""AgeIdx"":1,""BattleIdx"":14,""$type"":""MainBattleId""},""$type"":""CustomComparableConstant""},""Max"":null}]",,,PlayerSegmentBasicCondition
+PlayerSegments.json,SkillDungeon,,,,,,,SkillDungeon,Dungeon that gives skills currency,"Skill Ticket Dungeon ","[{""Id"":{""$type"":""PlayerPropertyIdMainBattleProgress""},""Min"":{""_value"":{""DifficultyIdx"":0,""AgeIdx"":1,""BattleIdx"":14,""$type"":""MainBattleId""},""$type"":""CustomComparableConstant""},""Max"":null}]",,,PlayerSegmentBasicCondition
+PlayerSegments.json,Pets,,,,,,,Pets,pets tab,Pets,"[{""Id"":{""$type"":""PlayerPropertyIdMainBattleProgress""},""Min"":{""_value"":{""DifficultyIdx"":0,""AgeIdx"":2,""BattleIdx"":0,""$type"":""MainBattleId""},""$type"":""CustomComparableConstant""},""Max"":null}]",,,PlayerSegmentBasicCondition
+PlayerSegments.json,PetSlot0,,,,,,,PetSlot0,First pet slot,First pet slot,"[{""Id"":{""$type"":""PlayerPropertyIdMainBattleProgress""},""Min"":{""_value"":{""DifficultyIdx"":0,""AgeIdx"":2,""BattleIdx"":0,""$type"":""MainBattleId""},""$type"":""CustomComparableConstant""},""Max"":null}]",,,PlayerSegmentBasicCondition
+PlayerSegments.json,PetDungeon,,,,,,,PetDungeon,Dungeon that gives pet currency,Eggshells Dungeon,"[{""Id"":{""$type"":""PlayerPropertyIdMainBattleProgress""},""Min"":{""_value"":{""DifficultyIdx"":0,""AgeIdx"":2,""BattleIdx"":0,""$type"":""MainBattleId""},""$type"":""CustomComparableConstant""},""Max"":null}]",,,PlayerSegmentBasicCondition
+PlayerSegments.json,EggStarterOffer,,,,,,,EggStarterOffer,Player gets egg starter offer,Egg Starter Offer,"[{""Id"":{""$type"":""PlayerPropertyAccountAge""},""Min"":null,""Max"":{""_value"":86400000,""$type"":""MetaDurationConstant""}}]",,"[""Pets""]",PlayerSegmentBasicCondition
+PlayerSegments.json,Chat,,,,,,,Chat,Chat is now unlocked,Chat,"[{""Id"":{""$type"":""PlayerPropertyIdMainBattleProgress""},""Min"":{""_value"":{""DifficultyIdx"":0,""AgeIdx"":2,""BattleIdx"":9,""$type"":""MainBattleId""},""$type"":""CustomComparableConstant""},""Max"":null}]",,,PlayerSegmentBasicCondition
+PlayerSegments.json,Arena,,,,,,,Arena,Players compete in leagues,Arena,"[{""Id"":{""$type"":""PlayerPropertyIdMainBattleProgress""},""Min"":{""_value"":{""DifficultyIdx"":0,""AgeIdx"":2,""BattleIdx"":9,""$type"":""MainBattleId""},""$type"":""CustomComparableConstant""},""Max"":null}]",,,PlayerSegmentBasicCondition
+PlayerSegments.json,SkillSlot1,,,,,,,SkillSlot1,Second Skill Slot unlocked,Second Skill Slot,"[{""Id"":{""$type"":""PlayerPropertyIdMainBattleProgress""},""Min"":{""_value"":{""DifficultyIdx"":0,""AgeIdx"":3,""BattleIdx"":0,""$type"":""MainBattleId""},""$type"":""CustomComparableConstant""},""Max"":null}]",,,PlayerSegmentBasicCondition
+PlayerSegments.json,TechTree,,,,,,,TechTree,Tech tree is now unlocked,Tech Tree,"[{""Id"":{""$type"":""PlayerPropertyIdMainBattleProgress""},""Min"":{""_value"":{""DifficultyIdx"":0,""AgeIdx"":3,""BattleIdx"":0,""$type"":""MainBattleId""},""$type"":""CustomComparableConstant""},""Max"":null}]",,,PlayerSegmentBasicCondition
+PlayerSegments.json,PotionDungeon,,,,,,,PotionDungeon,Dungeon that gives tech tree currency,Tech Potions Dungeon,"[{""Id"":{""$type"":""PlayerPropertyIdMainBattleProgress""},""Min"":{""_value"":{""DifficultyIdx"":0,""AgeIdx"":3,""BattleIdx"":0,""$type"":""MainBattleId""},""$type"":""CustomComparableConstant""},""Max"":null}]",,,PlayerSegmentBasicCondition
+PlayerSegments.json,PetSlot1,,,,,,,PetSlot1,Second Pet Slot is unlocked,Second Pet Slot,"[{""Id"":{""$type"":""PlayerPropertyIdMainBattleProgress""},""Min"":{""_value"":{""DifficultyIdx"":0,""AgeIdx"":3,""BattleIdx"":9,""$type"":""MainBattleId""},""$type"":""CustomComparableConstant""},""Max"":null}]",,,PlayerSegmentBasicCondition
+PlayerSegments.json,Guilds,,,,,,,Guilds,Guilds feature now unlocked,Guilds,"[{""Id"":{""$type"":""PlayerPropertyIdMainBattleProgress""},""Min"":{""_value"":{""DifficultyIdx"":0,""AgeIdx"":3,""BattleIdx"":14,""$type"":""MainBattleId""},""$type"":""CustomComparableConstant""},""Max"":null}]",,,PlayerSegmentBasicCondition
+PlayerSegments.json,SkillSlot2,,,,,,,SkillSlot2,Third Skill Slot now unlocked,Third Skill Slot,"[{""Id"":{""$type"":""PlayerPropertyIdMainBattleProgress""},""Min"":{""_value"":{""DifficultyIdx"":0,""AgeIdx"":4,""BattleIdx"":0,""$type"":""MainBattleId""},""$type"":""CustomComparableConstant""},""Max"":null}]",,,PlayerSegmentBasicCondition
+PlayerSegments.json,AutoHammer1,,,,,,,AutoHammer1,Second Free Auto Hammer now unlocked,First Free Auto Hammer,"[{""Id"":{""$type"":""PlayerPropertyIdMainBattleProgress""},""Min"":{""_value"":{""DifficultyIdx"":0,""AgeIdx"":4,""BattleIdx"":14,""$type"":""MainBattleId""},""$type"":""CustomComparableConstant""},""Max"":null}]",,,PlayerSegmentBasicCondition
+PlayerSegments.json,PetSlot2,,,,,,,PetSlot2,Third Pet Slot now unlocked,Third Pet Slot,"[{""Id"":{""$type"":""PlayerPropertyIdMainBattleProgress""},""Min"":{""_value"":{""DifficultyIdx"":0,""AgeIdx"":5,""BattleIdx"":0,""$type"":""MainBattleId""},""$type"":""CustomComparableConstant""},""Max"":null}]",,,PlayerSegmentBasicCondition
+PlayerSegments.json,AutoHammer2,,,,,,,AutoHammer2,Third Free Auto Hammer now unlocked,Second Free Auto Hammer,"[{""Id"":{""$type"":""PlayerPropertyIdMainBattleProgress""},""Min"":{""_value"":{""DifficultyIdx"":0,""AgeIdx"":6,""BattleIdx"":14,""$type"":""MainBattleId""},""$type"":""CustomComparableConstant""},""Max"":null}]",,,PlayerSegmentBasicCondition
+PlayerSegments.json,SwitchWorlds,,,,,,,SwitchWorlds,The player is allowed to change his current server,Switch Worlds,"[{""Id"":{""$type"":""PlayerPropertyIdMainBattleProgress""},""Min"":null,""Max"":{""_value"":{""DifficultyIdx"":0,""AgeIdx"":1,""BattleIdx"":0,""$type"":""MainBattleId""},""$type"":""CustomComparableConstant""}},{""Id"":{""$type"":""PlayerPropertyAccountAge""},""Min"":null,""Max"":{""_value"":3600000,""$type"":""MetaDurationConstant""}},{""Id"":{""$type"":""PlayerPropertyIdSwitchedWorldCount""},""Min"":null,""Max"":{""_value"":0,""$type"":""LongConstant""}},{""Id"":{""$type"":""PlayerPropertyIdHasGuild""},""Min"":{""_value"":false,""$type"":""BoolConstant""},""Max"":null}]",,,PlayerSegmentBasicCondition
+PlayerSegments.json,SteppingStones,,,,,,,SteppingStones,Determines if player has unlocked Stepping Stones event,Stepping Stones Unlocked,"[{""Id"":{""$type"":""PlayerPropertyIdMainBattleProgress""},""Min"":{""_value"":{""DifficultyIdx"":0,""AgeIdx"":5,""BattleIdx"":14,""$type"":""MainBattleId""},""$type"":""CustomComparableConstant""},""Max"":null}]",,,PlayerSegmentBasicCondition
+PlayerSegments.json,ForgeAscension,,,,,,,ForgeAscension,Determines if the player can ascend his forge,Can Ascend Forge,"[{""Id"":{""$type"":""PlayerPropertyIdForgeLevelMaxed""},""Min"":{""_value"":true,""$type"":""BoolConstant""},""Max"":null}]",,,PlayerSegmentBasicCondition
+PlayerSegments.json,MountsAscension,,,,,,,MountsAscension,Determines if the player can ascend his mounts,Can Ascend Mounts,"[{""Id"":{""$type"":""PlayerPropertyIdMountsSummonLevelMaxed""},""Min"":{""_value"":true,""$type"":""BoolConstant""},""Max"":null}]",,,PlayerSegmentBasicCondition
+PlayerSegments.json,SkillsAscension,,,,,,,SkillsAscension,Determines if the player can ascend his skills,Can Ascend Skills,"[{""Id"":{""$type"":""PlayerPropertyIdSkillsSummonLevelMaxed""},""Min"":{""_value"":true,""$type"":""BoolConstant""},""Max"":null}]",,,PlayerSegmentBasicCondition
+PlayerSegments.json,PetsAscension,,,,,,,PetsAscension,Determines if the player can ascend his pets,Can Ascend Pets,"[{""Id"":{""$type"":""PlayerPropertyIdEggsSummonLevelMaxed""},""Min"":{""_value"":true,""$type"":""BoolConstant""},""Max"":null}]",,,PlayerSegmentBasicCondition
+PlayerSegments.json,AutoForgeStack,,,,,,,AutoForgeStack,Auto forge stays active after finding an item and adds to a stack,Auto Forge Stack,"[{""Id"":{""$type"":""PlayerPropertyIdForgeLevel""},""Min"":{""_value"":19,""$type"":""LongConstant""},""Max"":null}]",,,PlayerSegmentBasicCondition
+PlayerSegments.json,GuildMissions,,,,,,,GuildMissions,Players can participate and start missions within their clan,Guild missions are available,"[{""Id"":{""$type"":""PlayerPropertyIdFeatureForceLock""},""Min"":{""_value"":false,""$type"":""BoolConstant""},""Max"":null}]",,,PlayerSegmentBasicCondition
+PlayerSegments.json,ClanTechTree,,,,,,,ClanTechTree,Shared clan tree that players can donate into to get shared bonuses,Clan Tech Tree,"[{""Id"":{""$type"":""PlayerPropertyIdFeatureForceLock""},""Min"":{""_value"":false,""$type"":""BoolConstant""},""Max"":null}]",,,PlayerSegmentBasicCondition
+PlayerSegments.json,AscensionStarsBonus,,,,,,,AscensionStarsBonus,Bonuses based on the number of ascension stars you collect,Ascension Bonuses,"[{""Id"":{""$type"":""PlayerPropertyIdFeatureForceLock""},""Min"":{""_value"":false,""$type"":""BoolConstant""},""Max"":null}]",,,PlayerSegmentBasicCondition
+PlayerSegments.json,DiscordLink,,,,,,,DiscordLink,Enables frontend button to start linking,Discord Linking Button,"[{""Id"":{""$type"":""PlayerPropertyIdFeatureForceLock""},""Min"":{""_value"":true,""$type"":""BoolConstant""},""Max"":null}]",,,PlayerSegmentBasicCondition
