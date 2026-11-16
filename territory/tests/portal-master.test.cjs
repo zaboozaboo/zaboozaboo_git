@@ -13,7 +13,7 @@ assert.equal(S.portal.board.length,3);assert.equal(B.masterWaves.length,2);asser
 for(let role=0;role<3;role++){S.portal.supply=100;Portal.rollingUntil=0;const r=Portal.rollPaid(()=>0);assert.ok(r);assert.equal(Portal.def(S.portal.pending).role,role);assert.equal(S.portal.pending.level,1);assert.equal(Portal.place((role+1)%3),false);assert.equal(Portal.place(role),true);}
 assert.ok(S.portal.board.every(Boolean));
 const charge=S.portal.board[0].charge;tickDice(30);assert.equal(S.portal.board[0].charge,charge);
-S.portal.mode='production';S.portal.supply=100;Portal.rollingUntil=0;Portal.rollProduction(()=>.99);assert.equal(S.portal.supply,100);assert.ok(B.units.some(u=>u.team===0));
+S.portal.mode='production';S.portal.supply=100;Portal.rollingUntil=0;Portal.rollProduction(()=>.99);Portal.tickProduction(1.3);assert.equal(S.portal.supply,100);assert.ok(B.units.some(u=>u.team===0));
 const veteran=B.units.find(u=>u.team===0&&u.slot===0);const hp=veteran.hp,atk=veteran.atk;S.portal.pending={id:'pm_0_1',level:10,options:[],charge:0};assert.ok(Portal.place(0));assert.ok(B.units.includes(veteran));assert.equal(veteran.hp,hp);assert.equal(veteran.atk,atk);Portal.produce(0,7);assert.ok(B.units.some(u=>u.heroId==='pm_0_1'));
 S.portal.pending={id:'pm_0_0',level:1,charge:0,options:[]};const gold=S.gold;Portal.sell();assert.equal(S.gold,gold+20);assert.equal(S.portal.xp,20);assert.ok(B.units.includes(veteran));
 S.portal.forgeRolls=8;S.gold=10000;assert.equal(Portal.payUpgrade(),true);assert.equal(S.portal.forgeLevel,1);assert.equal(S.portal.upgrade.level,2);assert.equal(Portal.skipUpgrade(),true);assert.equal(S.portal.forgeLevel,2);assert.equal(Portal.skipUpgrade(),false);
@@ -23,7 +23,7 @@ S.portal.forgeLevel=8;S.portal.paid=0;S.portal.upgrade=null;S.gold=100000;assert
 S.portal.upgrade.endsAt=Date.now()-1;assert.ok(Portal.completeUpgrade());assert.equal(S.portal.forgeLevel,9);
 const unit={id:'pm_3_2',level:12,options:[{key:'atk',value:.1},{key:'haste',value:.2}],charge:0};const stats=Portal.stats(unit);assert.ok(stats.atk>0);assert.ok(stats.cd>0);
 const target={team:0,hp:100,armor:10,flash:0,size:7};B.fx=[];dealDamage(target,15,null);assert.equal(target.hp,95);
-S.portal.supply=0;const rolls=S.dice.rolls;Portal.tickAuto(3);assert.ok(S.dice.rolls>rolls);assert.equal(S.portal.supply,0);
+S.portal.supply=0;const rolls=S.dice.rolls;Portal.tickAuto(3);Portal.tickProduction(1.3);assert.ok(S.dice.rolls>rolls);assert.equal(S.portal.supply,0);
 const before=S.portal.supply;Portal.rollingUntil=0;Portal.tickAuto(10);assert.equal(S.portal.supply,before,'Pending result blocks auto spend');
 // Migrate all five previous portals without losing extras or progress records.
 newGame({name:'old',gender:'m',cls:'knight',nation:'aurum'});S.gold=12345;S.portal={stage:15,maxStage:20,supply:200,board:['militia','archer','monk','paladin','ranger'].map(id=>({id,tier:2,level:7,charge:2.5})),pending:null};Portal.ensure();assert.equal(S.gold,12345);assert.equal(S.portal.legacy.maxStage,20);assert.equal(S.portal.board.filter(Boolean).length,3);assert.equal(S.portal.reserve.length+(S.portal.pending?1:0),2);

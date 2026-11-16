@@ -11,19 +11,18 @@ const PortalFeedback={
  production(event){
   if(!event||event.presented)return;
   // Let the cube settle on its result before sending that exact face to the slots.
-  if(Date.now()<Portal.productionUntil)return;
+  if(Portal.productionRoll&&Portal.productionRoll.elapsed<.85)return;
   event.presented=true;
   if(!this.visible()||Date.now()>event.until)return;
   const source=this.point(document.querySelector('.production-slot .slot-die'));if(!source)return;
   this.badge('생산 눈금 '+event.face,{x:source.x,y:source.y-40},'production');
   event.results.forEach((r,i)=>{
    const target=this.point(document.querySelector(`[data-slot="${r.slot}"] .slot-charge`));if(!target)return;
-   const arrive=()=>{if(this.visible())this.badge('+'+event.face+' 충전'+(r.count?' · '+r.count+'명 출격':''),{x:target.x,y:target.y-25},'production');};
-   if(this.reduced()){arrive();return;}
+   if(this.reduced())return;
    const dx=target.x-source.x,dy=target.y-source.y;
    const token=document.createElement('div');token.className='production-face-flight';token.innerHTML=dieFace(event.face)+'<b>+'+event.face+'</b>';token.style.left=source.x+'px';token.style.top=source.y+'px';
    const frames=[{transform:'translate(-50%,-50%) scale(.7)',opacity:0},{transform:'translate(-50%,-50%) scale(1.15)',opacity:1,offset:.15},{transform:`translate(calc(-50% + ${dx*.5}px),calc(-50% + ${dy*.5-36}px)) scale(1.1)`,opacity:1,offset:.55},{transform:`translate(calc(-50% + ${dx}px),calc(-50% + ${dy}px)) scale(.85)`,opacity:1,offset:.9},{transform:`translate(calc(-50% + ${dx}px),calc(-50% + ${dy}px)) scale(.6)`,opacity:0}];
-   this.fly(token,frames,650,i*85);setTimeout(arrive,600+i*85);
+   this.fly(token,frames,450/Math.max(1,S.settings?.speed||1));
   });
  },
  summon(cue){
@@ -34,5 +33,10 @@ const PortalFeedback={
   card.innerHTML='<span class="card-origin">포탈 소환'+(cue.count>1?' ×'+cue.count:'')+'</span>'+Portal.art(p)+'<b>'+d.name+'</b><small>Lv.'+p.level+' · '+PM_ROLES[d.role]+'</small>';
   const simple=this.reduced();this.fly(card,simple?[{opacity:1,transform:'translate(-50%,-115%)'},{opacity:1,offset:.8,transform:'translate(-50%,-115%)'},{opacity:0,transform:'translate(-50%,-115%)'}]:[{opacity:0,transform:'translate(-50%,-35%) scale(.15) rotateY(80deg)'},{opacity:1,transform:'translate(-50%,-90%) scale(.8) rotateY(55deg)',offset:.35},{opacity:1,transform:'translate(-50%,-125%) scale(1) rotateY(0)',offset:.65},{opacity:1,transform:'translate(-50%,-125%) scale(1)',offset:.88},{opacity:0,transform:'translate(-50%,-135%) scale(.95)'}],650);
  },
- tick(){if(!S?.portal)return;this.production(B.diceCue);this.summon(Portal.summonCue);}
+ applied(event){
+  if(!event?.applied||event.applicationPresented)return;event.applicationPresented=true;
+  if(!this.visible()||Date.now()>event.until)return;
+  for(const r of event.results){const target=this.point(document.querySelector(`[data-slot="${r.slot}"] .slot-charge`));if(target)this.badge('+'+event.face+' 충전'+(r.count?' · '+r.count+'명 출격':''),{x:target.x,y:target.y-25},'production');}
+ },
+ tick(){if(!S?.portal)return;this.production(B.diceCue);this.applied(B.diceCue);this.summon(Portal.summonCue);}
 };

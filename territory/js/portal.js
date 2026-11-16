@@ -68,13 +68,19 @@ const Portal={
  stageInfo(stage=S.stage){return FORGE_BALANCE.stages[Math.max(0,Math.min(FORGE_BALANCE.stages.length-1,stage-1))];},
  enemyScale(stage){const r=this.stageInfo(stage),age=Math.min(9,r.AgeIndex),base=FORGE_BALANCE.enemy[age]['Damage.Raw']/500;return base*(1+r.BattleIndex*.07)*Math.pow(6, r.DifficultyIndex);},
  castleHp(){const strongest=S.portal.board.reduce((n,p)=>p?Math.max(n,this.stats(p).hp):n,100);return 800+strongest*4;},
+ prepareStage(){
+  for(const p of [...S.portal.board,S.portal.pending,...S.portal.reserve].filter(Boolean))p.charge=0;
+  this.autoElapsed=0;this.productionUntil=0;this.productionRoll=null;B.productionOpening=1;B.enemyOpening=3;
+  ensureDice();S.dice.charge={};S.dice.progress=0;S.dice.history=[];S.dice.last=null;B.diceCue=null;S.portal.faces.production=1;
+ },
  startStage(stage){
   resetField(false);B.mode='stage';B.stage=stage;B.failed=false;B.special=null;B.buffs={rally:0,sanctuary:0};B.skillT=0;B.lordRespawn=0;B.openingDice=0;
   B.pCastle={hp:this.castleHp(),max:this.castleHp()};const hp=90*this.enemyScale(stage);B.eCastle={hp,max:hp};B.fortress=this.stageInfo(stage+1).AgeIndex!==this.stageInfo(stage).AgeIndex;B.timeLimit=0;B.stageBanner=2.2;B.queueT=2;
-  const waves=FORGE_BALANCE.waves.filter(r=>r.stageId===stage);B.masterWaves=waves.map(r=>({...r}));B.masterWaveIndex=0;B.queue=[];B.queueTotal=waves.reduce((n,w)=>n+this.armyWaveCount(w.count,stage),0);this.spawnWave();
+  const waves=FORGE_BALANCE.waves.filter(r=>r.stageId===stage);B.masterWaves=waves.map(r=>({...r}));B.masterWaveIndex=0;B.queue=[];B.queueTotal=waves.reduce((n,w)=>n+this.armyWaveCount(w.count,stage),0);this.prepareStage();
  },
  spawnWave(){const wave=B.masterWaves?.[B.masterWaveIndex++];if(!wave)return;for(let i=0;i<wave.count;i++)spawnEnemy(pick(region(B.stage).enemies),B.stage);},
  spawnPhase(dt){
+  if(B.enemyOpening>0){B.enemyOpening=Math.max(0,B.enemyOpening-dt);if(B.enemyOpening>1e-9)return;B.enemyOpening=0;this.spawnWave();return;}
   if(B.masterWaveIndex>=B.masterWaves.length)return;
   const living=B.units.filter(u=>u.team===1&&u.hp>0).length;
   // A cleared battlefield advances immediately, regardless of the reinforcement timer.
@@ -86,11 +92,11 @@ const Portal={
  },
  finish(){
   if(this.dungeonRun){this.leaveDungeon(B.result==='win');return;}
-  const win=B.result==='win',st=B.stage,survivors=win?B.units.filter(u=>u.team===0&&u.hp>0):[];
+  const win=B.result==='win',st=B.stage;
   if(win){S.gold+=this.stageInfo(st).goldReward;S.portal.supply+=this.stageInfo(st).hammerReward;S.portal.stage=Math.min(FORGE_BALANCE.stages.length,st+1);S.portal.maxStage=Math.max(S.portal.maxStage,S.portal.stage);conquerLand(st);}
   else{S.portal.stage=st;UI.toast('방어 실패 · 유닛을 교체하고 다시 도전하세요');}
   S.stage=S.portal.stage;S.maxStage=S.portal.maxStage;this.startStage(S.stage);
-  survivors.forEach(u=>{u.x=140;u.target=null;B.units.push(u);});saveGame();
+  saveGame();
  },
  produce(slot,face){
   const p=S.portal.board[slot];if(!p)return null;
@@ -133,12 +139,23 @@ const Portal={
   this.rollingUntil=Date.now()+700;this.summonCue={unit:{...S.portal.pending},count:withinBatch?(this.summonCue?.count||0)+1:1,until:this.rollingUntil};saveGame();return {pending:true};
  },
  rollProduction(random=Math.random){
-  if(!S.portal.board.some(Boolean))return false;
+  if(this.productionRoll||B.ended||!S.portal.board.some(Boolean))return false;
   const face=1+Math.min(5,Math.floor(random()*6));
-  const results=S.portal.board.map((p,i)=>p?this.produce(i,face):null).filter(Boolean);
-  ensureDice();S.dice.rolls=(S.dice.rolls||0)+1;S.dice.last={face,results,count:results.reduce((n,r)=>n+r.count,0)};
-  S.portal.faces.production=face;this.productionUntil=Date.now()+700;
-  B.diceCue={...S.dice.last,roll:S.dice.rolls,at:Date.now(),until:Date.now()+1700};saveGame();return true;
+  this.productionRoll={face,elapsed:0};this.productionUntil=Date.now()+550;
+  S.portal.faces.production=face;B.diceCue=null;return true;
+ },
+ tickProduction(dt){
+  const roll=this.productionRoll;if(!roll)return;
+  if(B.ended){this.productionRoll=null;B.diceCue=null;return;}
+  roll.elapsed+=dt;
+  if(roll.elapsed>=.85&&!roll.cue){
+   roll.cue={face:roll.face,results:S.portal.board.map((p,slot)=>p?{slot}:null).filter(Boolean),until:Date.now()+1600};B.diceCue=roll.cue;
+  }
+  if(roll.elapsed<1.3-1e-9)return;
+  const results=S.portal.board.map((p,i)=>p?this.produce(i,roll.face):null).filter(Boolean);
+  ensureDice();S.dice.rolls=(S.dice.rolls||0)+1;S.dice.last={face:roll.face,results,count:results.reduce((n,r)=>n+r.count,0)};
+  if(roll.cue){roll.cue.results=results;roll.cue.applied=true;}
+  this.productionRoll=null;saveGame();
  },
  place(slot){
   const p=S.portal.pending;if(!p||slot!==this.def(p).role)return false;
@@ -160,7 +177,9 @@ const Portal={
  skipUpgrade(){if(!S.portal.upgrade||S.portal.upgrade.level>4)return false;S.portal.upgrade.endsAt=Date.now();return this.completeUpgrade();},
  autoInterval(){return Math.max(1.5,3*Math.pow(.9,facilityCount('training')));},
  tickAuto(dt){
-  if(!S.portal.board.some(Boolean))return;
+  this.tickProduction(dt);
+  if(B.ended||!S.portal.board.some(Boolean))return;
+  if(B.productionOpening>0){const used=Math.min(dt,B.productionOpening);B.productionOpening-=used;dt-=used;if(B.productionOpening>1e-9)return;B.productionOpening=0;this.rollProduction(()=>5/6);}
   this.autoElapsed=Math.min(this.autoInterval(),this.autoElapsed+dt);
   if(this.autoElapsed>=this.autoInterval()){this.rollProduction();this.autoElapsed=0;}
  },
@@ -213,7 +232,7 @@ const Portal={
   $('#master-level').textContent='Lv.'+S.portal.commanderLevel;$('#portal-gems').textContent=fmt(S.gems);$('#portal-gold').textContent=fmt(S.gold);
   const stage=this.stageInfo();$('#ct-stage').textContent=PM_ERAS[Math.min(9,stage.AgeIndex)]+' 전선 '+(stage.BattleIndex+1);$('#ct-wave').innerHTML='<span class="forge-wave-line">'+Array.from({length:3},(_,i)=>'<i class="'+(i<Math.min(3,B.masterWaveIndex||1)?'done':'')+'"></i>').join('')+'</span>';$('#ct-timer').textContent='';$('#ct-power').textContent='';
   this.refreshDie();const pending=S.portal.pending,visible=this.comparing&&pending&&Date.now()>=this.rollingUntil;
-  const html=S.portal.board.map((p,i)=>`<button data-slot="${i}" class="deploy-card portal-socket master-slot ${visible&&this.def(pending).role===i?'placement-target':''}" style="--portal-rarity:${p?PM_COLORS[this.def(p).era]:'#829678'}" aria-label="${PM_ROLES[i]} · ${p?this.def(p).name+' Lv.'+p.level:'빈 자리'}"><span class="slot-role-icon" title="${PM_ROLES[i]}">${this.roleIcon(i)}</span>${p?`<span class="deploy-orb">${this.art(p)}</span><span class="slot-level" title="레벨 ${p.level}">${p.level}</span><span class="slot-charge ${p.charge>=this.cost(p)?'charged':''}" role="progressbar" aria-label="주사위 충전" aria-valuemin="0" aria-valuemax="${this.cost(p)}" aria-valuenow="${p.charge}"><span class="slot-charge-fill" style="width:${Math.min(100,p.charge/this.cost(p)*100)}%"></span><span class="slot-charge-label"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="2" width="12" height="12" rx="3"/><circle cx="5" cy="5" r="1"/><circle cx="8" cy="8" r="1"/><circle cx="11" cy="11" r="1"/></svg><b>${p.charge}<em>/${this.cost(p)}</em></b></span></span>`:'<span class="portal-empty">＋</span><small>유닛 소환</small>'}</button>`).join('')+`<div class="production-slot" aria-label="자동 생산 주사위"><small>자동 생산</small><span class="slot-die">${diceCube(S.portal.faces.production||1,Date.now()<this.productionUntil,6)}</span><small>무료</small></div>`;
+  const html=S.portal.board.map((p,i)=>`<button data-slot="${i}" class="deploy-card portal-socket master-slot ${visible&&this.def(pending).role===i?'placement-target':''}" style="--portal-rarity:${p?PM_COLORS[this.def(p).era]:'#829678'}" aria-label="${PM_ROLES[i]} · ${p?this.def(p).name+' Lv.'+p.level:'빈 자리'}"><span class="slot-role-icon" title="${PM_ROLES[i]}">${this.roleIcon(i)}</span>${p?`<span class="deploy-orb">${this.art(p)}</span><span class="slot-level" title="레벨 ${p.level}">${p.level}</span><span class="slot-charge ${p.charge>=this.cost(p)?'charged':''}" role="progressbar" aria-label="주사위 충전" aria-valuemin="0" aria-valuemax="${this.cost(p)}" aria-valuenow="${p.charge}"><span class="slot-charge-fill" style="width:${Math.min(100,p.charge/this.cost(p)*100)}%"></span><span class="slot-charge-label"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="2" width="12" height="12" rx="3"/><circle cx="5" cy="5" r="1"/><circle cx="8" cy="8" r="1"/><circle cx="11" cy="11" r="1"/></svg><b>${p.charge}<em>/${this.cost(p)}</em></b></span></span>`:'<span class="portal-empty">＋</span><small>유닛 소환</small>'}</button>`).join('')+`<div class="production-slot" aria-label="자동 생산 주사위"><small>${this.productionRoll?(this.productionRoll.elapsed<.55?'굴리는 중':this.productionRoll.elapsed<.85?'눈금 확정':'충전 전달'):'자동 생산'}</small><span class="slot-die">${diceCube(S.portal.faces.production||1,!!this.productionRoll&&this.productionRoll.elapsed<.55,6)}</span><small>무료</small></div>`;
   portalPatchMarkup($('#deployment'),html);
   let orders;
   if(visible){const d=this.def(pending),old=S.portal.board[d.role],st=this.stats(pending),prev=old?this.stats(old):null;const delta=prev?st.atk-prev.atk:st.atk;
