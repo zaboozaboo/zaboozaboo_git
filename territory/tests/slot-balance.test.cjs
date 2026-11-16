@@ -17,10 +17,24 @@ for(let era=0;era<10;era++)for(let level=1;level<=150;level++){
  near(s[2].atk/s[2].cd*s[2].cap,s[3].atk/s[3].cd*s[3].cap*1.6,'two-target artillery DPS');
  assert.ok(s[2].atk/s[2].cd*s[2].cap>s[3].atk/s[3].cd*s[3].cap,'single-target advantage');
  assert.ok(s[2].atk/s[2].cd*s[2].cap<s[3].atk/s[3].cd*s[3].cap*2.2,'three-target advantage');
- const baseline=s[4].heal/s[4].cd*s[4].cap;
- near(s[4].atk/s[4].cd*s[4].cap,baseline,'healer shared attack/heal budget');
+ const baseline=s[4].atk/s[4].cd*s[4].cap;
+ assert.equal(s[4].heal,0,'spearmen cannot heal');
+ assert.equal(PM_BY_ID['pm_'+era+'_4'].kind,'melee');
+ assert.ok(s[4].range>s[0].range&&s[4].range<s[2].range,'spearman fights behind frontline');
  assert.ok(Math.abs(((baseline*2+s[5].atk/s[5].cd*s[5].cap)*1.15-baseline*2)/baseline-1)<.17,'full formation support contribution within 17%');
 }
+// The same dice stream now creates separate frontline, firepower and support beats.
+S.portal.board=[unit(0,0,1),unit(0,2,1),unit(0,4,1)];B.units=[];B.fx=[];B.projs=[];
+const counts=face=>[0,1,2].map(slot=>Portal.produce(slot,face).count);
+assert.deepEqual(counts(5),[3,0,0]);
+assert.deepEqual(counts(2),[0,1,0]);
+assert.deepEqual(counts(2),[0,0,1]);
+const spear=B.units.find(u=>u.slot===2);
+assert.equal(spear.kind,'melee');assert.equal(spear.heal,0);assert.equal(spear.range,75);
+// Existing IDs and progression survive reload while their definition becomes a spearman.
+S.portal.board[2].level=27;S.portal.board[2].options=[{key:'atk',value:.1}];Portal.ensure();
+assert.equal(S.portal.board[2].id,'pm_0_4');assert.equal(S.portal.board[2].level,27);
+assert.equal(S.portal.board[2].options[0].value,.1);assert.equal(Portal.stats(S.portal.board[2]).heal,0);
 // Cache only immutable stats already validated above; production and combat remain real.
 const rawStats=Portal.stats.bind(Portal),statCache=new Map();
 Portal.stats=p=>{const key=p.id+":"+p.level;if(!statCache.has(key))statCache.set(key,rawStats(p));return statCache.get(key);};
@@ -48,9 +62,9 @@ for(let era=0;era<10;era++)for(const level of [1,25,75,150])for(const lifetime o
 // Compare support contribution during the same real-production ramp and casualty cycles.
 let maxSupportGap=0;
 for(const lifetime of [12,30,120])for(const seed of [1,42,2026]){
- const front=trial(0,1,0,seed,lifetime),ranged=trial(0,1,2,seed,lifetime),healer=trial(0,1,4,seed,lifetime),banner=trial(0,1,5,seed,lifetime);
+ const front=trial(0,1,0,seed,lifetime),ranged=trial(0,1,2,seed,lifetime),spearman=trial(0,1,4,seed,lifetime),banner=trial(0,1,5,seed,lifetime);
  const contribution=banner.timeline.reduce((sum,r,t)=>sum+r.value+(front.timeline[t].value+ranged.timeline[t].value+r.value)*Math.min(.15,r.count*.03),0);
- const gap=Math.abs(contribution/healer.output-1);maxSupportGap=Math.max(maxSupportGap,gap);
+ const gap=Math.abs(contribution/spearman.output-1);maxSupportGap=Math.max(maxSupportGap,gap);
  assert.ok(gap<.2,'support contribution within 20% during ramp/casualties: '+gap);
 }
 // Actual combat aura: partial roster scales, dead/out-of-range banners do not help, cap survives mixed generations.
@@ -63,7 +77,7 @@ const targets=[0,20,100].map(x=>({team:1,hp:1000,maxHp:1000,x,y:0,size:1,armor:0
 B.projs=[{team:0,x:0,y:0,tx:0,ty:0,speed:100,target:targets[0],dmg:100,splash:45,type:'fire'}];updateProjs(1);
 near(targets[0].hp,900,'primary');near(targets[1].hp,940,'secondary');near(targets[2].hp,1000,'outside splash');
 const hurt={team:0,hp:95,maxHp:100,x:0,y:0};B.units=[hurt];B.projs=[{team:0,x:0,y:0,tx:0,ty:0,speed:100,target:hurt,heal:50}];updateProjs(1);near(hurt.hp,100,'no overheal benefit');
-({comparisons,productionTrials,maxSupportGapPercent:maxSupportGap*100,maxHpGapPercent:maxHpGap*100,maxDamageGapPercent:maxDamageGap*100,scope:'10 eras, levels 1..150; 120s actual production at levels 1/25/75/150, 3 seeded dice streams, lifetimes 12/30/120s. Support equilibrium assumes two allied slot budgets in aura range; healing and attacks share cooldown.'});
+({comparisons,productionTrials,maxSupportGapPercent:maxSupportGap*100,maxHpGapPercent:maxHpGap*100,maxDamageGapPercent:maxDamageGap*100,scope:'10 eras, levels 1..150; 120s actual production at levels 1/25/75/150, 3 seeded dice streams, lifetimes 12/30/120s. Support equilibrium assumes two allied slot budgets in aura range; spearmen deal damage without healing.'});
 `,ctx);
 console.log(JSON.stringify(report,null,2));
 console.log('PASS slot budgets, production/caps/casualties, single vs area tradeoff, support aura, splash and overheal');

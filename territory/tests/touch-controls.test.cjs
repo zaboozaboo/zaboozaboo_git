@@ -1,0 +1,37 @@
+// NODE_PATH=/path/to/node_modules node territory/tests/touch-controls.test.cjs (linkedom)
+const {parseHTML}=require('linkedom');
+const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
+const {document,window}=parseHTML('<html><body><div id="hud"></div></body></html>');
+const source=fs.readFileSync(require('node:path').join(__dirname,'../js/portal.js'),'utf8');
+const context=vm.createContext({document});
+vm.runInContext(source.slice(0,source.indexOf('const Portal=')),context);
+const patch=context.portalPatchMarkup,host=document.querySelector('#hud');
+patch(host,'<button data-summon><b>소환</b><small>100</small></button><button data-auto>자동</button>');
+const summon=host.firstChild,auto=host.lastChild,label=summon.firstChild;
+let clicks=0;auto.addEventListener('click',()=>clicks++);auto.focus();
+auto.dispatchEvent(new window.Event('pointerdown',{bubbles:true}));
+// Supply tick + pending card insertion during a press must not replace/move the auto control.
+patch(host,'<button data-pending>새 유닛</button><button data-summon disabled><b>개방 중</b><small>99</small></button><button data-auto class="running">중지</button>');
+assert.equal(host.querySelector('[data-auto]'),auto);
+assert.equal(host.querySelector('[data-summon]'),summon);
+assert.equal(summon.firstChild,label);
+assert.equal(summon.hasAttribute('disabled'),true);
+auto.dispatchEvent(new window.Event('pointerup',{bubbles:true}));
+auto.dispatchEvent(new window.Event('click',{bubbles:true}));assert.equal(clicks,1);
+patch(host,'<button data-summon><b>소환</b><small>101</small></button><button data-auto>자동</button>');
+assert.equal(host.firstChild,summon);assert.equal(host.lastChild,auto);assert.equal(summon.hasAttribute('disabled'),false);assert.equal(host.children.length,2);
+patch(host,'<button data-slot="0"><span>1</span></button><button data-slot="1">부대</button><div class="production-slot">굴리는 중</div>');
+const slot=host.firstChild,die=host.lastChild;
+for(let i=0;i<20;i++)patch(host,`<button data-slot="0"><span>${i}</span></button><button data-slot="1">부대</button><div class="production-slot">${i%6+1}</div>`);
+assert.equal(host.firstChild,slot);assert.equal(host.lastChild,die);
+console.log('PASS controls and descendants survive supply ticks, pending-card insertion/removal and production dice updates; click listener retained; disabled state updates');
+const listeners={},timers=new Map();let timerId=0;
+const inputContext=vm.createContext({document:{addEventListener:(type,fn)=>listeners[type]=fn},window:{addEventListener:(type,fn)=>listeners[type]=fn},setTimeout:fn=>{timers.set(++timerId,fn);return timerId;},clearTimeout:id=>timers.delete(id)});
+vm.runInContext(fs.readFileSync(require('node:path').join(__dirname,'../js/touch-controls.js'),'utf8'),inputContext);
+const busy=()=>vm.runInContext('TouchControls.busy',inputContext);
+const control={disabled:false,closest:()=>null},press=id=>listeners.pointerdown({pointerId:id,target:{closest:()=>control}});
+press(1);assert.equal(busy(),true);listeners.pointerup({pointerId:1});assert.equal(busy(),true);listeners.click();assert.equal(busy(),false);
+press(2);listeners.pointercancel({pointerId:2});for(const fn of timers.values())fn();timers.clear();assert.equal(busy(),false);
+press(3);press(4);listeners.pointerup({pointerId:3});assert.equal(busy(),true);listeners.blur();assert.equal(busy(),false);
+control.disabled=true;press(5);assert.equal(busy(),false);
+console.log('PASS refresh blocked through native tap, cancellation recovers, multitouch/blur recover, disabled controls ignored');

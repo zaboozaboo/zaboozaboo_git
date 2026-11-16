@@ -6,7 +6,7 @@ folder=root/'assets/portal-units-v1'
 errors=[]; hashes=set(); total=0; rows=[]
 for era in range(10):
  for variant in range(6):
-  ident=f'pm_{era}_{variant}';p=folder/(ident+'.png')
+  ident=f'pm_{era}_{variant}';p=(root/'assets/portal-spearmen-v1' if variant==4 else folder)/(ident+'.png')
   if not p.exists():errors.append(ident+': missing');continue
   data=p.read_bytes()
   if data[:8]!=b'\x89PNG\r\n\x1a\n':errors.append(ident+': not PNG');continue

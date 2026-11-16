@@ -19,6 +19,8 @@ const HERO_ART_ORDER = ['militia','archer','spear','crossbow','apprentice','cava
 function heroArt(id) {
   const authored=typeof PortalUnitArt!=='undefined'?PortalUnitArt.portrait(id):null;
   if(authored)return `<span class="hero-art portal-unit-art" aria-hidden="true" style="background-image:url('${authored.url}');background-size:contain;background-position:center;background-repeat:no-repeat"></span>`;
+  // Portal units must never flash unrelated legacy portraits while their atlas loads.
+  if(/^pm_[0-9]_[0-5]$/.test(id)){const file=typeof PortalUnitArt!=='undefined'?PortalUnitArt.file(id):`assets/portal-units-v1/${id}.png`;return `<span class="hero-art portal-unit-art" aria-hidden="true" style="background-image:url('${file}');background-size:200% 100%;background-position:left center;background-repeat:no-repeat"></span>`;}
   const cell = (ALLY_ART[id] ?? 6);
   return `<span class="hero-art" aria-hidden="true" style="background-image:url('${CombatArt.allies[cell]?.url||''}');background-size:contain;background-position:center;background-repeat:no-repeat"></span>`;
 }

@@ -88,6 +88,7 @@ function fitCanvas() {
 }
 function spriteFor(u) {
   const authored=typeof PortalUnitArt!=='undefined'?PortalUnitArt.sprite(u):null;if(authored)return authored;
+  if(/^pm_[0-9]_[0-5]$/.test(u.heroId||''))return null;
   if(u.isVanguard)return CombatArt.allies[ALLY_ART.militia];
   if(u.monster) return CombatArt.enemies[ENEMY_ART[u.key] ?? 0];
   if(u.isLord) return CombatArt.allies[({knight:0,mage:1,priest:2}[u.cls] ?? 0)+(u.gender==='f'?3:0)];
@@ -297,7 +298,7 @@ function drawFx(f) {
     ellipse(x,y,6+k*20,(6+k*20)*.45);ctx.stroke();
     for(let i=0;i<5;i++){const px=x+Math.sin(i*2.4)*13;ctx.fillStyle=f.color;ctx.fillRect(px,y-k*38-i*3,2,8*(1-k)+2);}
   } else if(f.type==='fall') {
-    const a=spriteFor(f.unit),h=spriteHeight(f.unit)*perspectiveScale(f.unit.x)*VIEW.sx/VIEW.sy,w=spriteHeight(f.unit)*perspectiveScale(f.unit.x)*a.ratio;
+    const a=spriteFor(f.unit);if(!a){ctx.restore();return;}const h=spriteHeight(f.unit)*perspectiveScale(f.unit.x)*VIEW.sx/VIEW.sy,w=spriteHeight(f.unit)*perspectiveScale(f.unit.x)*a.ratio;
     ctx.translate(x,y);if(!CombatArt.reducedMotion) ctx.rotate((f.unit.team===0?-1:1)*k*.55);
     if(typeof MilitiaCombat!=='undefined'&&MilitiaCombat.ready&&MilitiaCombat.accepts(f.unit))ctx.scale(f.unit.face<0?-1:1,1);
     if(!(typeof MilitiaCombat!=='undefined'&&MilitiaCombat.paint(ctx,{...f.unit,moving:false,meleeStartedAt:undefined,flash:0},B.time,h*(1-k*.2),true)))ctx.drawImage(a.image,-w/2,-h*(1-k*.2),w,h*(1-k*.2));

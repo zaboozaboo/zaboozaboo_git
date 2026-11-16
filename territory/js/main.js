@@ -26,8 +26,9 @@ function frame(now) {
   lastFrame = now;
   for (let i = 0; S.firstExpedition!==false && !(typeof firstBattlePaused==='function'&&firstBattlePaused()) && i < S.settings.speed; i++) updateBattle(dt);
   if(MobileShell.mode==='battle') render();
+  PortalFeedback.tick();
   uiTimer += dt; saveTimer += dt;
-  if (uiTimer > 0.25) { uiTimer = 0; UI.refresh(); }
+  if (uiTimer > 0.25 && !TouchControls.busy) { uiTimer = 0; UI.refresh(); }
   if (saveTimer > 5) { saveTimer = 0; checkDaily(); saveGame(); }
   requestAnimationFrame(frame);
 }

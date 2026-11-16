@@ -18,7 +18,7 @@ Object.assign(Portal,{
   // This retains value during replenishment rather than balancing only a full army.
   const damageShare=d.splash?1/1.6:d.aura?.75:1;
   const hit=attack*cd/1.5;
-  return {hp:hp*(1+(o.hp||0)),atk:hit*damageShare*(1+(o.atk||0)),armor:0,heal:d.kind==='healer'?hit*(1+(o.atk||0)):0,cd:cd/(1+(o.haste||0)),range:d.range,speed:d.speed,crit:o.crit||0,splash:d.splash||0,aura:d.aura||0,cost:d.cost,batch:d.batch,cap:d.cap};
+  return {hp:hp*(1+(o.hp||0)),atk:hit*damageShare*(1+(o.atk||0)),armor:0,heal:0,cd:cd/(1+(o.haste||0)),range:d.range,speed:d.speed,crit:o.crit||0,splash:d.splash||0,aura:d.aura||0,cost:d.cost,batch:d.batch,cap:d.cap};
  },
  enemyScale(){return 1;},
  // Fixed campaign formations: no dependency on roster, living troops, pets, or power.

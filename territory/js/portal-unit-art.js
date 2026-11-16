@@ -2,7 +2,7 @@
 // Each source is an authored front/back pair. Preserve alpha and use shared scale.
 const PortalUnitArt={
  frames:{},pending:new Set(),failed:new Set(),
- file(id){return `assets/portal-units-v1/${id}.png`;},
+ file(id){return /_4$/.test(id)?`assets/portal-spearmen-v1/${id}.png`:`assets/portal-units-v1/${id}.png`;},
  load(id){
   if(!/^pm_[0-9]_[0-5]$/.test(id)||this.frames[id]||this.pending.has(id)||this.failed.has(id))return;
   this.pending.add(id);const image=new Image();

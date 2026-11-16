@@ -438,3 +438,34 @@ html body #app{margin:0 auto;width:100%;max-width:500px;height:100dvh;max-height
 #app #game.master-mode #sheet[data-page="auto"]>.sheet-head>#sheet-title{color:white!important}
 #app #game.master-mode .offline-claim>div,#app #game.master-mode .offline-claim>div span{color:#fff!important;text-shadow:0 2px #17131f}
 #app #game.master-mode #sheet #feature-detail .master-primary,#app #game.master-mode #sheet #pet-detail-overlay .master-primary{background:#6c82ee!important;border:2px solid #292532!important;border-bottom:5px solid #202032!important;border-radius:8px!important;box-shadow:inset 0 0 0 2px #b7c0ff66!important;color:#fff!important;min-height:46px;font-size:16px!important}
+
+/* Separate cyan production pips from violet/gold portal cards; effects never own input. */
+#portal-feedback{position:fixed;inset:0;z-index:45;pointer-events:none!important;overflow:hidden}
+#portal-feedback *{pointer-events:none!important;user-select:none}
+.production-face-flight{position:absolute;display:flex;align-items:center;gap:4px;padding:5px 8px;background:#153e55;border:2px solid #9ceeff;border-radius:12px;box-shadow:0 0 17px #58deff99;color:#efffff}
+.production-face-flight .die-face{position:relative!important;inset:auto!important;transform:none!important;display:block;width:30px;height:30px;border-radius:6px;background:#e0fbff;border:1px solid #79d9ed}
+.production-face-flight b{font-size:21px;font-weight:900}
+.feedback-badge{position:absolute;white-space:nowrap;padding:5px 8px;border-radius:8px;font-size:11px;font-weight:800;color:#e2fcff;background:#153e55f2;border:1px solid #8ceaff;box-shadow:0 2px 8px #08162066}
+.portal-card-emerge{position:absolute;width:108px;min-height:132px;display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 5px;background:linear-gradient(145deg,#514268,#211a33);border:3px solid var(--card-color,#e9c378);border-radius:10px;box-shadow:0 0 22px #c79fff99,inset 0 0 12px #e9c37833;color:#fff2d3;transform-origin:50% 100%}
+.portal-card-emerge .hero-art{width:72px!important;height:78px!important;flex:none}
+.portal-card-emerge .card-origin{font-size:10px;letter-spacing:1px;color:#e2c4ff}
+.portal-card-emerge>b{font-size:12px}.portal-card-emerge>small{font-size:10px;color:#d9cbea}
+
+/* Collection popup uses the same complete cube geometry as the battlefield. */
+#sheet[data-page="dice"] .dice-perspective{position:relative;display:block;width:52px;height:52px;perspective:450px;overflow:visible;transform:none}
+#sheet[data-page="dice"] .dice-cube{position:relative;display:block;width:52px;height:52px;transform-style:preserve-3d;transform:var(--result-rotation)}
+#sheet[data-page="dice"] .cube-side{position:absolute;inset:0;display:block;width:52px;height:52px;box-sizing:border-box;border:2px solid #ad8b48;border-radius:9px;background:linear-gradient(140deg,#fffbea,#ecd494);box-shadow:inset 0 0 0 2px #fff4ca,inset 0 -5px 8px #b5914933;backface-visibility:hidden;animation:none;margin:0}
+#sheet[data-page="dice"] .side-1{transform:translateZ(26px)}
+#sheet[data-page="dice"] .side-6{transform:rotateY(180deg) translateZ(26px)}
+#sheet[data-page="dice"] .side-2{transform:rotateY(90deg) translateZ(26px)}
+#sheet[data-page="dice"] .side-5{transform:rotateY(-90deg) translateZ(26px)}
+#sheet[data-page="dice"] .side-3{transform:rotateX(90deg) translateZ(26px)}
+#sheet[data-page="dice"] .side-4{transform:rotateX(-90deg) translateZ(26px)}
+#sheet[data-page="dice"] .collection-art{height:58px;display:grid;place-items:center;flex:none}
+#sheet[data-page="dice"] .collection-die{display:block;width:52px;height:52px;transform:scale(.65);transform-origin:center}
+#sheet[data-page="dice"] .collection-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+#sheet[data-page="dice"] .collection-grid article{min-width:0;overflow-wrap:anywhere}
+#sheet[data-page="dice"] .collection-grid button{margin-top:auto;min-height:44px}
+#app #game.master-mode #sheet[data-page="dice"]{top:12%!important;bottom:12%!important;height:auto!important;max-height:none!important;display:flex;flex-direction:column;overflow:hidden!important}
+#app #game.master-mode #sheet[data-page="dice"]>.sheet-head{flex:none}
+#app #game.master-mode #sheet[data-page="dice"] #panel{flex:1;min-height:0!important;max-height:none!important;overflow-y:auto!important}

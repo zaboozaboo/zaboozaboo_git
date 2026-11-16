@@ -1,4 +1,29 @@
 'use strict';
+// Keep live controls connected between pointerdown and click during periodic HUD updates.
+function portalPatchMarkup(host, html) {
+ const template=document.createElement('template');template.innerHTML=html;
+ const key=node=>node.nodeType===1?node.tagName+':'+Array.from(node.attributes).filter(a=>a.name.startsWith('data-')).map(a=>a.name+'='+a.value).join('|'):String(node.nodeType);
+ function patch(parent, source) {
+  let cursor=parent.firstChild;
+  for(const next of Array.from(source.childNodes)) {
+   let current=cursor;
+   if(!current||key(current)!==key(next)) {
+    current=Array.from(parent.childNodes).slice(cursor?Array.from(parent.childNodes).indexOf(cursor):parent.childNodes.length).find(n=>key(n)===key(next));
+    if(current)parent.insertBefore(current,cursor);
+    else {current=next.cloneNode(true);parent.insertBefore(current,cursor);}
+   }
+   if(next.nodeType===1) {
+    for(const attr of Array.from(current.attributes))if(!next.hasAttribute(attr.name))current.removeAttribute(attr.name);
+    for(const attr of Array.from(next.attributes))if(current.getAttribute(attr.name)!==attr.value)current.setAttribute(attr.name,attr.value);
+    patch(current,next);
+   } else if(current.nodeValue!==next.nodeValue)current.nodeValue=next.nodeValue;
+   cursor=current.nextSibling;
+  }
+  while(cursor){const next=cursor.nextSibling;cursor.remove();cursor=next;}
+ }
+ patch(host,template.content);
+}
+
 // Portal Master uses the reference forge tables with units replacing equipment slots.
 const Portal={
  selected:0,page:null,comparing:false,switching:false,rollingUntil:0,autoElapsed:0,
@@ -52,7 +77,9 @@ const Portal={
  spawnPhase(dt){
   if(B.masterWaveIndex>=B.masterWaves.length)return;
   const living=B.units.filter(u=>u.team===1&&u.hp>0).length;
-  if(this.dungeonRun){if(!living){B.queueT-=dt;if(B.queueT<=0){this.spawnWave();B.queueT=2;}}return;}
+  // A cleared battlefield advances immediately, regardless of the reinforcement timer.
+  if(!living){this.spawnWave();return;}
+  if(this.dungeonRun)return;
   B.queueT=Math.max(0,B.queueT-dt);
   // Fixed interval; at most two formations alive, without changing their stats or size.
   if(B.queueT<=0&&living<=this.armyFormation(B.stage).count)this.spawnWave();
@@ -103,7 +130,7 @@ const Portal={
  rollPaid(random=Math.random,withinBatch=false){
   if(withinBatch?(this.stackCount()>=this.stackCapacity||S.portal.supply<this.rollPrice()):!this.canRoll())return false;
   this.comparing=true;if(S.portal.pending)S.portal.reserve.push(S.portal.pending);S.portal.supply-=this.rollPrice();S.portal.pending=this.draw(random);S.portal.forgeRolls++;
-  this.rollingUntil=Date.now()+700;saveGame();return {pending:true};
+  this.rollingUntil=Date.now()+700;this.summonCue={unit:{...S.portal.pending},count:withinBatch?(this.summonCue?.count||0)+1:1,until:this.rollingUntil};saveGame();return {pending:true};
  },
  rollProduction(random=Math.random){
   if(!S.portal.board.some(Boolean))return false;
@@ -177,24 +204,24 @@ const Portal={
   this.refresh();requestAnimationFrame(()=>fitCanvas());
  },
  refreshDie(){
-  const host=$('#dice-hud'),rolling=Date.now()<this.productionUntil,opening=Date.now()<this.rollingUntil;
-  const key=[opening,S.portal.faces.production,S.portal.forgeLevel,this.canRoll(),S.portal.pending?.id,S.portal.pending?.level,typeof PortalUnitArt!=='undefined'&&!!PortalUnitArt.frames[S.portal.pending?.id],S.portal.reserve.length,this.summonAuto,this.summonStatus,Math.floor(S.portal.supply/this.rollPrice())].join(':');
+  const host=$('#dice-hud'),opening=Date.now()<this.rollingUntil;
+  const key=[opening,S.portal.forgeLevel,this.canRoll(),S.portal.pending?.id,S.portal.pending?.level,typeof PortalUnitArt!=='undefined'&&!!PortalUnitArt.frames[S.portal.pending?.id],S.portal.reserve.length,this.summonAuto,this.summonStatus,Math.floor(S.portal.supply)].join(':');
   if(host.dataset.dualKey===key)return;host.dataset.dualKey=key;host.className='master-controls';
-  host.innerHTML=`${S.portal.pending?`<button class="pending-deck" data-pending aria-label="획득 유닛 ${S.portal.reserve.length+1}개 비교" style="--tier:${PM_COLORS[this.def(S.portal.pending).era]}">${this.art(S.portal.pending)}<b>Lv.${S.portal.pending.level}</b><small>${this.stackCount()}/${this.stackCapacity}</small></button>`:''}<button data-summon class="summon-portal ${opening?'opening':''}" aria-label="룬석 ${this.rollPrice()}개로 유닛 소환" title="소환 1회에 룬석 ${this.rollPrice()}개 사용" ${this.canRoll()?'':'disabled'}><img class="summon-portal-art" src="assets/summon-portal-v1.png" alt="" draggable="false"><b>${opening?'개방 중':'유닛 소환'}</b><small aria-label="소환 가능 ${Math.floor(S.portal.supply/this.rollPrice())}회"><img src="assets/forge-ui/currency-runestone-v1.png" alt="룬석">${Math.floor(S.portal.supply).toLocaleString('ko-KR')}</small></button><button data-core class="core-upgrade"><span>✦</span><b>Lv.${S.portal.forgeLevel}</b><small>포탈 강화</small></button><button data-auto class="portal-auto ${this.summonAuto?'running':''}" aria-label="${this.summonAuto?'자동 소환 중지':'자동 소환 설정'}"><span>${this.summonAuto?'⟳':'≫'}</span><b>${this.summonAuto?(this.summonStatus==='획득 유닛 확인'?'확인 대기':this.summonStatus==='보급 대기'?'보급 대기':'자동 중지'):'자동'}</b></button>`;
+  portalPatchMarkup(host,`${S.portal.pending?`<button class="pending-deck" data-pending aria-label="획득 유닛 ${S.portal.reserve.length+1}개 비교" style="--tier:${PM_COLORS[this.def(S.portal.pending).era]}">${this.art(S.portal.pending)}<b>Lv.${S.portal.pending.level}</b><small>${this.stackCount()}/${this.stackCapacity}</small></button>`:''}<button data-summon class="summon-portal ${opening?'opening':''}" aria-label="룬석 ${this.rollPrice()}개로 유닛 소환" title="소환 1회에 룬석 ${this.rollPrice()}개 사용" ${this.canRoll()?'':'disabled'}><img class="summon-portal-art" src="assets/summon-portal-v1.png" alt="" draggable="false"><b>${opening?'개방 중':'유닛 소환'}</b><small aria-label="소환 가능 ${Math.floor(S.portal.supply/this.rollPrice())}회"><img src="assets/forge-ui/currency-runestone-v1.png" alt="룬석">${Math.floor(S.portal.supply).toLocaleString('ko-KR')}</small></button><button data-core class="core-upgrade"><span>✦</span><b>Lv.${S.portal.forgeLevel}</b><small>포탈 강화</small></button><button data-auto class="portal-auto ${this.summonAuto?'running':''}" aria-label="${this.summonAuto?'자동 소환 중지':'자동 소환 설정'}"><span>${this.summonAuto?'⟳':'≫'}</span><b>${this.summonAuto?(this.summonStatus==='획득 유닛 확인'?'확인 대기':this.summonStatus==='보급 대기'?'보급 대기':'자동 중지'):'자동'}</b></button>`);
  },
  refresh(){
   $('#master-level').textContent='Lv.'+S.portal.commanderLevel;$('#portal-gems').textContent=fmt(S.gems);$('#portal-gold').textContent=fmt(S.gold);
   const stage=this.stageInfo();$('#ct-stage').textContent=PM_ERAS[Math.min(9,stage.AgeIndex)]+' 전선 '+(stage.BattleIndex+1);$('#ct-wave').innerHTML='<span class="forge-wave-line">'+Array.from({length:3},(_,i)=>'<i class="'+(i<Math.min(3,B.masterWaveIndex||1)?'done':'')+'"></i>').join('')+'</span>';$('#ct-timer').textContent='';$('#ct-power').textContent='';
   this.refreshDie();const pending=S.portal.pending,visible=this.comparing&&pending&&Date.now()>=this.rollingUntil;
   const html=S.portal.board.map((p,i)=>`<button data-slot="${i}" class="deploy-card portal-socket master-slot ${visible&&this.def(pending).role===i?'placement-target':''}" style="--portal-rarity:${p?PM_COLORS[this.def(p).era]:'#829678'}" aria-label="${PM_ROLES[i]} · ${p?this.def(p).name+' Lv.'+p.level:'빈 자리'}"><span class="slot-role-icon" title="${PM_ROLES[i]}">${this.roleIcon(i)}</span>${p?`<span class="deploy-orb">${this.art(p)}</span><span class="slot-level" title="레벨 ${p.level}">${p.level}</span><span class="slot-charge ${p.charge>=this.cost(p)?'charged':''}" role="progressbar" aria-label="주사위 충전" aria-valuemin="0" aria-valuemax="${this.cost(p)}" aria-valuenow="${p.charge}"><span class="slot-charge-fill" style="width:${Math.min(100,p.charge/this.cost(p)*100)}%"></span><span class="slot-charge-label"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="2" width="12" height="12" rx="3"/><circle cx="5" cy="5" r="1"/><circle cx="8" cy="8" r="1"/><circle cx="11" cy="11" r="1"/></svg><b>${p.charge}<em>/${this.cost(p)}</em></b></span></span>`:'<span class="portal-empty">＋</span><small>유닛 소환</small>'}</button>`).join('')+`<div class="production-slot" aria-label="자동 생산 주사위"><small>자동 생산</small><span class="slot-die">${diceCube(S.portal.faces.production||1,Date.now()<this.productionUntil,6)}</span><small>무료</small></div>`;
-  if($('#deployment').innerHTML!==html)$('#deployment').innerHTML=html;
+  portalPatchMarkup($('#deployment'),html);
   let orders;
   if(visible){const d=this.def(pending),old=S.portal.board[d.role],st=this.stats(pending),prev=old?this.stats(old):null;const delta=prev?st.atk-prev.atk:st.atk;
    const row=(p,label)=>p?`<div class="compare-row">${this.art(p)}<div><small>${label} · ${PM_ERAS[this.def(p).era]}</small><b>${this.def(p).name} Lv.${p.level}</b><span>공격 ${fmt(this.stats(p).atk)} · 체력 ${fmt(this.stats(p).hp)}</span></div></div>`:`<div class="compare-row"><b>미배치 · ${PM_ROLES[d.role]}</b></div>`;
    orders=`<div class="replacement-panel"><h3 class="compare-heading">장착됨</h3><div class="compare-pair">${row(old,'현재')}${row(pending,'새로운!')}<span class="compare-delta" style="color:${delta<0?'#ff9caf':'#9fe77f'}">공격 ${delta>=0?'+':''}${fmt(delta)}</span></div><div class="compare-actions"><button data-sell>판매 ●${this.sellPrice(pending)}</button><button data-equip>${old?'교체':'배치'}</button></div></div>`;
   }else orders='';
   $('#portal-orders').classList.toggle('has-comparison',!!visible);
-  if($('#portal-orders').innerHTML!==orders)$('#portal-orders').innerHTML=orders;
+  portalPatchMarkup($('#portal-orders'),orders);
   animateProductionCue();document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('active',b.dataset.masterPage===(this.page||'battle')));
   if(this.page==='growth')this.refreshResearchStatus();
   if(this.page==='forge'){const key=[S.portal.forgeLevel,S.portal.paid,S.portal.upgrade?Math.ceil((S.portal.upgrade.endsAt-Date.now())/1000):0,S.gold>=this.installment(),S.portal.forgeRolls<8].join(':');if(this.panelKey!==key){this.panelKey=key;this.panel();}}
@@ -204,7 +231,7 @@ const Portal={
  statRows(p,other){const st=this.stats(p),prev=other?this.stats(other):null;const rows=[['hp','체력'],['atk','공격력'],['armor','방어력'],['cd','공격 간격'],['range','사거리'],['speed','이동속도'],['cost','필요 눈금'],['batch','출격 수'],['cap','정원']];if(st.heal)rows.push(['heal','회복량']);if(st.splash)rows.push(['splash','광역 범위']);return rows.map(([k,name])=>`<div><span>${name}</span><b>${Number.isInteger(st[k])?st[k]:+st[k].toFixed(2)}${k==='cd'?'초':''}</b>${prev?`<small>${+prev[k].toFixed(2)} → ${+st[k].toFixed(2)}</small>`:''}</div>`).join('');},
  unitCard(p,other){const d=this.def(p);return `<section class="master-unit-detail" style="--drop-color:${PM_COLORS[d.era]}"><div class="master-unit-hero">${this.art(p)}<div><small>${PM_ERAS[d.era]} 시대 · ${PM_ROLES[d.role]}</small><h2>${d.name}</h2><b>Lv.${p.level}</b></div></div><p><b>${d.ability}</b> · ${d.desc}</p><div class="master-stat-grid">${this.statRows(p,other)}</div>${(p.options||[]).length?`<p class="master-options">${p.options.map(o=>({atk:'공격력',hp:'체력',haste:'공격 속도',crit:'치명타'})[o.key]+' +'+(o.value*100).toFixed(1)+'%').join(' · ')}</p>`:''}</section>`;},
  panel(){
-  const host=$('#panel');
+  const host=this.panelRenderTarget||$('#panel');
   if(this.page==='dungeon'){host.innerHTML=this.dungeonPanel();
   }else if(this.page==='growth'){
    host.innerHTML=`<div class="growth-research"><h3>연구</h3><p>부대와 보급을 영구 강화합니다.</p>${[['atk','부대 공격','공격력',5,'%'],['hp','부대 체력','체력',5,'%'],['supply','보급 생산','초당 보급',.2,'']].map(([key,name,label,step,unit])=>{const lv=S.portal.research[key];return `<article><div><h3>${name} <small>Lv.${lv}/10</small></h3><p>${label} +${+(lv*step).toFixed(1)}${unit} → +${+(Math.min(10,lv+1)*step).toFixed(1)}${unit}</p></div><button data-research="${key}" ${lv>=10||S.gold<this.researchCost(key)?'disabled':''}>${lv>=10?'완료':'● '+fmt(this.researchCost(key))}</button></article>`;}).join('')}</div><nav class="growth-subtabs"><button disabled>탈것 🔒</button><button disabled>스킬 🔒</button><button class="active">연구</button></nav><button class="feature-back" data-return>‹ 전장</button>`;

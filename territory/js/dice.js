@@ -75,6 +75,7 @@ function refreshDiceHUD(){
 
 }
 function animateProductionCue(){
+ if(S.portal&&typeof PortalFeedback!=='undefined'){PortalFeedback.production(B.diceCue);return;}
  const event=B.diceCue,host=document.querySelector('.production-slot')||document.getElementById('dice-hud');
  if(!event||!host||event.presented)return;event.presented=true;
  if(event.until<Date.now()||!document.getElementById('game').classList.contains('battle-mode'))return;
